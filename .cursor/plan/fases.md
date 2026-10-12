@@ -89,7 +89,13 @@ Fase 8 terminada en código: widget `LatestPhoto` de Android con `react-native-a
 
 Compilar solo cuando el usuario lo pida: el plan gratuito de EAS da 15 compilaciones de Android al mes.
 
-Siguiente: compilar el development build, instalarlo y probar las fases 2 a 8 en los teléfonos. Después, fase 9.
+Fases 2 a 8 probadas en los teléfonos con el development build. En Expo Go, `expo-notifications` y el widget se cargan solo fuera de Expo Go para que la app no falle, y `npm run start:go` abre el túnel en ese modo.
+
+Rediseño de la interfaz: paleta blanca, rosada y café, tipografía Nunito, íconos Lucide y componentes base nuevos en `shared/ui`.
+
+Fase 9 en curso: ícono de dos corazones (café y rosado) generado como SVG, splash con la misma marca y tres widgets de Android: `LatestPhoto`, `DaysTogether` y `NextDate`, con fuentes Nunito y vistas previas en `assets/widgets`. El cálculo de próximas fechas está en `shared/utils/occurrence.ts` porque lo usan las fechas y los widgets. El perfil `production` genera un APK para instalarlo directo en los dos teléfonos.
+
+Siguiente: compilar la versión de producción cuando el usuario lo pida e instalarla en ambos teléfonos.
 
 ## Costos
 
