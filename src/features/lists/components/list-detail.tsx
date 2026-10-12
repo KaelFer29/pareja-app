@@ -1,11 +1,17 @@
 import { router } from 'expo-router';
+import { Check, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import { colors, radius, spacing } from '@/shared/theme';
+import { colors, fonts, radius, shadows, spacing } from '@/shared/theme';
+import { AddField } from '@/shared/ui/add-field';
 import { Button } from '@/shared/ui/button';
+import { Icon } from '@/shared/ui/icon';
+import { Notice } from '@/shared/ui/notice';
+import { ProgressBar } from '@/shared/ui/progress-bar';
+import { SCREEN_PADDING } from '@/shared/ui/screen';
+import { LoadingState } from '@/shared/ui/states';
 import { Text } from '@/shared/ui/text';
-import { TextField } from '@/shared/ui/text-field';
 
 import {
   useAddItem,
@@ -32,6 +38,7 @@ export function ListDetail({ list }: ListDetailProps) {
   const [content, setContent] = useState('');
 
   const sorted = [...(items.data ?? [])].sort((a, b) => Number(a.done) - Number(b.done));
+  const doneCount = sorted.filter((item) => item.done).length;
 
   function add() {
     if (content.trim() === '') return;
@@ -74,35 +81,35 @@ export function ListDetail({ list }: ListDetailProps) {
 
   const header = (
     <View style={styles.header}>
-      <TextField
+      <TextInput
+        accessibilityLabel="Nombre de la lista"
         value={title}
         onChangeText={setTitle}
         onEndEditing={rename}
         maxLength={60}
+        selectionColor={colors.primary}
+        cursorColor={colors.primary}
         style={styles.title}
       />
-      <View style={styles.form}>
-        <TextField
-          placeholder="Agregar elemento"
-          maxLength={200}
-          value={content}
-          onChangeText={setContent}
-          onSubmitEditing={add}
-          submitBehavior="submit"
-          returnKeyType="done"
-          style={styles.input}
-        />
-        <Button
-          title="Agregar"
-          onPress={add}
-          loading={addItem.isPending}
-          disabled={content.trim() === ''}
-        />
-      </View>
+      {sorted.length > 0 && (
+        <View style={styles.progress}>
+          <Text variant="caption" tone="muted">
+            {doneCount} de {sorted.length} hechos
+          </Text>
+          <ProgressBar value={doneCount / sorted.length} />
+        </View>
+      )}
+      <AddField
+        placeholder="Agregar elemento"
+        accessibilityLabel="Agregar elemento"
+        maxLength={200}
+        value={content}
+        onChangeText={setContent}
+        onSubmit={add}
+        loading={addItem.isPending}
+      />
       {(addItem.isError || renameList.isError) && (
-        <Text variant="caption" tone="danger">
-          No se pudo guardar el cambio. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
+        <Notice message="No se pudo guardar el cambio. Revisa tu conexión e inténtalo de nuevo." />
       )}
     </View>
   );
@@ -113,25 +120,29 @@ export function ListDetail({ list }: ListDetailProps) {
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
       ListHeaderComponent={header}
       renderItem={({ item }) => <ItemRow item={item} />}
       ListEmptyComponent={
         items.isPending ? (
-          <ActivityIndicator color={colors.primary} />
+          <LoadingState />
         ) : (
-          <Text tone="muted" align="center">
+          <Text tone="muted" align="center" style={styles.empty}>
             Esta lista está vacía. Agrega el primer elemento.
           </Text>
         )
       }
       ListFooterComponent={
         <View style={styles.footer}>
-          <Text variant="caption" tone="muted" align="center">
-            Mantén presionado un elemento para eliminarlo.
-          </Text>
+          {sorted.length > 0 && (
+            <Text variant="caption" tone="muted" align="center">
+              Mantén presionado un elemento para eliminarlo.
+            </Text>
+          )}
           <Button
             title="Eliminar lista"
-            variant="secondary"
+            variant="danger"
+            icon={Trash2}
             onPress={confirmDelete}
             loading={deleteList.isPending}
           />
@@ -169,10 +180,10 @@ function ItemRow({ item }: { item: ListItem }) {
       accessibilityState={{ checked: item.done }}
       onPress={() => toggleItem.mutate({ id: item.id, listId: item.list_id, done: !item.done })}
       onLongPress={confirmDelete}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.row, item.done && styles.rowDone, pressed && styles.pressed]}
     >
       <View style={[styles.check, item.done && styles.checked]}>
-        {item.done && <Text style={styles.checkMark}>✓</Text>}
+        {item.done && <Icon icon={Check} size={16} color={colors.primaryText} strokeWidth={3} />}
       </View>
       <Text
         tone={item.done ? 'muted' : 'default'}
@@ -187,32 +198,38 @@ function ItemRow({ item }: { item: ListItem }) {
 const styles = StyleSheet.create({
   content: {
     gap: spacing.sm,
-    padding: spacing.md,
+    paddingHorizontal: SCREEN_PADDING,
+    paddingTop: spacing.sm,
     paddingBottom: spacing.xl,
   },
   header: {
-    gap: spacing.sm,
+    gap: spacing.md - spacing.xs,
     marginBottom: spacing.sm,
   },
   title: {
-    fontWeight: '600',
+    fontFamily: fonts.extrabold,
+    fontSize: 26,
+    lineHeight: 34,
+    color: colors.text,
+    paddingVertical: spacing.xs,
   },
-  form: {
-    flexDirection: 'row',
+  progress: {
     gap: spacing.sm,
-  },
-  input: {
-    flex: 1,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
+    gap: spacing.md - spacing.xs,
+    paddingVertical: spacing.md - spacing.xs,
+    paddingHorizontal: spacing.md,
     borderRadius: radius.md,
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...shadows.card,
+  },
+  rowDone: {
+    backgroundColor: colors.surfaceMuted,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   pressed: {
     opacity: 0.7,
@@ -229,15 +246,14 @@ const styles = StyleSheet.create({
   checked: {
     backgroundColor: colors.primary,
   },
-  checkMark: {
-    color: colors.primaryText,
-    fontWeight: '700',
-  },
   itemText: {
     flex: 1,
   },
   done: {
     textDecorationLine: 'line-through',
+  },
+  empty: {
+    marginTop: spacing.lg,
   },
   footer: {
     gap: spacing.md,

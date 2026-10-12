@@ -1,37 +1,26 @@
 import { useLocalSearchParams } from 'expo-router';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { ListX } from 'lucide-react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 
 import { ListDetail } from '@/features/lists/components/list-detail';
 import { useList } from '@/features/lists/hooks';
-import { colors, spacing } from '@/shared/theme';
-import { Text } from '@/shared/ui/text';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 export default function ListScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const list = useList(id);
 
   if (list.isPending) {
-    return <ActivityIndicator color={colors.primary} style={styles.loader} />;
+    return <LoadingState />;
   }
 
   if (list.isError) {
-    return (
-      <View style={styles.message}>
-        <Text tone="danger" align="center">
-          No se pudo cargar la lista. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
-      </View>
-    );
+    return <ErrorState title="No se pudo cargar la lista" onRetry={() => list.refetch()} />;
   }
 
   if (!list.data) {
-    return (
-      <View style={styles.message}>
-        <Text tone="muted" align="center">
-          Esta lista ya no existe.
-        </Text>
-      </View>
-    );
+    return <EmptyState icon={ListX} title="Esta lista ya no existe" />;
   }
 
   return (
@@ -47,11 +36,5 @@ export default function ListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  loader: {
-    marginTop: spacing.xl,
-  },
-  message: {
-    padding: spacing.lg,
   },
 });

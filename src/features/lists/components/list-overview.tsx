@@ -1,19 +1,17 @@
 import { router } from 'expo-router';
+import { ChevronRight, ListChecks, ListTodo } from 'lucide-react-native';
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
-import { colors, spacing } from '@/shared/theme';
-import { Button } from '@/shared/ui/button';
+import { colors, radius, spacing } from '@/shared/theme';
+import { AddField } from '@/shared/ui/add-field';
 import { Card } from '@/shared/ui/card';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { Icon } from '@/shared/ui/icon';
+import { Notice } from '@/shared/ui/notice';
+import { ProgressBar } from '@/shared/ui/progress-bar';
+import { ErrorState, LoadingState } from '@/shared/ui/states';
 import { Text } from '@/shared/ui/text';
-import { TextField } from '@/shared/ui/text-field';
 
 import { useCreateList, useLists } from '../hooks';
 import type { ListSummary } from '../types';
@@ -42,44 +40,27 @@ export function ListOverview({ coupleId }: ListOverviewProps) {
 
   const header = (
     <View style={styles.header}>
-      <View style={styles.form}>
-        <TextField
-          placeholder="Nueva lista, por ejemplo Viajes"
-          maxLength={60}
-          value={title}
-          onChangeText={setTitle}
-          onSubmitEditing={create}
-          returnKeyType="done"
-          style={styles.input}
-        />
-        <Button
-          title="Crear"
-          onPress={create}
-          loading={createList.isPending}
-          disabled={title.trim() === ''}
-        />
-      </View>
+      <AddField
+        placeholder="Nueva lista, por ejemplo Viajes"
+        accessibilityLabel="Crear lista"
+        maxLength={60}
+        value={title}
+        onChangeText={setTitle}
+        onSubmit={create}
+        loading={createList.isPending}
+      />
       {createList.isError && (
-        <Text variant="caption" tone="danger">
-          No se pudo crear la lista. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
+        <Notice message="No se pudo crear la lista. Revisa tu conexión e inténtalo de nuevo." />
       )}
     </View>
   );
 
   if (lists.isPending) {
-    return <ActivityIndicator color={colors.primary} style={styles.loader} />;
+    return <LoadingState />;
   }
 
   if (lists.isError) {
-    return (
-      <View style={styles.message}>
-        <Text tone="danger" align="center">
-          No se pudieron cargar las listas. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
-        <Button title="Reintentar" onPress={() => lists.refetch()} />
-      </View>
-    );
+    return <ErrorState title="No se pudieron cargar las listas" onRetry={() => lists.refetch()} />;
   }
 
   return (
@@ -88,6 +69,7 @@ export function ListOverview({ coupleId }: ListOverviewProps) {
       keyExtractor={(list) => list.id}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
       ListHeaderComponent={header}
       renderItem={({ item }) => <ListCard list={item} />}
       refreshControl={
@@ -99,59 +81,73 @@ export function ListOverview({ coupleId }: ListOverviewProps) {
         />
       }
       ListEmptyComponent={
-        <Text tone="muted" align="center" style={styles.empty}>
-          Aún no hay listas. Crea una para sus planes, deseos o pendientes.
-        </Text>
+        <EmptyState
+          icon={ListTodo}
+          title="Aún no hay listas"
+          description="Crea una para sus planes, deseos o pendientes."
+        />
       }
     />
   );
 }
 
 function ListCard({ list }: { list: ListSummary }) {
-  const progress = list.total === 0 ? 'Sin elementos' : `${list.done} de ${list.total} hechos`;
+  const isComplete = list.total > 0 && list.done === list.total;
+  const progress =
+    list.total === 0
+      ? 'Sin elementos'
+      : isComplete
+        ? 'Todo listo'
+        : `${list.done} de ${list.total} hechos`;
 
   return (
-    <Pressable
-      onPress={() => router.push({ pathname: '/lists/[id]', params: { id: list.id } })}
-      style={({ pressed }) => pressed && styles.pressed}
-    >
-      <Card>
-        <Text variant="subtitle">{list.title}</Text>
-        <Text variant="caption" tone="muted">
-          {progress}
-        </Text>
-      </Card>
-    </Pressable>
+    <Card onPress={() => router.push({ pathname: '/lists/[id]', params: { id: list.id } })}>
+      <View style={styles.row}>
+        <View style={[styles.iconBox, isComplete && styles.iconBoxComplete]}>
+          <Icon icon={ListChecks} size={20} color={isComplete ? colors.primary : colors.accent} />
+        </View>
+        <View style={styles.texts}>
+          <Text variant="bodyStrong" numberOfLines={1}>
+            {list.title}
+          </Text>
+          <Text variant="caption" tone={isComplete ? 'primary' : 'muted'}>
+            {progress}
+          </Text>
+        </View>
+        <Icon icon={ChevronRight} size={20} color={colors.textMuted} />
+      </View>
+      {list.total > 0 && <ProgressBar value={list.done / list.total} />}
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  loader: {
-    marginTop: spacing.xl,
-  },
-  message: {
-    gap: spacing.md,
-    marginTop: spacing.xl,
-  },
   content: {
-    gap: spacing.sm,
+    gap: spacing.md - spacing.xs,
     paddingBottom: spacing.xl,
   },
   header: {
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
-  form: {
+  row: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    alignItems: 'center',
+    gap: spacing.md - spacing.xs,
   },
-  input: {
+  iconBox: {
+    width: 42,
+    height: 42,
+    borderRadius: radius.md,
+    backgroundColor: colors.accentSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconBoxComplete: {
+    backgroundColor: colors.primarySoft,
+  },
+  texts: {
     flex: 1,
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-  empty: {
-    marginTop: spacing.xl,
+    gap: spacing.xxs,
   },
 });
