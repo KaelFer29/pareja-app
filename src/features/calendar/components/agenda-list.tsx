@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Heart } from 'lucide-react-native';
+import { Flame, Heart } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { colors, fonts, radius, spacing } from '@/shared/theme';
@@ -55,8 +55,11 @@ function AgendaRow({ item, showDay }: { item: AgendaItem; showDay: boolean }) {
           <Icon icon={Heart} size={18} color={colors.accent} fill={colors.accent} />
         </View>
       ) : (
-        <View style={[styles.marker, styles.planMarker]}>
-          <Text style={styles.time} numberOfLines={2}>
+        <View style={[styles.marker, item.outingStreak ? styles.streakMarker : styles.planMarker]}>
+          <Text
+            style={[styles.time, item.outingStreak ? styles.streakTime : null]}
+            numberOfLines={2}
+          >
             {item.startTime ? formatTime(item.startTime) : 'Todo\nel día'}
           </Text>
         </View>
@@ -70,12 +73,44 @@ function AgendaRow({ item, showDay }: { item: AgendaItem; showDay: boolean }) {
             {subtitle}
           </Text>
         )}
+        {item.outingStreak ? <StreakTag streak={item.outingStreak} /> : null}
       </View>
     </Card>
   );
 }
 
+export function StreakTag({ streak }: { streak: number }) {
+  return (
+    <View style={styles.streakTag}>
+      <Icon icon={Flame} size={12} color={colors.streak} fill={colors.streak} />
+      <Text style={styles.streakText}>Racha de {streak} días</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  streakTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: spacing.xxs + 1,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: radius.pill,
+    backgroundColor: colors.streakSoft,
+  },
+  streakText: {
+    fontFamily: fonts.extrabold,
+    fontSize: 11,
+    lineHeight: 15,
+    color: colors.streak,
+  },
+  streakMarker: {
+    backgroundColor: colors.streakSoft,
+  },
+  streakTime: {
+    color: colors.streak,
+  },
   list: {
     gap: spacing.sm + spacing.xxs,
   },

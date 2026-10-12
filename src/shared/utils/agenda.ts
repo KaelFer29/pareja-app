@@ -8,6 +8,7 @@ export type AgendaEvent = {
   ends_on: string | null;
   start_time: string | null;
   end_time: string | null;
+  outing_streak?: number | null;
 };
 
 export type AgendaSpecial = Recurring & {
@@ -25,6 +26,7 @@ export type AgendaItem = {
   endTime: string | null;
   years: number | null;
   span: { index: number; total: number } | null;
+  outingStreak: number | null;
 };
 
 function eventItems(event: AgendaEvent, from: Date, to: Date): AgendaItem[] {
@@ -47,6 +49,7 @@ function eventItems(event: AgendaEvent, from: Date, to: Date): AgendaItem[] {
       endTime: index === total - 1 ? event.end_time : null,
       years: null,
       span: total > 1 ? { index, total } : null,
+      outingStreak: event.outing_streak ?? null,
     });
   }
 
@@ -79,6 +82,7 @@ function specialItems(special: AgendaSpecial, from: Date, to: Date): AgendaItem[
         endTime: null,
         years: special.repeats_yearly ? year - original.getFullYear() || null : null,
         span: null,
+        outingStreak: null,
       },
     ];
   });

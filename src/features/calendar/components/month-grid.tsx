@@ -1,8 +1,9 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Flame } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { colors, fonts, radius, spacing } from '@/shared/theme';
 import { Card } from '@/shared/ui/card';
+import { Icon } from '@/shared/ui/icon';
 import { IconButton } from '@/shared/ui/icon-button';
 import { Text } from '@/shared/ui/text';
 import type { AgendaItem } from '@/shared/utils/agenda';
@@ -74,7 +75,7 @@ export function MonthGrid({
             const isToday = day === today;
             const isOutside = date.getMonth() !== month.getMonth();
             const hasSpecial = items.some((item) => item.kind === 'special');
-            const plans = Math.min(items.filter((item) => item.kind === 'plan').length, 3);
+            const plans = items.filter((item) => item.kind === 'plan').slice(0, 3);
 
             return (
               <Pressable
@@ -109,9 +110,19 @@ export function MonthGrid({
                   </Text>
                 </View>
                 <View style={styles.dots}>
-                  {Array.from({ length: plans }, (_, index) => (
-                    <View key={index} style={[styles.dot, isOutside && styles.outsideDot]} />
-                  ))}
+                  {plans.map((item) =>
+                    item.outingStreak ? (
+                      <Icon
+                        key={item.key}
+                        icon={Flame}
+                        size={9}
+                        color={colors.streak}
+                        fill={colors.streak}
+                      />
+                    ) : (
+                      <View key={item.key} style={[styles.dot, isOutside && styles.outsideDot]} />
+                    ),
+                  )}
                 </View>
               </Pressable>
             );
@@ -130,6 +141,12 @@ export function MonthGrid({
           <View style={styles.legendRing} />
           <Text variant="caption" tone="muted">
             Fechas importantes
+          </Text>
+        </View>
+        <View style={styles.legendItem}>
+          <Icon icon={Flame} size={11} color={colors.streak} fill={colors.streak} />
+          <Text variant="caption" tone="muted">
+            Racha
           </Text>
         </View>
       </View>

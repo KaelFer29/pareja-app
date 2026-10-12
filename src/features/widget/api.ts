@@ -127,7 +127,7 @@ export async function getUpcomingAgendaForWidget(limit: number): Promise<WidgetA
   const [events, specials] = await Promise.all([
     supabase
       .from('events')
-      .select('id, title, starts_on, ends_on, start_time, end_time')
+      .select('id, title, starts_on, ends_on, start_time, end_time, outing_streak')
       .or(`ends_on.gte.${toDay(today)},starts_on.gte.${toDay(today)}`)
       .lte('starts_on', toDay(until)),
     supabase.from('important_dates').select('id, title, date, repeats_yearly'),
@@ -152,6 +152,7 @@ export async function getUpcomingAgendaForWidget(limit: number): Promise<WidgetA
       startTime: item.startTime,
       endTime: item.endTime,
       years: item.years,
+      outingStreak: item.outingStreak,
     });
     if (items.length >= limit) break;
   }

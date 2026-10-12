@@ -24,6 +24,7 @@ export type WidgetAgendaItem = {
   startTime: string | null;
   endTime: string | null;
   years: number | null;
+  outingStreak: number | null;
 };
 
 export type WidgetPet = {

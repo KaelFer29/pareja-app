@@ -24,6 +24,7 @@ function dayLabel(item: WidgetAgendaItem) {
 
 function detailLabel(item: WidgetAgendaItem) {
   if (item.kind === 'special') return formatYears(item.years) ?? 'Fecha importante';
+  if (item.outingStreak) return `🔥 Racha de ${item.outingStreak} días`;
   if (!item.startTime) return 'Todo el día';
   return item.endTime
     ? `${formatTime(item.startTime)} a ${formatTime(item.endTime)}`

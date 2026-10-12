@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { CalendarPlus, CalendarRange, Check, Trash2 } from 'lucide-react-native';
+import { CalendarPlus, CalendarRange, Check, Flame, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, View } from 'react-native';
 
@@ -118,6 +118,14 @@ export function EventForm({ coupleId, event, initialDay }: EventFormProps) {
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
+      {event?.outing_streak ? (
+        <View style={styles.streakBanner}>
+          <Icon icon={Flame} size={20} color={colors.streak} fill={colors.streak} />
+          <Text variant="bodyStrong" style={styles.streakText}>
+            Salida por {event.outing_streak} días de racha
+          </Text>
+        </View>
+      ) : null}
       <Card style={styles.card}>
         <TextField
           label="Plan"
@@ -218,6 +226,19 @@ export function EventForm({ coupleId, event, initialDay }: EventFormProps) {
 }
 
 const styles = StyleSheet.create({
+  streakBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderRadius: radius.lg,
+    backgroundColor: colors.streakSoft,
+    borderWidth: 1.5,
+    borderColor: colors.streak,
+  },
+  streakText: {
+    color: colors.streak,
+  },
   content: {
     gap: spacing.md,
     paddingHorizontal: SCREEN_PADDING,
