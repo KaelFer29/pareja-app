@@ -1,8 +1,10 @@
+import { Heart } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
-import { Animated, Pressable, StyleSheet } from 'react-native';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, radius, spacing } from '@/shared/theme';
+import { colors, radius, shadows, spacing } from '@/shared/theme';
+import { Icon } from '@/shared/ui/icon';
 import { Text } from '@/shared/ui/text';
 
 import { describeNudge } from '../kinds';
@@ -49,11 +51,16 @@ export function NudgeToast({ coupleId, userId, senderName }: NudgeToastProps) {
         { top: insets.top + spacing.sm, transform: [{ translateY: offset }] },
       ]}
     >
-      <Pressable onPress={hide} style={styles.toast}>
-        <Text variant="caption" tone="muted">
-          {senderName} te envió
-        </Text>
-        <Text variant="subtitle">{describeNudge(nudge.kind)}</Text>
+      <Pressable onPress={hide} style={styles.toast} accessibilityRole="alert">
+        <View style={styles.badge}>
+          <Icon icon={Heart} size={20} color={colors.primary} fill={colors.primary} />
+        </View>
+        <View style={styles.texts}>
+          <Text variant="caption" tone="muted">
+            {senderName} te envió
+          </Text>
+          <Text variant="heading">{describeNudge(nudge.kind)}</Text>
+        </View>
       </Pressable>
     </Animated.View>
   );
@@ -66,16 +73,23 @@ const styles = StyleSheet.create({
     right: spacing.md,
   },
   toast: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md - spacing.xs,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    padding: spacing.md,
-    gap: spacing.xs,
-    elevation: 6,
-    shadowColor: colors.text,
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    padding: spacing.md - spacing.xs,
+    ...shadows.floating,
+  },
+  badge: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  texts: {
+    flex: 1,
   },
 });

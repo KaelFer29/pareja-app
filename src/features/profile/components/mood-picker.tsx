@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { colors, radius, spacing } from '@/shared/theme';
-import { Text } from '@/shared/ui/text';
+import { spacing } from '@/shared/theme';
+import { Chip } from '@/shared/ui/chip';
+import { Notice } from '@/shared/ui/notice';
 
 import { useUpdateMood } from '../hooks';
 import { MOODS } from '../moods';
@@ -20,28 +21,18 @@ export function MoodPicker({ userId, mood }: MoodPickerProps) {
         {MOODS.map((option) => {
           const isSelected = option.value === mood;
           return (
-            <Pressable
+            <Chip
               key={option.value}
-              accessibilityRole="button"
-              accessibilityState={{ selected: isSelected }}
+              emoji={option.emoji}
+              label={option.label}
+              selected={isSelected}
               onPress={() => updateMood.mutate({ userId, mood: isSelected ? null : option.value })}
-              style={({ pressed }) => [
-                styles.option,
-                isSelected && styles.selected,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text>
-                {option.emoji} {option.label}
-              </Text>
-            </Pressable>
+            />
           );
         })}
       </View>
       {updateMood.isError && (
-        <Text variant="caption" tone="danger">
-          No se pudo guardar tu estado. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
+        <Notice message="No se pudo guardar tu estado. Revisa tu conexión e inténtalo de nuevo." />
       )}
     </View>
   );
@@ -49,26 +40,11 @@ export function MoodPicker({ userId, mood }: MoodPickerProps) {
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.sm,
+    gap: spacing.md - spacing.xs,
   },
   options: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-  },
-  option: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  selected: {
-    borderColor: colors.primary,
-    backgroundColor: colors.background,
-  },
-  pressed: {
-    opacity: 0.8,
   },
 });
