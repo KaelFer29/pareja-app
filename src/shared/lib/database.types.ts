@@ -1,54 +1,34 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
+type PetRow = {
+  couple_id: string;
+  created_at: string;
+  fullness: number;
+  happiness: number;
+  last_action: string | null;
+  last_actor: string | null;
+  name: string;
+  updated_at: string;
+  xp: number;
+};
+
+type CoupleRow = {
+  created_at: string;
+  id: string;
+  invite_code: string;
+  started_on: string | null;
+};
+
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: '14.18';
-  };
-  graphql_public: {
-    Tables: {
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json;
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
   };
   public: {
     Tables: {
       couple_members: {
-        Row: {
-          couple_id: string;
-          joined_at: string;
-          user_id: string;
-        };
-        Insert: {
-          couple_id: string;
-          joined_at?: string;
-          user_id: string;
-        };
-        Update: {
-          couple_id?: string;
-          joined_at?: string;
-          user_id?: string;
-        };
+        Row: { couple_id: string; joined_at: string; user_id: string };
+        Insert: { couple_id: string; joined_at?: string; user_id: string };
+        Update: { couple_id?: string; joined_at?: string; user_id?: string };
         Relationships: [
           {
             foreignKeyName: 'couple_members_couple_id_fkey';
@@ -67,12 +47,7 @@ export type Database = {
         ];
       };
       couples: {
-        Row: {
-          created_at: string;
-          id: string;
-          invite_code: string;
-          started_on: string | null;
-        };
+        Row: CoupleRow;
         Insert: {
           created_at?: string;
           id?: string;
@@ -86,6 +61,63 @@ export type Database = {
           started_on?: string | null;
         };
         Relationships: [];
+      };
+      events: {
+        Row: {
+          couple_id: string;
+          created_at: string;
+          created_by: string | null;
+          details: string;
+          end_time: string | null;
+          ends_on: string | null;
+          id: string;
+          start_time: string | null;
+          starts_on: string;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          couple_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          details?: string;
+          end_time?: string | null;
+          ends_on?: string | null;
+          id?: string;
+          start_time?: string | null;
+          starts_on: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          couple_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          details?: string;
+          end_time?: string | null;
+          ends_on?: string | null;
+          id?: string;
+          start_time?: string | null;
+          starts_on?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'events_couple_id_fkey';
+            columns: ['couple_id'];
+            isOneToOne: false;
+            referencedRelation: 'couples';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'events_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       important_dates: {
         Row: {
@@ -118,90 +150,6 @@ export type Database = {
             columns: ['couple_id'];
             isOneToOne: false;
             referencedRelation: 'couples';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      list_items: {
-        Row: {
-          content: string;
-          couple_id: string;
-          created_at: string;
-          done: boolean;
-          done_by: string | null;
-          id: string;
-          list_id: string;
-        };
-        Insert: {
-          content: string;
-          couple_id: string;
-          created_at?: string;
-          done?: boolean;
-          done_by?: string | null;
-          id?: string;
-          list_id: string;
-        };
-        Update: {
-          content?: string;
-          couple_id?: string;
-          created_at?: string;
-          done?: boolean;
-          done_by?: string | null;
-          id?: string;
-          list_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'list_items_done_by_fkey';
-            columns: ['done_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'list_items_list_id_couple_id_fkey';
-            columns: ['list_id', 'couple_id'];
-            isOneToOne: false;
-            referencedRelation: 'lists';
-            referencedColumns: ['id', 'couple_id'];
-          },
-        ];
-      };
-      lists: {
-        Row: {
-          couple_id: string;
-          created_at: string;
-          created_by: string | null;
-          id: string;
-          title: string;
-        };
-        Insert: {
-          couple_id: string;
-          created_at?: string;
-          created_by?: string | null;
-          id?: string;
-          title: string;
-        };
-        Update: {
-          couple_id?: string;
-          created_at?: string;
-          created_by?: string | null;
-          id?: string;
-          title?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'lists_couple_id_fkey';
-            columns: ['couple_id'];
-            isOneToOne: false;
-            referencedRelation: 'couples';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'lists_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
         ];
@@ -293,6 +241,47 @@ export type Database = {
           },
         ];
       };
+      pets: {
+        Row: PetRow;
+        Insert: {
+          couple_id: string;
+          created_at?: string;
+          fullness?: number;
+          happiness?: number;
+          last_action?: string | null;
+          last_actor?: string | null;
+          name: string;
+          updated_at?: string;
+          xp?: number;
+        };
+        Update: {
+          couple_id?: string;
+          created_at?: string;
+          fullness?: number;
+          happiness?: number;
+          last_action?: string | null;
+          last_actor?: string | null;
+          name?: string;
+          updated_at?: string;
+          xp?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pets_couple_id_fkey';
+            columns: ['couple_id'];
+            isOneToOne: true;
+            referencedRelation: 'couples';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pets_last_actor_fkey';
+            columns: ['last_actor'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       photos: {
         Row: {
           caption: string | null;
@@ -341,6 +330,67 @@ export type Database = {
           },
         ];
       };
+      places: {
+        Row: {
+          couple_id: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          latitude: number;
+          longitude: number;
+          name: string;
+          note: string;
+          photo_id: string | null;
+          visited_on: string | null;
+        };
+        Insert: {
+          couple_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          latitude: number;
+          longitude: number;
+          name: string;
+          note?: string;
+          photo_id?: string | null;
+          visited_on?: string | null;
+        };
+        Update: {
+          couple_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          latitude?: number;
+          longitude?: number;
+          name?: string;
+          note?: string;
+          photo_id?: string | null;
+          visited_on?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'places_couple_id_fkey';
+            columns: ['couple_id'];
+            isOneToOne: false;
+            referencedRelation: 'couples';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'places_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'places_photo_fkey';
+            columns: ['photo_id', 'couple_id'];
+            isOneToOne: false;
+            referencedRelation: 'photos';
+            referencedColumns: ['id', 'couple_id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_path: string | null;
@@ -366,27 +416,71 @@ export type Database = {
         Relationships: [];
       };
       push_tokens: {
+        Row: { platform: string; token: string; updated_at: string; user_id: string };
+        Insert: { platform: string; token: string; updated_at?: string; user_id: string };
+        Update: { platform?: string; token?: string; updated_at?: string; user_id?: string };
+        Relationships: [
+          {
+            foreignKeyName: 'push_tokens_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      reactions: {
         Row: {
-          platform: string;
-          token: string;
-          updated_at: string;
+          couple_id: string;
+          created_at: string;
+          emoji: string;
+          id: string;
+          note_id: string | null;
+          photo_id: string | null;
           user_id: string;
         };
         Insert: {
-          platform: string;
-          token: string;
-          updated_at?: string;
-          user_id: string;
+          couple_id: string;
+          created_at?: string;
+          emoji: string;
+          id?: string;
+          note_id?: string | null;
+          photo_id?: string | null;
+          user_id?: string;
         };
         Update: {
-          platform?: string;
-          token?: string;
-          updated_at?: string;
+          couple_id?: string;
+          created_at?: string;
+          emoji?: string;
+          id?: string;
+          note_id?: string | null;
+          photo_id?: string | null;
           user_id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: 'push_tokens_user_id_fkey';
+            foreignKeyName: 'reactions_couple_id_fkey';
+            columns: ['couple_id'];
+            isOneToOne: false;
+            referencedRelation: 'couples';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'reactions_note_fkey';
+            columns: ['note_id', 'couple_id'];
+            isOneToOne: false;
+            referencedRelation: 'notes';
+            referencedColumns: ['id', 'couple_id'];
+          },
+          {
+            foreignKeyName: 'reactions_photo_fkey';
+            columns: ['photo_id', 'couple_id'];
+            isOneToOne: false;
+            referencedRelation: 'photos';
+            referencedColumns: ['id', 'couple_id'];
+          },
+          {
+            foreignKeyName: 'reactions_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
@@ -399,35 +493,25 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      adopt_pet: {
+        Args: { pet_name: string };
+        Returns: PetRow;
+        SetofOptions: { from: '*'; to: 'pets'; isOneToOne: true; isSetofReturn: false };
+      };
+      care_for_pet: {
+        Args: { action: string };
+        Returns: PetRow;
+        SetofOptions: { from: '*'; to: 'pets'; isOneToOne: true; isSetofReturn: false };
+      };
       create_couple: {
         Args: never;
-        Returns: {
-          created_at: string;
-          id: string;
-          invite_code: string;
-          started_on: string | null;
-        };
-        SetofOptions: {
-          from: '*';
-          to: 'couples';
-          isOneToOne: true;
-          isSetofReturn: false;
-        };
+        Returns: CoupleRow;
+        SetofOptions: { from: '*'; to: 'couples'; isOneToOne: true; isSetofReturn: false };
       };
       join_couple: {
         Args: { code: string };
-        Returns: {
-          created_at: string;
-          id: string;
-          invite_code: string;
-          started_on: string | null;
-        };
-        SetofOptions: {
-          from: '*';
-          to: 'couples';
-          isOneToOne: true;
-          isSetofReturn: false;
-        };
+        Returns: CoupleRow;
+        SetofOptions: { from: '*'; to: 'couples'; isOneToOne: true; isSetofReturn: false };
       };
       register_push_token: {
         Args: { new_platform: string; new_token: string };
@@ -443,122 +527,12 @@ export type Database = {
   };
 };
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>;
+type PublicSchema = Database['public'];
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>];
+export type Tables<T extends keyof PublicSchema['Tables']> = PublicSchema['Tables'][T]['Row'];
 
-export type Tables<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
-  }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
-      Row: infer R;
-    }
-    ? R
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R;
-      }
-      ? R
-      : never
-    : never;
+export type TablesInsert<T extends keyof PublicSchema['Tables']> =
+  PublicSchema['Tables'][T]['Insert'];
 
-export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Insert: infer I;
-    }
-    ? I
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I;
-      }
-      ? I
-      : never
-    : never;
-
-export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Update: infer U;
-    }
-    ? U
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U;
-      }
-      ? U
-      : never
-    : never;
-
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    keyof DefaultSchema['Enums'] | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
-    : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
-    : never;
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    keyof DefaultSchema['CompositeTypes'] | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals;
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never) = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-    : never;
-
-export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
-  public: {
-    Enums: {},
-  },
-} as const;
+export type TablesUpdate<T extends keyof PublicSchema['Tables']> =
+  PublicSchema['Tables'][T]['Update'];
