@@ -1,23 +1,61 @@
 import type { PropsWithChildren } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, radius, spacing } from '@/shared/theme';
+import { colors, radius, shadows, spacing } from '@/shared/theme';
+
+type CardTone = 'default' | 'primary' | 'accent' | 'muted';
 
 type CardProps = PropsWithChildren<{
+  tone?: CardTone;
+  onPress?: () => void;
+  accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 }>;
 
-export function Card({ children, style }: CardProps) {
-  return <View style={[styles.card, style]}>{children}</View>;
+const backgrounds: Record<CardTone, string> = {
+  default: colors.surface,
+  primary: colors.primarySoft,
+  accent: colors.accentSoft,
+  muted: colors.surfaceMuted,
+};
+
+export function Card({
+  children,
+  tone = 'default',
+  onPress,
+  accessibilityLabel,
+  style,
+}: CardProps) {
+  const baseStyle = [
+    styles.card,
+    { backgroundColor: backgrounds[tone] },
+    tone === 'default' && shadows.card,
+  ];
+
+  if (!onPress) {
+    return <View style={[baseStyle, style]}>{children}</View>;
+  }
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      onPress={onPress}
+      style={({ pressed }) => [baseStyle, pressed && styles.pressed, style]}
+    >
+      {children}
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
+    padding: spacing.md + spacing.xs,
     gap: spacing.sm,
+  },
+  pressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.99 }],
   },
 });

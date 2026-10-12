@@ -1,32 +1,71 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import type { LucideIcon } from 'lucide-react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { colors, radius, spacing, typography } from '@/shared/theme';
+import { colors, fonts, radius, spacing } from '@/shared/theme';
+
+import { Icon } from './icon';
+import { Text } from './text';
+
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
 type ButtonProps = {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary';
+  variant?: ButtonVariant;
+  size?: 'md' | 'sm';
+  icon?: LucideIcon;
   loading?: boolean;
   disabled?: boolean;
 };
 
-export function Button({ title, onPress, variant = 'primary', loading, disabled }: ButtonProps) {
-  const isPrimary = variant === 'primary';
+const palette: Record<ButtonVariant, { background: string; pressed: string; content: string }> = {
+  primary: {
+    background: colors.primary,
+    pressed: colors.primaryPressed,
+    content: colors.primaryText,
+  },
+  secondary: { background: colors.accentSoft, pressed: colors.border, content: colors.accent },
+  ghost: { background: 'transparent', pressed: colors.surfaceMuted, content: colors.primary },
+  danger: { background: colors.dangerSoft, pressed: colors.border, content: colors.danger },
+};
+
+export function Button({
+  title,
+  onPress,
+  variant = 'primary',
+  size = 'md',
+  icon,
+  loading,
+  disabled,
+}: ButtonProps) {
+  const { background, pressed: pressedBackground, content } = palette[variant];
+  const isSmall = size === 'sm';
 
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled, busy: !!loading }}
       onPress={onPress}
       disabled={disabled || loading}
       style={({ pressed }) => [
         styles.base,
-        isPrimary ? styles.primary : styles.secondary,
-        (pressed || disabled) && styles.dimmed,
+        isSmall && styles.small,
+        { backgroundColor: pressed ? pressedBackground : background },
+        disabled && styles.disabled,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? colors.primaryText : colors.primary} />
+        <ActivityIndicator color={content} />
       ) : (
-        <Text style={[styles.label, !isPrimary && styles.secondaryLabel]}>{title}</Text>
+        <View style={styles.content}>
+          {icon && <Icon icon={icon} size={isSmall ? 16 : 19} color={content} strokeWidth={2.2} />}
+          <Text
+            variant={isSmall ? 'caption' : 'bodyStrong'}
+            style={[styles.label, { color: content }]}
+          >
+            {title}
+          </Text>
+        </View>
       )}
     </Pressable>
   );
@@ -34,28 +73,25 @@ export function Button({ title, onPress, variant = 'primary', loading, disabled 
 
 const styles = StyleSheet.create({
   base: {
-    paddingVertical: spacing.md,
+    minHeight: 52,
     paddingHorizontal: spacing.lg,
-    borderRadius: radius.md,
+    borderRadius: radius.pill,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  primary: {
-    backgroundColor: colors.primary,
+  small: {
+    minHeight: 38,
+    paddingHorizontal: spacing.md,
   },
-  secondary: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  dimmed: {
-    opacity: 0.6,
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   label: {
-    ...typography.body,
-    fontWeight: '600',
-    color: colors.primaryText,
+    fontFamily: fonts.bold,
   },
-  secondaryLabel: {
-    color: colors.primary,
+  disabled: {
+    opacity: 0.5,
   },
 });

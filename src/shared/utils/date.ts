@@ -49,3 +49,12 @@ export function formatDay(day: string) {
 export function formatDayWithoutYear(date: Date) {
   return date.toLocaleDateString('es', { day: 'numeric', month: 'long' });
 }
+
+export function formatWeekday(date: Date) {
+  const text = date.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+export function formatMonthShort(date: Date) {
+  return date.toLocaleDateString('es', { month: 'short' }).replace('.', '').toUpperCase();
+}

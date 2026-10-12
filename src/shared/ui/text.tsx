@@ -2,10 +2,12 @@ import { Text as NativeText, StyleSheet, type TextProps as NativeTextProps } fro
 
 import { colors, typography } from '@/shared/theme';
 
+export type TextTone = 'default' | 'muted' | 'danger' | 'primary' | 'accent' | 'inverse';
+
 type TextProps = NativeTextProps & {
   variant?: keyof typeof typography;
-  tone?: 'default' | 'muted' | 'danger' | 'primary';
-  align?: 'left' | 'center';
+  tone?: TextTone;
+  align?: 'left' | 'center' | 'right';
 };
 
 export function Text({
@@ -17,7 +19,7 @@ export function Text({
 }: TextProps) {
   return (
     <NativeText
-      style={[typography[variant], styles[tone], align === 'center' && styles.center, style]}
+      style={[typography[variant], styles[tone], { textAlign: align }, style]}
       {...props}
     />
   );
@@ -36,7 +38,10 @@ const styles = StyleSheet.create({
   primary: {
     color: colors.primary,
   },
-  center: {
-    textAlign: 'center',
+  accent: {
+    color: colors.accent,
+  },
+  inverse: {
+    color: colors.primaryText,
   },
 });

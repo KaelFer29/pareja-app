@@ -1,25 +1,30 @@
+import { Plus, type LucideIcon } from 'lucide-react-native';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { colors, spacing } from '@/shared/theme';
+import { colors, radius, shadows, spacing } from '@/shared/theme';
 
-import { Text } from './text';
+import { Icon } from './icon';
 
-const SIZE = 60;
+const SIZE = 58;
 
 type FabProps = {
   accessibilityLabel: string;
   onPress: () => void;
+  icon?: LucideIcon;
 };
 
-export function Fab({ accessibilityLabel, onPress }: FabProps) {
+export function Fab({ accessibilityLabel, onPress, icon = Plus }: FabProps) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       onPress={onPress}
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.button,
+        { backgroundColor: pressed ? colors.primaryPressed : colors.primary },
+      ]}
     >
-      <Text style={styles.icon}>+</Text>
+      <Icon icon={icon} size={26} color={colors.primaryText} strokeWidth={2.4} />
     </Pressable>
   );
 }
@@ -27,26 +32,14 @@ export function Fab({ accessibilityLabel, onPress }: FabProps) {
 const styles = StyleSheet.create({
   button: {
     position: 'absolute',
-    right: spacing.lg,
-    bottom: spacing.lg,
+    right: spacing.md + spacing.xs,
+    bottom: spacing.md + spacing.xs,
     width: SIZE,
     height: SIZE,
-    borderRadius: SIZE / 2,
-    backgroundColor: colors.primary,
+    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
-    shadowColor: colors.text,
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-  icon: {
-    color: colors.primaryText,
-    fontSize: 32,
-    lineHeight: 36,
+    ...shadows.floating,
+    shadowColor: colors.primary,
   },
 });
