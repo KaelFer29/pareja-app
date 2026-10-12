@@ -1,16 +1,31 @@
 export const colors = {
-  primary: '#E75480',
-  primaryText: '#FFFFFF',
-  background: '#FFF7F9',
+  background: '#FFFAF7',
   surface: '#FFFFFF',
-  text: '#2B2B2B',
-  textMuted: '#7A7A7A',
-  border: '#F0D5DE',
-  danger: '#D93F3F',
-  overlay: 'rgba(0, 0, 0, 0.35)',
+  surfaceMuted: '#F7F0EB',
+  primary: '#D0668A',
+  primaryPressed: '#B9557A',
+  primarySoft: '#FBE9EF',
+  primaryText: '#FFFFFF',
+  accent: '#7A5242',
+  accentSoft: '#F2E7E0',
+  text: '#3A2A23',
+  textMuted: '#937E73',
+  border: '#EFE4DD',
+  danger: '#C2453D',
+  dangerSoft: '#FBEAE8',
+  shadow: '#5C3D2E',
+  overlay: 'rgba(58, 42, 35, 0.45)',
+} as const;
+
+export const fonts = {
+  regular: 'Nunito_400Regular',
+  semibold: 'Nunito_600SemiBold',
+  bold: 'Nunito_700Bold',
+  extrabold: 'Nunito_800ExtraBold',
 } as const;
 
 export const spacing = {
+  xxs: 2,
   xs: 4,
   sm: 8,
   md: 16,
@@ -19,35 +34,70 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  sm: 8,
-  md: 12,
-  lg: 20,
+  sm: 10,
+  md: 16,
+  lg: 22,
+  xl: 28,
+  pill: 999,
+} as const;
+
+export const shadows = {
+  card: {
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.07,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 2,
+  },
+  floating: {
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.2,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
 } as const;
 
 export const typography = {
   display: {
-    fontSize: 56,
-    fontWeight: '700',
-    lineHeight: 64,
-  },
-  emoji: {
-    fontSize: 28,
-    lineHeight: 34,
+    fontFamily: fonts.extrabold,
+    fontSize: 52,
+    lineHeight: 60,
   },
   title: {
+    fontFamily: fonts.extrabold,
     fontSize: 28,
-    fontWeight: '700',
+    lineHeight: 36,
   },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: '600',
+  heading: {
+    fontFamily: fonts.bold,
+    fontSize: 19,
+    lineHeight: 26,
   },
   body: {
+    fontFamily: fonts.regular,
     fontSize: 16,
-    fontWeight: '400',
+    lineHeight: 23,
+  },
+  bodyStrong: {
+    fontFamily: fonts.semibold,
+    fontSize: 16,
+    lineHeight: 23,
   },
   caption: {
-    fontSize: 14,
-    fontWeight: '400',
+    fontFamily: fonts.semibold,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  label: {
+    fontFamily: fonts.bold,
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  emoji: {
+    fontSize: 26,
+    lineHeight: 32,
   },
 } as const;
