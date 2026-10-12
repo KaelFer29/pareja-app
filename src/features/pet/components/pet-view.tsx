@@ -130,7 +130,7 @@ export function PetView({ pet, userId, names }: PetViewProps) {
           text={
             stats.nextStageLevel
               ? `Evoluciona en el nivel ${stats.nextStageLevel}.`
-              : 'Ya es un dragón adulto. ¡Lo lograron!'
+              : 'Ya es un perrito adulto. ¡Lo lograron!'
           }
         />
         <Stat label="Pancita" value={stats.fullness} color={colors.accent} />

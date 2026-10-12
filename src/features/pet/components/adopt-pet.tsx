@@ -25,7 +25,7 @@ export function AdoptPet() {
       <PetAvatar mood="happy" stage="baby" size={190} />
       <View style={styles.texts}>
         <Text variant="title" align="center">
-          Adopten un dragoncito
+          Adopten un perrito
         </Text>
         <Text tone="muted" align="center">
           Es de los dos. Aliméntenlo, mímenlo y jueguen con él para que crezca y evolucione.
@@ -34,7 +34,7 @@ export function AdoptPet() {
       <Card style={styles.card}>
         <TextField
           label="¿Cómo se va a llamar?"
-          placeholder="Por ejemplo, Chispa"
+          placeholder="Por ejemplo, Copito"
           maxLength={24}
           value={name}
           onChangeText={setName}

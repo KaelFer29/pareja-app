@@ -89,7 +89,7 @@ export default function SettingsScreen() {
             />
             <ListRow
               icon={PawPrint}
-              title="Dragoncito"
+              title="Perrito"
               description="Cuídenlo entre los dos"
               onPress={() => router.push('/pet')}
             />

@@ -34,7 +34,7 @@ function AdoptInvite() {
       <PetAvatar mood="happy" stage="baby" size={150} />
       <View style={styles.texts}>
         <Text variant="heading" align="center">
-          Un dragoncito los espera
+          Un perrito los espera
         </Text>
         <Text variant="caption" tone="muted" align="center">
           Adóptenlo y cuídenlo entre los dos para que crezca.
