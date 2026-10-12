@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { colors, radius, spacing } from '@/shared/theme';
 import { Text } from '@/shared/ui/text';
 
-import { formatDaysLeft } from '../occurrence';
+import { formatDaysLeft } from '@/shared/utils/occurrence';
 
 type DaysLeftPillProps = {
   daysLeft: number;

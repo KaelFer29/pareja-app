@@ -1,6 +1,15 @@
-import { daysBetween, parseDay } from '@/shared/utils/date';
+import { daysBetween, parseDay } from './date';
 
-import type { ImportantDate, Occurrence, UpcomingDate } from './types';
+export type Recurring = {
+  date: string;
+  repeats_yearly: boolean;
+};
+
+export type Occurrence = {
+  date: Date;
+  daysLeft: number;
+  years: number | null;
+};
 
 function dateInYear(original: Date, year: number) {
   const candidate = new Date(year, original.getMonth(), original.getDate());
@@ -10,7 +19,7 @@ function dateInYear(original: Date, year: number) {
   return candidate;
 }
 
-export function getOccurrence(item: ImportantDate, today: Date): Occurrence | null {
+export function getOccurrence(item: Recurring, today: Date): Occurrence | null {
   const original = parseDay(item.date);
 
   if (!item.repeats_yearly || daysBetween(today, original) >= 0) {
@@ -28,7 +37,10 @@ export function getOccurrence(item: ImportantDate, today: Date): Occurrence | nu
   };
 }
 
-export function sortByUpcoming(items: ImportantDate[], today: Date): UpcomingDate[] {
+export function sortByUpcoming<T extends Recurring>(
+  items: T[],
+  today: Date,
+): (T & { occurrence: Occurrence | null })[] {
   const withOccurrence = items.map((item) => ({ ...item, occurrence: getOccurrence(item, today) }));
   const upcoming = withOccurrence
     .filter((item) => item.occurrence)

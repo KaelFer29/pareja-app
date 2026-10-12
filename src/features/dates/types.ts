@@ -1,4 +1,5 @@
 import type { Tables } from '@/shared/lib/database.types';
+import type { Occurrence } from '@/shared/utils/occurrence';
 
 export type ImportantDate = Tables<'important_dates'>;
 
@@ -14,12 +15,6 @@ export type NewImportantDateInput = ImportantDateDraft & {
 
 export type ImportantDateChanges = ImportantDateDraft & {
   id: string;
-};
-
-export type Occurrence = {
-  date: Date;
-  daysLeft: number;
-  years: number | null;
 };
 
 export type UpcomingDate = ImportantDate & {

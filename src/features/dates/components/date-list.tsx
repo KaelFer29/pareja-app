@@ -10,7 +10,7 @@ import { Text } from '@/shared/ui/text';
 import { formatDay, formatDayWithoutYear, parseDay, startOfToday } from '@/shared/utils/date';
 
 import { useImportantDates } from '../hooks';
-import { formatYears, sortByUpcoming } from '../occurrence';
+import { formatYears, sortByUpcoming } from '@/shared/utils/occurrence';
 import type { UpcomingDate } from '../types';
 import { DateBadge } from './date-badge';
 import { DaysLeftPill } from './days-left-pill';

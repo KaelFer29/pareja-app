@@ -14,10 +14,11 @@ export const dateKeys = {
   detail: (id: string) => [...dateKeys.all, 'detail', id] as const,
 };
 
-export function useImportantDates(coupleId: string) {
+export function useImportantDates(coupleId: string | undefined) {
   return useQuery({
-    queryKey: dateKeys.list(coupleId),
-    queryFn: () => listImportantDates(coupleId),
+    queryKey: dateKeys.list(coupleId ?? ''),
+    queryFn: () => listImportantDates(coupleId ?? ''),
+    enabled: !!coupleId,
   });
 }
 
