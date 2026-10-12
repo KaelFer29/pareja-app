@@ -1,10 +1,11 @@
+import { MailCheck } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { spacing } from '@/shared/theme';
 import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
-import { Text } from '@/shared/ui/text';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { Notice } from '@/shared/ui/notice';
 import { TextField } from '@/shared/ui/text-field';
 
 import { getAuthErrorMessage } from '../errors';
@@ -18,13 +19,11 @@ export function SignUpForm() {
 
   if (signUp.data?.needsEmailConfirmation) {
     return (
-      <Card>
-        <Text variant="subtitle">Revisa tu correo</Text>
-        <Text tone="muted">
-          Te enviamos un enlace a {email.trim()}. Ábrelo para confirmar tu cuenta y luego inicia
-          sesión.
-        </Text>
-      </Card>
+      <EmptyState
+        icon={MailCheck}
+        title="Revisa tu correo"
+        description={`Te enviamos un enlace a ${email.trim()}. Ábrelo para confirmar tu cuenta y luego inicia sesión.`}
+      />
     );
   }
 
@@ -33,14 +32,16 @@ export function SignUpForm() {
   return (
     <View style={styles.form}>
       <TextField
-        placeholder="Tu nombre"
+        label="Tu nombre"
+        placeholder="Como te llama tu pareja"
         autoComplete="name"
         maxLength={40}
         value={displayName}
         onChangeText={setDisplayName}
       />
       <TextField
-        placeholder="Correo"
+        label="Correo"
+        placeholder="tu@correo.com"
         autoCapitalize="none"
         autoComplete="email"
         keyboardType="email-address"
@@ -48,25 +49,24 @@ export function SignUpForm() {
         onChangeText={setEmail}
       />
       <TextField
-        placeholder="Contraseña"
+        label="Contraseña"
+        placeholder="Mínimo 6 caracteres"
         secureTextEntry
         autoComplete="new-password"
         value={password}
         onChangeText={setPassword}
       />
-      {signUp.isError && (
-        <Text variant="caption" tone="danger">
-          {getAuthErrorMessage(signUp.error)}
-        </Text>
-      )}
-      <Button
-        title="Crear cuenta"
-        onPress={() =>
-          signUp.mutate({ displayName: displayName.trim(), email: email.trim(), password })
-        }
-        loading={signUp.isPending}
-        disabled={!canSubmit}
-      />
+      {signUp.isError && <Notice message={getAuthErrorMessage(signUp.error)} />}
+      <View style={styles.action}>
+        <Button
+          title="Crear cuenta"
+          onPress={() =>
+            signUp.mutate({ displayName: displayName.trim(), email: email.trim(), password })
+          }
+          loading={signUp.isPending}
+          disabled={!canSubmit}
+        />
+      </View>
     </View>
   );
 }
@@ -74,5 +74,8 @@ export function SignUpForm() {
 const styles = StyleSheet.create({
   form: {
     gap: spacing.md,
+  },
+  action: {
+    marginTop: spacing.sm,
   },
 });

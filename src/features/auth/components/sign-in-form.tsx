@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { spacing } from '@/shared/theme';
 import { Button } from '@/shared/ui/button';
-import { Text } from '@/shared/ui/text';
+import { Notice } from '@/shared/ui/notice';
 import { TextField } from '@/shared/ui/text-field';
 
 import { getAuthErrorMessage } from '../errors';
@@ -17,7 +17,8 @@ export function SignInForm() {
   return (
     <View style={styles.form}>
       <TextField
-        placeholder="Correo"
+        label="Correo"
+        placeholder="tu@correo.com"
         autoCapitalize="none"
         autoComplete="email"
         keyboardType="email-address"
@@ -25,23 +26,22 @@ export function SignInForm() {
         onChangeText={setEmail}
       />
       <TextField
-        placeholder="Contraseña"
+        label="Contraseña"
+        placeholder="Tu contraseña"
         secureTextEntry
         autoComplete="current-password"
         value={password}
         onChangeText={setPassword}
       />
-      {signIn.isError && (
-        <Text variant="caption" tone="danger">
-          {getAuthErrorMessage(signIn.error)}
-        </Text>
-      )}
-      <Button
-        title="Entrar"
-        onPress={() => signIn.mutate({ email: email.trim(), password })}
-        loading={signIn.isPending}
-        disabled={!email.trim() || !password}
-      />
+      {signIn.isError && <Notice message={getAuthErrorMessage(signIn.error)} />}
+      <View style={styles.action}>
+        <Button
+          title="Entrar"
+          onPress={() => signIn.mutate({ email: email.trim(), password })}
+          loading={signIn.isPending}
+          disabled={!email.trim() || !password}
+        />
+      </View>
     </View>
   );
 }
@@ -49,5 +49,8 @@ export function SignInForm() {
 const styles = StyleSheet.create({
   form: {
     gap: spacing.md,
+  },
+  action: {
+    marginTop: spacing.sm,
   },
 });

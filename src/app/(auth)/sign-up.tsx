@@ -1,36 +1,32 @@
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
+import { AuthFooterLink } from '@/features/auth/components/auth-footer-link';
 import { SignUpForm } from '@/features/auth/components/sign-up-form';
-import { colors, spacing, typography } from '@/shared/theme';
+import { spacing } from '@/shared/theme';
+import { BrandMark } from '@/shared/ui/brand-mark';
 import { Screen } from '@/shared/ui/screen';
-import { Text } from '@/shared/ui/text';
 
 export default function SignUpScreen() {
   return (
-    <Screen style={styles.container} avoidKeyboard>
-      <Text variant="title" align="center" style={styles.title}>
-        Crea tu cuenta
-      </Text>
-      <SignUpForm />
-      <Link href="/sign-in" replace style={styles.link}>
-        ¿Ya tienes cuenta? Inicia sesión
-      </Link>
+    <Screen avoidKeyboard>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <BrandMark title="Crea tu cuenta" subtitle="Después podrás vincularte con tu pareja." />
+        <SignUpForm />
+        <AuthFooterLink question="¿Ya tienes cuenta?" action="Inicia sesión" href="/sign-in" />
+      </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  content: {
+    flexGrow: 1,
     justifyContent: 'center',
-  },
-  title: {
-    marginBottom: spacing.xl,
-  },
-  link: {
-    ...typography.body,
-    color: colors.primary,
-    textAlign: 'center',
-    marginTop: spacing.lg,
+    gap: spacing.xl,
+    paddingVertical: spacing.xl,
   },
 });
