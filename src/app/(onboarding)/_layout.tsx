@@ -8,7 +8,8 @@ export default function OnboardingLayout() {
       screenOptions={{
         headerShadowVisible: false,
         headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.primary,
+        headerTintColor: colors.accent,
+        contentStyle: { backgroundColor: colors.background },
         headerTitle: '',
         headerBackButtonDisplayMode: 'minimal',
       }}

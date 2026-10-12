@@ -10,7 +10,7 @@ import { NudgeToast } from '@/features/nudges/components/nudge-toast';
 import { useLatestPhoto } from '@/features/photos/hooks';
 import { usePhotosRealtime } from '@/features/photos/realtime';
 import { useLatestPhotoWidgetSync } from '@/features/widget/hooks';
-import { colors } from '@/shared/theme';
+import { colors, fonts } from '@/shared/theme';
 
 export default function AppLayout() {
   const { session } = useAuth();
@@ -30,8 +30,9 @@ export default function AppLayout() {
         screenOptions={{
           headerShadowVisible: false,
           headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.primary,
-          headerTitleStyle: { color: colors.text },
+          headerTintColor: colors.accent,
+          headerTitleStyle: { color: colors.text, fontFamily: fonts.bold, fontSize: 18 },
+          headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: colors.background },
         }}
       >
