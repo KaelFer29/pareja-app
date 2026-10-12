@@ -57,7 +57,6 @@ export function PetAvatar({
 }: PetAvatarProps) {
   const [breath] = useState(() => new Animated.Value(0));
   const [sway] = useState(() => new Animated.Value(0));
-  const [bounce] = useState(() => new Animated.Value(0));
   const [hop] = useState(() => new Animated.Value(0));
   const [squash] = useState(() => new Animated.Value(0));
   const [hearts] = useState(() => HEARTS.map(() => new Animated.Value(0)));
@@ -116,7 +115,6 @@ export function PetAvatar({
       loop(breath, sleepy ? 1800 : mood === 'happy' ? 700 : 1100),
       loop(sway, sleepy ? 3200 : 2200),
     ];
-    if (mood === 'happy') loops.push(loop(bounce, 260, 1400));
     if (sleepy) {
       loops.push(
         Animated.loop(
@@ -131,16 +129,13 @@ export function PetAvatar({
     }
     loops.forEach((item) => item.start());
     return () => loops.forEach((item) => item.stop());
-  }, [animated, bounce, breath, mood, snore, sway]);
+  }, [animated, breath, mood, snore, sway]);
 
   const art = size * PET_SCALE[stage];
   const sleepy = mood === 'sleepy';
   const sad = mood === 'lonely' || mood === 'hungry';
 
-  const translateY = Animated.add(
-    bounce.interpolate({ inputRange: [0, 1], outputRange: [0, -size * 0.06] }),
-    hop.interpolate({ inputRange: [0, 1], outputRange: [0, -size * 0.14] }),
-  );
+  const translateY = hop.interpolate({ inputRange: [0, 1], outputRange: [0, -size * 0.14] });
   const scaleX = Animated.add(
     breath.interpolate({ inputRange: [0, 1], outputRange: [1, sleepy ? 1.03 : 1.018] }),
     squash.interpolate({ inputRange: [0, 1], outputRange: [0, 0.12] }),
