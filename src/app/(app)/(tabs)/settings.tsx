@@ -11,7 +11,7 @@ import { AvatarPicker } from '@/features/profile/components/avatar-picker';
 import { ProfileForm } from '@/features/profile/components/profile-form';
 import { useProfile } from '@/features/profile/hooks';
 import { colors, spacing } from '@/shared/theme';
-import { Avatar } from '@/shared/ui/avatar';
+import { ViewableAvatar } from '@/shared/ui/avatar-viewer';
 import { Card } from '@/shared/ui/card';
 import { ListRow } from '@/shared/ui/list-row';
 import { Screen } from '@/shared/ui/screen';
@@ -55,7 +55,7 @@ export default function SettingsScreen() {
           <SectionHeader title="Tu pareja" />
           <Card style={styles.partnerCard}>
             <View style={styles.partner}>
-              <Avatar
+              <ViewableAvatar
                 path={partner?.profile?.avatar_path}
                 name={partnerName}
                 size={52}

@@ -2,7 +2,7 @@ import { Heart } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { colors, radius, shadows } from '@/shared/theme';
-import { Avatar } from '@/shared/ui/avatar';
+import { ViewableAvatar } from '@/shared/ui/avatar-viewer';
 import { Icon } from '@/shared/ui/icon';
 
 type Person = {
@@ -23,13 +23,18 @@ export function CoupleAvatars({ me, partner, size = 56 }: CoupleAvatarsProps) {
   return (
     <View style={styles.container}>
       <View style={shadows.card}>
-        <Avatar path={me.avatarPath} name={me.name} size={size} ringColor={colors.surface} />
+        <ViewableAvatar
+          path={me.avatarPath}
+          name={me.name}
+          size={size}
+          ringColor={colors.surface}
+        />
       </View>
       <View style={[styles.badge, { width: badge, height: badge, marginHorizontal: -overlap }]}>
         <Icon icon={Heart} size={badge * 0.5} color={colors.primary} fill={colors.primary} />
       </View>
       <View style={shadows.card}>
-        <Avatar
+        <ViewableAvatar
           path={partner.avatarPath}
           name={partner.name}
           size={size}
