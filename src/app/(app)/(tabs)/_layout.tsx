@@ -1,16 +1,18 @@
 import { Tabs } from 'expo-router';
 import {
+  CalendarDays,
   House,
   Images,
-  CalendarDays,
+  MapPinned,
   NotebookPen,
   Settings,
   type LucideIcon,
 } from 'lucide-react-native';
 import type { ColorValue } from 'react-native';
 
-import { colors, fonts, shadows } from '@/shared/theme';
+import { colors } from '@/shared/theme';
 import { Icon } from '@/shared/ui/icon';
+import { ScrollableTabBar } from '@/shared/ui/scrollable-tab-bar';
 
 function tabIcon(icon: LucideIcon) {
   return function TabIcon({ color, focused }: { color: ColorValue; focused: boolean }) {
@@ -21,16 +23,9 @@ function tabIcon(icon: LucideIcon) {
 export default function TabsLayout() {
   return (
     <Tabs
+      tabBar={(props) => <ScrollableTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
-        tabBarLabelStyle: { fontFamily: fonts.semibold, fontSize: 11 },
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopWidth: 0,
-          ...shadows.card,
-        },
         sceneStyle: { backgroundColor: colors.background },
       }}
     >
@@ -41,6 +36,7 @@ export default function TabsLayout() {
         name="calendar"
         options={{ title: 'Calendario', tabBarIcon: tabIcon(CalendarDays) }}
       />
+      <Tabs.Screen name="places" options={{ title: 'Lugares', tabBarIcon: tabIcon(MapPinned) }} />
       <Tabs.Screen name="settings" options={{ title: 'Ajustes', tabBarIcon: tabIcon(Settings) }} />
     </Tabs>
   );
