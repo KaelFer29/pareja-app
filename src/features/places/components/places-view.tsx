@@ -12,6 +12,7 @@ import { Text } from '@/shared/ui/text';
 import { formatDay } from '@/shared/utils/date';
 
 import { usePlaces } from '../hooks';
+import { findSavedPlace } from '../nearby';
 import type { Coordinates, Place } from '../types';
 import { PlaceMap } from './place-map';
 import { PlaceSearch } from './place-search';
@@ -55,7 +56,13 @@ export function PlacesView({ coupleId }: PlacesViewProps) {
   return (
     <>
       <View style={styles.header}>
-        <PlaceSearch onSelect={(result) => addPlace(result, result.name)} />
+        <PlaceSearch
+          onSelect={(result) => {
+            const saved = findSavedPlace(places.data, result);
+            if (saved) openPlace(saved.id);
+            else addPlace(result, result.name);
+          }}
+        />
         <PlaceMap
           key={places.data.map((place) => place.id).join()}
           points={places.data}
