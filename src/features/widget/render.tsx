@@ -1,10 +1,16 @@
 import type { WidgetInfo } from 'react-native-android-widget';
 
-import { getCoupleForWidget, getLatestPhotoForWidget, getNextDateForWidget } from './api';
+import {
+  getCoupleForWidget,
+  getLatestPhotoForWidget,
+  getNextDateForWidget,
+  getUpcomingAgendaForWidget,
+} from './api';
 import { DaysTogetherWidget } from './days-together-widget';
 import { LatestPhotoWidget } from './latest-photo-widget';
 import { WIDGET_NAMES, type WidgetName } from './names';
 import { NextDateWidget } from './next-date-widget';
+import { PLAN_ROW_HEIGHT, PLANS_HEADER_HEIGHT, UpcomingPlansWidget } from './upcoming-plans-widget';
 
 type WidgetRenderer = (info: WidgetInfo) => Promise<React.JSX.Element>;
 
@@ -20,6 +26,14 @@ export const widgetRenderers: Record<WidgetName, WidgetRenderer> = {
   [WIDGET_NAMES.nextDate]: async () => {
     const next = await getNextDateForWidget().catch(() => null);
     return <NextDateWidget next={next} />;
+  },
+  [WIDGET_NAMES.upcomingPlans]: async ({ height }) => {
+    const rows = Math.min(
+      Math.max(Math.floor((height - PLANS_HEADER_HEIGHT) / PLAN_ROW_HEIGHT), 1),
+      6,
+    );
+    const items = await getUpcomingAgendaForWidget(rows).catch(() => []);
+    return <UpcomingPlansWidget items={items} />;
   },
 };
 

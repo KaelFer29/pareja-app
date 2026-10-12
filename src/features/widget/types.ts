@@ -12,6 +12,18 @@ export type WidgetCouple = {
   partnerName: string;
 };
 
+export type WidgetAgendaItem = {
+  key: string;
+  kind: 'plan' | 'special';
+  id: string;
+  title: string;
+  date: Date;
+  daysLeft: number;
+  startTime: string | null;
+  endTime: string | null;
+  years: number | null;
+};
+
 export type WidgetNextDate = {
   id: string;
   title: string;

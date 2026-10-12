@@ -109,6 +109,18 @@
               "resizeMode": "horizontal|vertical",
               "previewImage": "./assets/widgets/widget-next-date.png",
               "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "UpcomingPlans",
+              "label": "Próximos planes",
+              "description": "Sus próximos planes y fechas importantes.",
+              "minWidth": "180dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 3,
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/widgets/widget-upcoming-plans.png",
+              "updatePeriodMillis": 1800000
             }
           ]
         }
