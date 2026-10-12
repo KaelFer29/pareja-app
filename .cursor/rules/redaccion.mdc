@@ -1,0 +1,22 @@
+---
+description: Reglas de redacción para textos de la app, documentación y respuestas
+alwaysApply: true
+---
+
+# Redacción
+
+Aplica a los textos de la app, la documentación, los mensajes de error y las respuestas del agente.
+
+- Español neutro, tratando de "tú". Sin voseo: "puedes", "tienes", "sube", nunca "podés", "tenés", "subí".
+- Sin punto y coma. Dividir en dos oraciones o usar una coma.
+- Sin guiones largos (—) ni medios (–). Solo el guion corto "-".
+- Frases cortas y directas. En la interfaz, mayúscula solo al inicio de la frase.
+- Los mensajes de error dicen qué pasó y qué puede hacer la persona.
+
+## Ejemplos
+
+| Evitar | Usar |
+| --- | --- |
+| Subí tu foto; la verá tu pareja. | Sube tu foto. Tu pareja la verá al instante. |
+| Notas — compartidas | Notas compartidas |
+| Error 400 | No se pudo guardar la nota. Revisa tu conexión e inténtalo de nuevo. |

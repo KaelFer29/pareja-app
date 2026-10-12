@@ -1,0 +1,53 @@
+---
+description: Estilo de código TypeScript y React Native
+globs: src/**
+alwaysApply: false
+---
+
+# Estilo de código
+
+## General
+
+- Sin comentarios en el código. Si algo necesita explicación, mejorar los nombres o extraer una función.
+- Nombres de variables, funciones, tipos y archivos en inglés. Los textos visibles para el usuario van en español.
+- Prettier: punto y coma, comillas simples, 2 espacios, ancho 100.
+- TypeScript estricto. Prohibido `any`, usar `unknown` y acotar el tipo.
+- Archivos en kebab-case (`photo-card.tsx`). Componentes en PascalCase, hooks con prefijo `use`.
+- Exportaciones nombradas. La única excepción son las rutas de `src/app/`, que Expo Router exige con `export default`.
+- Componentes como `function`, no como constantes con flecha.
+
+## Datos
+
+- Solo `api.ts` y `src/shared/lib/` llaman a Supabase. Las funciones son `async`, reciben parámetros tipados y lanzan el error si Supabase devuelve uno.
+- Imágenes: elegir con `requestImage` de `shared/ui`, comprimir con `compressImage` y subir con `uploadImage` de `shared/lib/storage`. Mostrarlas con `expo-image` usando la ruta de Storage como `cacheKey`.
+- `hooks.ts` envuelve esas funciones con `useQuery` y `useMutation`. Las claves de consulta se definen en un objeto `<feature>Keys` dentro del mismo archivo.
+- La suscripción a Realtime vive en un hook de la feature e invalida o actualiza la caché de TanStack Query.
+- Los tipos de la base de datos salen de `src/shared/lib/database.types.ts`, generado desde Supabase. Nunca editarlo a mano.
+
+## Estilos
+
+- `StyleSheet.create` al final del archivo.
+- Colores, espaciados, radios y tipografía siempre desde `@/shared/theme`. Prohibido escribir valores de color directamente.
+
+## Ejemplo
+
+```tsx
+import { StyleSheet, Text } from 'react-native';
+
+import { colors, spacing } from '@/shared/theme';
+
+type PhotoCaptionProps = {
+  caption: string;
+};
+
+export function PhotoCaption({ caption }: PhotoCaptionProps) {
+  return <Text style={styles.caption}>{caption}</Text>;
+}
+
+const styles = StyleSheet.create({
+  caption: {
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+});
+```

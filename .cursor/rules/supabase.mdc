@@ -1,0 +1,32 @@
+---
+description: Seguridad y migraciones de Supabase
+globs: supabase/**,src/features/**/api.ts,src/shared/lib/**
+alwaysApply: false
+---
+
+# Supabase
+
+Proyecto `pareja-app`, id `apbjqfkereibpanqppdu`, región `sa-east-1`. Usar este id con las herramientas MCP de Supabase.
+
+- Consultar la documentación vigente antes de implementar. Supabase cambia seguido.
+- RLS activado en todas las tablas de `public`. Las políticas se basan en la pertenencia a la pareja mediante `private.is_couple_member(couple_id)`.
+- Las funciones `security definer` van en el esquema `private`, nunca en `public`.
+- Las vistas se crean con `security_invoker = true`.
+- Toda política de UPDATE necesita también una de SELECT.
+- Nunca usar `user_metadata` para decidir permisos.
+- En la app solo se usa la publishable key. La secret key y la service_role nunca salen de las Edge Functions.
+- El bucket `photos` es privado. Las rutas siguen el formato `{couple_id}/{photo_id}.jpg` y las imágenes se muestran con URLs firmadas.
+- Las tablas nuevas no reciben permisos solas. Revocar todo a `anon` y `authenticated` y otorgar solo lo necesario, por columna cuando aplica.
+- Las RPC que llama la app viven en `public` como `security invoker` y delegan en una función `security definer` de `private`.
+
+## Flujo de migraciones
+
+La CLI está vinculada al proyecto y es el camino principal. El MCP es opcional.
+
+1. Crear el archivo con `npx supabase migration new <nombre>` y escribir el SQL.
+2. Revisar con `npx supabase db push --dry-run` y aplicar con `npm run db:push -- --yes`.
+3. Probar las políticas. Para SQL usar `npx supabase db query --linked` con un bloque `do` que termine en `raise exception`, así nada queda guardado. Para Storage y Realtime, un script temporal con supabase-js y usuarios de prueba, que se eliminan al terminar.
+4. Revisar avisos con `npx supabase db advisors --linked`.
+5. Regenerar los tipos con `npm run db:types`.
+
+Tras crear rutas nuevas, los tipos de Expo Router se regeneran al levantar `npx expo start`.
