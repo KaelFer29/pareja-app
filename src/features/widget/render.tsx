@@ -23,9 +23,9 @@ export const widgetRenderers: Record<WidgetName, WidgetRenderer> = {
     const couple = await getCoupleForWidget().catch(() => null);
     return <DaysTogetherWidget couple={couple} width={width} />;
   },
-  [WIDGET_NAMES.nextDate]: async () => {
+  [WIDGET_NAMES.nextDate]: async ({ height }) => {
     const next = await getNextDateForWidget().catch(() => null);
-    return <NextDateWidget next={next} />;
+    return <NextDateWidget next={next} height={height} />;
   },
   [WIDGET_NAMES.upcomingPlans]: async ({ height }) => {
     const rows = Math.min(

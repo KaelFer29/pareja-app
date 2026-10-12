@@ -66,6 +66,29 @@
       ],
       "expo-dev-client",
       [
+        "./plugins/with-widget-resize",
+        {
+          "widgets": {
+            "LatestPhoto": {
+              "minResizeWidth": "90dp",
+              "minResizeHeight": "90dp"
+            },
+            "DaysTogether": {
+              "minResizeWidth": "90dp",
+              "minResizeHeight": "90dp"
+            },
+            "NextDate": {
+              "minResizeWidth": "160dp",
+              "minResizeHeight": "30dp"
+            },
+            "UpcomingPlans": {
+              "minResizeWidth": "160dp",
+              "minResizeHeight": "100dp"
+            }
+          }
+        }
+      ],
+      [
         "react-native-android-widget",
         {
           "fonts": [

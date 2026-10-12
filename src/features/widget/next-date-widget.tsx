@@ -9,9 +9,12 @@ import { color, WIDGET_RADIUS, WidgetRowMessage } from './widget-ui';
 
 type NextDateWidgetProps = {
   next: WidgetNextDate | null;
+  height: number;
 };
 
-export function NextDateWidget({ next }: NextDateWidgetProps) {
+export function NextDateWidget({ next, height }: NextDateWidgetProps) {
+  const slim = height < 90;
+  const badge = slim ? 34 : 42;
   if (!next) {
     return (
       <WidgetRowMessage
@@ -35,16 +38,16 @@ export function NextDateWidget({ next }: NextDateWidgetProps) {
         width: 'match_parent',
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 12,
-        borderRadius: WIDGET_RADIUS,
+        paddingHorizontal: slim ? 8 : 12,
+        borderRadius: slim ? Math.min(height / 2, 32) : WIDGET_RADIUS,
         backgroundColor: color(colors.surface),
       }}
     >
       <FlexWidget
         style={{
-          width: 42,
-          height: 42,
-          borderRadius: 14,
+          width: badge,
+          height: badge,
+          borderRadius: slim ? badge / 2 : 14,
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: color(isToday ? colors.primary : colors.accentSoft),
@@ -53,7 +56,7 @@ export function NextDateWidget({ next }: NextDateWidgetProps) {
         <TextWidget
           text={formatMonthShort(next.date)}
           style={{
-            fontSize: 9,
+            fontSize: slim ? 8 : 9,
             fontFamily: fonts.bold,
             color: color(isToday ? colors.primaryText : colors.primary),
           }}
@@ -61,7 +64,7 @@ export function NextDateWidget({ next }: NextDateWidgetProps) {
         <TextWidget
           text={String(next.date.getDate())}
           style={{
-            fontSize: 17,
+            fontSize: slim ? 14 : 17,
             fontFamily: fonts.extrabold,
             color: color(isToday ? colors.primaryText : colors.accent),
           }}
