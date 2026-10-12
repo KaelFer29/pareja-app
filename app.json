@@ -48,7 +48,7 @@
         "expo-notifications",
         {
           "icon": "./assets/android-icon-monochrome.png",
-          "color": "#E75480",
+          "color": "#D0668A",
           "defaultChannel": "default"
         }
       ],
@@ -69,6 +69,16 @@
               "updatePeriodMillis": 1800000
             }
           ]
+        }
+      ],
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#FFFAF7"
         }
       ]
     ],
