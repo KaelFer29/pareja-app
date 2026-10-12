@@ -22,19 +22,19 @@ export function AdoptPet() {
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
-      <PetAvatar mood="happy" size={190} />
+      <PetAvatar mood="happy" stage="baby" size={190} />
       <View style={styles.texts}>
         <Text variant="title" align="center">
-          Adopten una mascota
+          Adopten un dragoncito
         </Text>
         <Text tone="muted" align="center">
-          Es de los dos. Aliméntenla, mímenla y jueguen con ella para que suba de nivel.
+          Es de los dos. Aliméntenlo, mímenlo y jueguen con él para que crezca y evolucione.
         </Text>
       </View>
       <Card style={styles.card}>
         <TextField
           label="¿Cómo se va a llamar?"
-          placeholder="Por ejemplo, Mochi"
+          placeholder="Por ejemplo, Chispa"
           maxLength={24}
           value={name}
           onChangeText={setName}

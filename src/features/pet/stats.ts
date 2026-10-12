@@ -1,8 +1,29 @@
-import type { Pet, PetAction, PetMood, PetStats } from './types';
+import { addDays, toDay } from '@/shared/utils/date';
+
+import type { Pet, PetAction, PetMood, PetStage, PetStats } from './types';
 
 const FULLNESS_PER_HOUR = 4;
 const HAPPINESS_PER_HOUR = 3;
 const XP_PER_LEVEL = 100;
+
+export const STAGES: { stage: PetStage; fromLevel: number; label: string }[] = [
+  { stage: 'baby', fromLevel: 1, label: 'Dragoncito bebé' },
+  { stage: 'young', fromLevel: 3, label: 'Dragón pequeño' },
+  { stage: 'teen', fromLevel: 6, label: 'Dragón joven' },
+  { stage: 'adult', fromLevel: 10, label: 'Dragón adulto' },
+];
+
+function stageFor(level: number) {
+  let index = 0;
+  STAGES.forEach((item, position) => {
+    if (level >= item.fromLevel) index = position;
+  });
+  return { stage: STAGES[index].stage, next: STAGES[index + 1]?.fromLevel ?? null };
+}
+
+export function stageLabel(stage: PetStage) {
+  return STAGES.find((item) => item.stage === stage)?.label ?? 'Dragón';
+}
 
 function clamp(value: number) {
   return Math.max(0, Math.min(100, value));
@@ -22,12 +43,23 @@ export function getPetStats(pet: Pet, now = new Date()): PetStats {
   const fullness = clamp(pet.fullness - hours * FULLNESS_PER_HOUR);
   const happiness = clamp(pet.happiness - hours * HAPPINESS_PER_HOUR);
 
+  const level = Math.floor(pet.xp / XP_PER_LEVEL) + 1;
+  const { stage, next } = stageFor(level);
+  const today = toDay(now);
+  const yesterday = toDay(addDays(now, -1));
+  const caredToday = pet.last_care_on === today;
+  const streakAlive = caredToday || pet.last_care_on === yesterday;
+
   return {
     fullness,
     happiness,
-    level: Math.floor(pet.xp / XP_PER_LEVEL) + 1,
+    level,
     progress: (pet.xp % XP_PER_LEVEL) / XP_PER_LEVEL,
     mood: moodFor(fullness, happiness, now),
+    stage,
+    nextStageLevel: next,
+    streak: streakAlive ? pet.streak : 0,
+    caredToday,
   };
 }
 

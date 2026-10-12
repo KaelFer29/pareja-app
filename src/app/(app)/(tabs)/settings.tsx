@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { CalendarHeart, LogOut, MapPinned, PawPrint } from 'lucide-react-native';
+import { CalendarHeart, LogOut, PawPrint } from 'lucide-react-native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { useAuth } from '@/features/auth/auth-provider';
@@ -88,15 +88,9 @@ export default function SettingsScreen() {
               onPress={() => router.push('/dates')}
             />
             <ListRow
-              icon={MapPinned}
-              title="Nuestros lugares"
-              description="El mapa de lo que han visitado"
-              onPress={() => router.push('/places')}
-            />
-            <ListRow
               icon={PawPrint}
-              title="Mascota"
-              description="Cuídenla entre los dos"
+              title="Dragoncito"
+              description="Cuídenlo entre los dos"
               onPress={() => router.push('/pet')}
             />
           </Card>

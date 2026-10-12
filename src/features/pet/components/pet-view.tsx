@@ -1,5 +1,5 @@
-import { Check, Cookie, HandHeart, Pencil, Volleyball, type LucideIcon } from 'lucide-react-native';
-import { useState } from 'react';
+import { Check, Flame, Pencil, Sparkles, Trophy } from 'lucide-react-native';
+import { useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { colors, fonts, radius, spacing } from '@/shared/theme';
@@ -11,10 +11,12 @@ import { Text } from '@/shared/ui/text';
 import { TextField } from '@/shared/ui/text-field';
 import { formatRelative } from '@/shared/utils/date';
 
-import { useCareForPet, useNow, useRenamePet } from '../hooks';
-import { describeLastCare, getPetStats, isPetAction, MOOD_MESSAGES } from '../stats';
-import type { Pet, PetAction } from '../types';
-import { PetAvatar } from './pet-avatar';
+import { useNow, useRenamePet } from '../hooks';
+import { describeLastCare, getPetStats, isPetAction, MOOD_MESSAGES, stageLabel } from '../stats';
+import type { Pet } from '../types';
+import { PetActions, useCare } from './pet-actions';
+import { PetAvatar, type PetAvatarHandle } from './pet-avatar';
+import { LevelBadge, StreakBadge } from './streak-badge';
 
 type PetViewProps = {
   pet: Pet;
@@ -22,26 +24,15 @@ type PetViewProps = {
   names: Record<string, string>;
 };
 
-const ACTIONS: { action: PetAction; label: string; icon: LucideIcon }[] = [
-  { action: 'feed', label: 'Alimentar', icon: Cookie },
-  { action: 'pet', label: 'Mimar', icon: HandHeart },
-  { action: 'play', label: 'Jugar', icon: Volleyball },
-];
-
 export function PetView({ pet, userId, names }: PetViewProps) {
   const now = useNow();
   const stats = getPetStats(pet, now);
-  const care = useCareForPet();
   const rename = useRenamePet();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(pet.name);
-
-  function act(action: PetAction) {
-    care.mutate(action, {
-      onError: () =>
-        Alert.alert(`No se pudo cuidar a ${pet.name}`, 'Revisa tu conexión e inténtalo de nuevo.'),
-    });
-  }
+  const avatar = useRef<PetAvatarHandle>(null);
+  const cheer = () => avatar.current?.cheer();
+  const { act } = useCare(pet.name, cheer);
 
   function saveName() {
     if (name.trim() === '' || name.trim() === pet.name) {
@@ -71,7 +62,17 @@ export function PetView({ pet, userId, names }: PetViewProps) {
   return (
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Card tone="primary" style={styles.hero}>
-        <PetAvatar mood={stats.mood} size={200} />
+        <View style={styles.badges}>
+          <StreakBadge streak={stats.streak} caredToday={stats.caredToday} />
+          <LevelBadge level={stats.level} />
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Hacerle mimos a ${pet.name}`}
+          onPress={() => act('pet')}
+        >
+          <PetAvatar ref={avatar} mood={stats.mood} stage={stats.stage} size={210} />
+        </Pressable>
         {editing ? (
           <View style={styles.rename}>
             <View style={styles.flex}>
@@ -105,10 +106,15 @@ export function PetView({ pet, userId, names }: PetViewProps) {
             <Icon icon={Pencil} size={16} color={colors.textMuted} />
           </Pressable>
         )}
+        <Text variant="caption" tone="accent">
+          {stageLabel(stats.stage)}
+        </Text>
         <Text tone="muted" align="center">
           {MOOD_MESSAGES[stats.mood](pet.name)}
         </Text>
       </Card>
+
+      <PetActions petName={pet.name} onCare={cheer} />
 
       <Card style={styles.stats}>
         <View style={styles.levelRow}>
@@ -119,32 +125,32 @@ export function PetView({ pet, userId, names }: PetViewProps) {
             <ProgressBar value={stats.progress} color={colors.accent} height={8} />
           </View>
         </View>
+        <InfoRow
+          icon={Sparkles}
+          text={
+            stats.nextStageLevel
+              ? `Evoluciona en el nivel ${stats.nextStageLevel}.`
+              : 'Ya es un dragón adulto. ¡Lo lograron!'
+          }
+        />
         <Stat label="Pancita" value={stats.fullness} color={colors.accent} />
         <Stat label="Ánimo" value={stats.happiness} color={colors.primary} />
       </Card>
 
-      <View style={styles.actions}>
-        {ACTIONS.map(({ action, label, icon }) => (
-          <Pressable
-            key={action}
-            accessibilityRole="button"
-            accessibilityLabel={label}
-            disabled={care.isPending}
-            onPress={() => act(action)}
-            style={({ pressed }) => [
-              styles.action,
-              (pressed || (care.isPending && care.variables === action)) && styles.actionPressed,
-            ]}
-          >
-            <View style={styles.actionIcon}>
-              <Icon icon={icon} size={24} color={colors.primary} strokeWidth={2.1} />
-            </View>
-            <Text variant="caption" style={styles.actionLabel}>
-              {label}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+      <Card style={styles.stats}>
+        <InfoRow
+          icon={Flame}
+          text={
+            stats.streak > 0
+              ? `Racha de ${stats.streak === 1 ? '1 día' : `${stats.streak} días`}.${stats.caredToday ? '' : ' Cuídenlo hoy para no perderla.'}`
+              : 'Cuídenlo hoy para empezar una racha.'
+          }
+        />
+        <InfoRow
+          icon={Trophy}
+          text={`Mejor racha: ${pet.best_streak === 1 ? '1 día' : `${pet.best_streak} días`}.`}
+        />
+      </Card>
 
       {lastAction && (
         <Text variant="caption" tone="muted" align="center">
@@ -152,6 +158,17 @@ export function PetView({ pet, userId, names }: PetViewProps) {
         </Text>
       )}
     </ScrollView>
+  );
+}
+
+function InfoRow({ icon, text }: { icon: typeof Flame; text: string }) {
+  return (
+    <View style={styles.info}>
+      <Icon icon={icon} size={18} color={colors.primary} />
+      <Text variant="caption" style={styles.flex}>
+        {text}
+      </Text>
+    </View>
   );
 }
 
@@ -221,34 +238,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  actions: {
+  badges: {
     flexDirection: 'row',
-    gap: spacing.sm + spacing.xs,
+    gap: spacing.sm,
   },
-  action: {
-    flex: 1,
+  info: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingVertical: spacing.md,
-    borderRadius: radius.lg,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  actionPressed: {
-    backgroundColor: colors.primarySoft,
-    borderColor: colors.primary,
-    transform: [{ scale: 0.97 }],
-  },
-  actionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.pill,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionLabel: {
-    color: colors.text,
   },
 });

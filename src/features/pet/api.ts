@@ -1,4 +1,5 @@
 import { supabase } from '@/shared/lib/supabase';
+import { toDay } from '@/shared/utils/date';
 
 import type { Pet, PetAction } from './types';
 
@@ -19,7 +20,10 @@ export async function adoptPet(name: string): Promise<Pet> {
 }
 
 export async function careForPet(action: PetAction): Promise<Pet> {
-  const { data, error } = await supabase.rpc('care_for_pet', { action });
+  const { data, error } = await supabase.rpc('care_for_pet', {
+    action,
+    local_day: toDay(new Date()),
+  });
   if (error) throw error;
   return data;
 }

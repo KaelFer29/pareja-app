@@ -1,13 +1,16 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 type PetRow = {
+  best_streak: number;
   couple_id: string;
   created_at: string;
   fullness: number;
   happiness: number;
   last_action: string | null;
   last_actor: string | null;
+  last_care_on: string | null;
   name: string;
+  streak: number;
   updated_at: string;
   xp: number;
 };
@@ -244,24 +247,30 @@ export type Database = {
       pets: {
         Row: PetRow;
         Insert: {
+          best_streak?: number;
           couple_id: string;
           created_at?: string;
           fullness?: number;
           happiness?: number;
           last_action?: string | null;
           last_actor?: string | null;
+          last_care_on?: string | null;
           name: string;
+          streak?: number;
           updated_at?: string;
           xp?: number;
         };
         Update: {
+          best_streak?: number;
           couple_id?: string;
           created_at?: string;
           fullness?: number;
           happiness?: number;
           last_action?: string | null;
           last_actor?: string | null;
+          last_care_on?: string | null;
           name?: string;
+          streak?: number;
           updated_at?: string;
           xp?: number;
         };
@@ -499,7 +508,7 @@ export type Database = {
         SetofOptions: { from: '*'; to: 'pets'; isOneToOne: true; isSetofReturn: false };
       };
       care_for_pet: {
-        Args: { action: string };
+        Args: { action: string; local_day?: string };
         Returns: PetRow;
         SetofOptions: { from: '*'; to: 'pets'; isOneToOne: true; isSetofReturn: false };
       };
