@@ -1,12 +1,16 @@
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Camera } from 'lucide-react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
 
-import { spacing } from '@/shared/theme';
+import { colors, radius, shadows, spacing } from '@/shared/theme';
 import { Avatar } from '@/shared/ui/avatar';
+import { Icon } from '@/shared/ui/icon';
 import { requestImage } from '@/shared/ui/request-image';
 import { Text } from '@/shared/ui/text';
 
 import { useUpdateAvatar } from '../hooks';
 import type { Profile } from '../types';
+
+const SIZE = 96;
 
 type AvatarPickerProps = {
   profile: Profile;
@@ -29,19 +33,55 @@ export function AvatarPicker({ profile }: AvatarPickerProps) {
   }
 
   return (
-    <Pressable onPress={changeAvatar} disabled={updateAvatar.isPending} style={styles.container}>
-      <Avatar path={profile.avatar_path} name={profile.display_name} size={72} />
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Cambiar foto de perfil"
+      onPress={changeAvatar}
+      disabled={updateAvatar.isPending}
+      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+    >
       <View>
-        <Text tone="primary">{updateAvatar.isPending ? 'Subiendo...' : 'Cambiar foto'}</Text>
+        <Avatar
+          path={profile.avatar_path}
+          name={profile.display_name}
+          size={SIZE}
+          ringColor={colors.primarySoft}
+        />
+        <View style={styles.badge}>
+          {updateAvatar.isPending ? (
+            <ActivityIndicator size="small" color={colors.primaryText} />
+          ) : (
+            <Icon icon={Camera} size={16} color={colors.primaryText} strokeWidth={2.2} />
+          )}
+        </View>
       </View>
+      <Text variant="caption" tone="primary">
+        {updateAvatar.isPending ? 'Subiendo foto' : 'Cambiar foto'}
+      </Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
+  },
+  pressed: {
+    opacity: 0.75,
+  },
+  badge: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    width: 32,
+    height: 32,
+    borderRadius: radius.pill,
+    borderWidth: 3,
+    borderColor: colors.surface,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadows.card,
   },
 });
