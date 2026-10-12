@@ -3,18 +3,18 @@ import { AppState } from 'react-native';
 
 import { widgetRuntime } from './native';
 
-function refreshLatestPhotoWidget() {
-  widgetRuntime?.refreshLatestPhotoWidget().catch(() => undefined);
+function refreshWidgets() {
+  widgetRuntime?.refreshWidgets().catch(() => undefined);
 }
 
-export function useLatestPhotoWidgetSync(latestPhotoId: string | null) {
+export function useWidgetsSync(signature: string) {
   useEffect(() => {
-    refreshLatestPhotoWidget();
-  }, [latestPhotoId]);
+    refreshWidgets();
+  }, [signature]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'background') refreshLatestPhotoWidget();
+      if (state === 'background') refreshWidgets();
     });
     return () => subscription.remove();
   }, []);

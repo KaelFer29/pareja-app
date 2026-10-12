@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 
 import { useAuth } from '@/features/auth/auth-provider';
 import { useCouple } from '@/features/couple/couple-provider';
+import { useImportantDates } from '@/features/dates/hooks';
 import { useImportantDatesRealtime } from '@/features/dates/realtime';
 import { useListsRealtime } from '@/features/lists/realtime';
 import { useNotesRealtime } from '@/features/notes/realtime';
@@ -9,7 +10,7 @@ import { useNotificationNavigation, usePushRegistration } from '@/features/notif
 import { NudgeToast } from '@/features/nudges/components/nudge-toast';
 import { useLatestPhoto } from '@/features/photos/hooks';
 import { usePhotosRealtime } from '@/features/photos/realtime';
-import { useLatestPhotoWidgetSync } from '@/features/widget/hooks';
+import { useWidgetsSync } from '@/features/widget/hooks';
 import { colors, fonts } from '@/shared/theme';
 
 export default function AppLayout() {
@@ -22,7 +23,15 @@ export default function AppLayout() {
   usePushRegistration(session?.user.id);
   useNotificationNavigation();
   const latestPhoto = useLatestPhoto(couple?.id);
-  useLatestPhotoWidgetSync(latestPhoto.data?.id ?? null);
+  const dates = useImportantDates(couple?.id);
+  useWidgetsSync(
+    [
+      latestPhoto.data?.id,
+      couple?.started_on,
+      partner?.profile?.display_name,
+      dates.dataUpdatedAt,
+    ].join('|'),
+  );
 
   return (
     <>

@@ -19,7 +19,7 @@
       "package": "com.kaelfernandez.pareja",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#FCEEE9",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -56,16 +56,46 @@
       [
         "react-native-android-widget",
         {
+          "fonts": [
+            "./node_modules/@expo-google-fonts/nunito/600SemiBold/Nunito_600SemiBold.ttf",
+            "./node_modules/@expo-google-fonts/nunito/700Bold/Nunito_700Bold.ttf",
+            "./node_modules/@expo-google-fonts/nunito/800ExtraBold/Nunito_800ExtraBold.ttf"
+          ],
           "widgets": [
             {
               "name": "LatestPhoto",
               "label": "Última foto",
               "description": "La última foto que compartieron.",
-              "minWidth": "180dp",
-              "minHeight": "180dp",
+              "minWidth": "150dp",
+              "minHeight": "150dp",
               "targetCellWidth": 2,
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/widgets/widget-latest-photo.png",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "DaysTogether",
+              "label": "Días juntos",
+              "description": "Los días que llevan juntos.",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/widgets/widget-days-together.png",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "NextDate",
+              "label": "Próxima fecha",
+              "description": "Su próxima fecha importante y cuánto falta.",
+              "minWidth": "250dp",
+              "minHeight": "70dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 1,
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/widgets/widget-next-date.png",
               "updatePeriodMillis": 1800000
             }
           ]
@@ -76,7 +106,7 @@
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
-          "imageWidth": 160,
+          "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#FFFAF7"
         }
