@@ -163,6 +163,7 @@ export type Database = {
       notes: {
         Row: {
           author_id: string | null;
+          color: string;
           content: string;
           couple_id: string;
           created_at: string;
@@ -173,6 +174,7 @@ export type Database = {
         };
         Insert: {
           author_id?: string | null;
+          color?: string;
           content?: string;
           couple_id: string;
           created_at?: string;
@@ -183,6 +185,7 @@ export type Database = {
         };
         Update: {
           author_id?: string | null;
+          color?: string;
           content?: string;
           couple_id?: string;
           created_at?: string;

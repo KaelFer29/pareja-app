@@ -1,15 +1,16 @@
 import { router } from 'expo-router';
 import { NotebookPen, Pin } from 'lucide-react-native';
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
-import { colors, spacing } from '@/shared/theme';
-import { Card } from '@/shared/ui/card';
+import { colors, fonts, noteColors, radius, spacing } from '@/shared/theme';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { Icon } from '@/shared/ui/icon';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 import { Text } from '@/shared/ui/text';
-import { formatRelative } from '@/shared/utils/date';
+import { formatRelativeShort } from '@/shared/utils/date';
+import { tiltFor } from '@/shared/utils/tilt';
 
+import { noteColorOf } from '../colors';
 import { useNotes } from '../hooks';
 import type { Note } from '../types';
 
@@ -17,6 +18,22 @@ type NoteListProps = {
   coupleId: string;
   authorNames: Record<string, string>;
 };
+
+function estimateHeight(note: Note) {
+  const lines = Math.min(6, Math.ceil(note.content.length / 18));
+  return 70 + (note.title ? 30 : 0) + lines * 20;
+}
+
+function splitColumns(notes: Note[]) {
+  const columns: [Note[], Note[]] = [[], []];
+  const heights = [0, 0];
+  for (const note of notes) {
+    const target = heights[0] <= heights[1] ? 0 : 1;
+    columns[target].push(note);
+    heights[target] += estimateHeight(note);
+  }
+  return columns;
+}
 
 export function NoteList({ coupleId, authorNames }: NoteListProps) {
   const notes = useNotes(coupleId);
@@ -29,15 +46,22 @@ export function NoteList({ coupleId, authorNames }: NoteListProps) {
     return <ErrorState title="No se pudieron cargar las notas" onRetry={() => notes.refetch()} />;
   }
 
+  if (notes.data.length === 0) {
+    return (
+      <EmptyState
+        icon={NotebookPen}
+        title="Aún no hay notas"
+        description="Pega la primera con el botón + para compartirla con tu pareja."
+      />
+    );
+  }
+
+  const columns = splitColumns(notes.data);
+
   return (
-    <FlatList
-      data={notes.data}
-      keyExtractor={(note) => note.id}
+    <ScrollView
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
-      renderItem={({ item }) => (
-        <NoteCard note={item} authorName={authorNames[item.author_id ?? ''] ?? 'Alguien'} />
-      )}
       refreshControl={
         <RefreshControl
           refreshing={notes.isRefetching}
@@ -46,59 +70,124 @@ export function NoteList({ coupleId, authorNames }: NoteListProps) {
           colors={[colors.primary]}
         />
       }
-      ListEmptyComponent={
-        <EmptyState
-          icon={NotebookPen}
-          title="Aún no hay notas"
-          description="Escribe la primera con el botón + para compartirla con tu pareja."
-        />
-      }
-    />
+    >
+      {columns.map((column, index) => (
+        <View key={index} style={styles.column}>
+          {column.map((note) => (
+            <StickyNote
+              key={note.id}
+              note={note}
+              authorName={authorNames[note.author_id ?? ''] ?? 'Alguien'}
+            />
+          ))}
+        </View>
+      ))}
+    </ScrollView>
   );
 }
 
-type NoteCardProps = {
+type StickyNoteProps = {
   note: Note;
   authorName: string;
 };
 
-function NoteCard({ note, authorName }: NoteCardProps) {
+function StickyNote({ note, authorName }: StickyNoteProps) {
+  const palette = noteColors[noteColorOf(note)];
+  const title = note.title || note.content.split('\n')[0];
+  const body = note.title ? note.content : note.content.split('\n').slice(1).join('\n');
+
   return (
-    <Card onPress={() => router.push({ pathname: '/notes/[id]', params: { id: note.id } })}>
-      <View style={styles.header}>
-        <Text variant="heading" numberOfLines={1} style={styles.title}>
-          {note.title || note.content.split('\n')[0]}
-        </Text>
-        {note.pinned && (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      onPress={() => router.push({ pathname: '/notes/[id]', params: { id: note.id } })}
+      style={({ pressed }) => [
+        styles.note,
+        { backgroundColor: palette.paper, transform: [{ rotate: tiltFor(note.id) }] },
+        pressed && styles.pressed,
+      ]}
+    >
+      {note.pinned ? (
+        <View style={styles.pin}>
           <Icon icon={Pin} size={18} color={colors.primary} fill={colors.primarySoft} />
-        )}
-      </View>
-      {note.title !== '' && note.content !== '' && (
-        <Text tone="muted" numberOfLines={3}>
-          {note.content}
+        </View>
+      ) : (
+        <View style={styles.tape} />
+      )}
+      <Text style={[styles.title, { color: palette.ink }]} numberOfLines={note.title ? 2 : 4}>
+        {title}
+      </Text>
+      {body.trim() !== '' && (
+        <Text style={styles.body} numberOfLines={6}>
+          {body.trim()}
         </Text>
       )}
-      <Text variant="caption" tone="muted" style={styles.meta}>
-        {authorName} · {formatRelative(note.updated_at)}
+      <Text style={[styles.meta, { color: palette.ink }]} numberOfLines={1}>
+        {authorName}, {formatRelativeShort(note.updated_at)}
       </Text>
-    </Card>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   content: {
-    gap: spacing.md - spacing.xs,
+    flexDirection: 'row',
+    gap: spacing.md,
+    paddingTop: spacing.md,
+    paddingHorizontal: spacing.xxs,
     paddingBottom: spacing.xl * 3,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
+  column: {
+    flex: 1,
+    gap: spacing.lg,
+  },
+  note: {
+    gap: spacing.xs,
+    paddingTop: spacing.md + spacing.xs,
+    paddingBottom: spacing.sm + spacing.xs,
+    paddingHorizontal: spacing.sm + spacing.xs,
+    borderRadius: radius.sm / 2,
+    borderBottomRightRadius: radius.lg,
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  pressed: {
+    opacity: 0.85,
+  },
+  tape: {
+    position: 'absolute',
+    top: -8,
+    alignSelf: 'center',
+    width: 54,
+    height: 18,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    transform: [{ rotate: '-4deg' }],
+  },
+  pin: {
+    position: 'absolute',
+    top: -10,
+    alignSelf: 'center',
   },
   title: {
-    flex: 1,
+    fontFamily: fonts.handBold,
+    fontSize: 23,
+    lineHeight: 26,
+  },
+  body: {
+    fontFamily: fonts.regular,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.text,
   },
   meta: {
     marginTop: spacing.xs,
+    fontFamily: fonts.semibold,
+    fontSize: 11,
+    lineHeight: 15,
+    opacity: 0.7,
   },
 });

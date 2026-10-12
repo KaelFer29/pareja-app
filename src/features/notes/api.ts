@@ -19,20 +19,26 @@ export async function getNote(id: string): Promise<Note | null> {
   return data;
 }
 
-export async function createNote({ coupleId, title, content }: NewNoteInput): Promise<Note> {
+export async function createNote({ coupleId, title, content, color }: NewNoteInput): Promise<Note> {
   const { data, error } = await supabase
     .from('notes')
-    .insert({ couple_id: coupleId, title: title.trim(), content: content.trim() })
+    .insert({ couple_id: coupleId, title: title.trim(), content: content.trim(), color })
     .select()
     .single();
   if (error) throw error;
   return data;
 }
 
-export async function updateNote({ id, title, content, pinned }: NoteChanges): Promise<Note> {
+export async function updateNote({
+  id,
+  title,
+  content,
+  color,
+  pinned,
+}: NoteChanges): Promise<Note> {
   const { data, error } = await supabase
     .from('notes')
-    .update({ title: title?.trim(), content: content?.trim(), pinned })
+    .update({ title: title?.trim(), content: content?.trim(), color, pinned })
     .eq('id', id)
     .select()
     .single();
