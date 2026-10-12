@@ -1,19 +1,15 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
+import Constants from 'expo-constants';
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import { colors } from '@/shared/theme';
 
+import { notificationsModule } from './native';
+
 export const DEFAULT_CHANNEL_ID = 'default';
 
-export const isPushAvailable =
-  Device.isDevice &&
-  Platform.OS !== 'web' &&
-  Constants.executionEnvironment !== ExecutionEnvironment.StoreClient;
-
 export function configureForegroundNotifications() {
-  Notifications.setNotificationHandler({
+  notificationsModule?.setNotificationHandler({
     handleNotification: async () => ({
       shouldPlaySound: false,
       shouldSetBadge: false,
@@ -24,7 +20,8 @@ export function configureForegroundNotifications() {
 }
 
 export async function getDevicePushToken(): Promise<string | null> {
-  if (!isPushAvailable) return null;
+  const Notifications = notificationsModule;
+  if (!Notifications || !Device.isDevice) return null;
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(DEFAULT_CHANNEL_ID, {

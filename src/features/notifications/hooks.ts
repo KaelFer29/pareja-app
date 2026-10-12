@@ -1,10 +1,11 @@
-import * as Notifications from 'expo-notifications';
 import { router, type Href } from 'expo-router';
+import type { NotificationResponse } from 'expo-notifications';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
 
 import { registerPushToken, unregisterPushToken } from './api';
 import { getDevicePushToken } from './device';
+import { notificationsModule } from './native';
 
 let registeredToken: string | null = null;
 
@@ -31,15 +32,18 @@ export async function unregisterThisDevice() {
   await unregisterPushToken(token).catch(() => undefined);
 }
 
-function openNotification(response: Notifications.NotificationResponse | null) {
+function openNotification(response: NotificationResponse | null) {
   const url = response?.notification.request.content.data?.url;
   if (typeof url !== 'string' || !url.startsWith('/')) return;
-  Notifications.clearLastNotificationResponse();
+  notificationsModule?.clearLastNotificationResponse();
   router.push(url as Href);
 }
 
 export function useNotificationNavigation() {
   useEffect(() => {
+    const Notifications = notificationsModule;
+    if (!Notifications) return;
+
     openNotification(Notifications.getLastNotificationResponse());
 
     const subscription = Notifications.addNotificationResponseReceivedListener(openNotification);
