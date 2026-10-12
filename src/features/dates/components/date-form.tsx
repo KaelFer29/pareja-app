@@ -1,10 +1,15 @@
 import { router } from 'expo-router';
+import { Check, Repeat, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, View } from 'react-native';
 
-import { colors, spacing } from '@/shared/theme';
+import { colors, radius, spacing } from '@/shared/theme';
 import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
 import { DateField } from '@/shared/ui/date-field';
+import { Icon } from '@/shared/ui/icon';
+import { Notice } from '@/shared/ui/notice';
+import { SCREEN_PADDING } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
 import { TextField } from '@/shared/ui/text-field';
 
@@ -60,34 +65,48 @@ export function DateForm({ coupleId, item }: DateFormProps) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <TextField
-        placeholder="Nombre, por ejemplo Aniversario"
-        maxLength={60}
-        value={title}
-        onChangeText={setTitle}
-        autoFocus={!item}
-      />
-      <DateField value={date} onChange={setDate} placeholder="Elige la fecha" />
-      <View style={styles.switchRow}>
-        <Text style={styles.switchLabel}>Se repite cada año</Text>
-        <Switch
-          value={repeatsYearly}
-          onValueChange={setRepeatsYearly}
-          trackColor={{ true: colors.primary, false: colors.border }}
-          thumbColor={colors.surface}
+    <ScrollView
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      <Card style={styles.card}>
+        <TextField
+          label="Nombre"
+          placeholder="Por ejemplo, Aniversario"
+          maxLength={60}
+          value={title}
+          onChangeText={setTitle}
+          autoFocus={!item}
         />
-      </View>
+        <DateField label="Fecha" value={date} onChange={setDate} placeholder="Elige la fecha" />
+        <View style={styles.switchRow}>
+          <View style={styles.switchIcon}>
+            <Icon icon={Repeat} size={18} color={colors.accent} />
+          </View>
+          <View style={styles.switchTexts}>
+            <Text variant="bodyStrong">Se repite cada año</Text>
+            <Text variant="caption" tone="muted">
+              Ideal para cumpleaños y aniversarios.
+            </Text>
+          </View>
+          <Switch
+            value={repeatsYearly}
+            onValueChange={setRepeatsYearly}
+            trackColor={{ true: colors.primary, false: colors.border }}
+            thumbColor={colors.surface}
+          />
+        </View>
+      </Card>
       {saveFailed && (
-        <Text variant="caption" tone="danger">
-          No se pudo guardar la fecha. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
+        <Notice message="No se pudo guardar la fecha. Revisa tu conexión e inténtalo de nuevo." />
       )}
-      <Button title="Guardar" onPress={save} loading={isSaving} disabled={!canSave} />
+      <Button title="Guardar" icon={Check} onPress={save} loading={isSaving} disabled={!canSave} />
       {item && (
         <Button
-          title="Eliminar"
-          variant="secondary"
+          title="Eliminar fecha"
+          variant="danger"
+          icon={Trash2}
           onPress={confirmDelete}
           loading={deleteDate.isPending}
         />
@@ -99,14 +118,28 @@ export function DateForm({ coupleId, item }: DateFormProps) {
 const styles = StyleSheet.create({
   content: {
     gap: spacing.md,
-    padding: spacing.md,
+    paddingHorizontal: SCREEN_PADDING,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
+  },
+  card: {
+    gap: spacing.md,
   },
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.md - spacing.xs,
+    paddingTop: spacing.xs,
   },
-  switchLabel: {
+  switchIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: radius.sm,
+    backgroundColor: colors.accentSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  switchTexts: {
     flex: 1,
   },
 });

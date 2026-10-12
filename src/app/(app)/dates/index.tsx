@@ -5,6 +5,7 @@ import { useCouple } from '@/features/couple/couple-provider';
 import { DateList } from '@/features/dates/components/date-list';
 import { spacing } from '@/shared/theme';
 import { Fab } from '@/shared/ui/fab';
+import { SCREEN_PADDING } from '@/shared/ui/screen';
 
 export default function DatesScreen() {
   const { couple } = useCouple();
@@ -20,6 +21,7 @@ export default function DatesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: spacing.md,
+    paddingHorizontal: SCREEN_PADDING,
+    paddingTop: spacing.sm,
   },
 });

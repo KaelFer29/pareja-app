@@ -1,22 +1,19 @@
 import { router } from 'expo-router';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { CalendarHeart } from 'lucide-react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { colors, spacing } from '@/shared/theme';
-import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { ErrorState, LoadingState } from '@/shared/ui/states';
 import { Text } from '@/shared/ui/text';
 import { formatDay, formatDayWithoutYear, parseDay, startOfToday } from '@/shared/utils/date';
 
 import { useImportantDates } from '../hooks';
-import { formatDaysLeft, formatYears, sortByUpcoming } from '../occurrence';
+import { formatYears, sortByUpcoming } from '../occurrence';
 import type { UpcomingDate } from '../types';
+import { DateBadge } from './date-badge';
+import { DaysLeftPill } from './days-left-pill';
 
 type DateListProps = {
   coupleId: string;
@@ -26,18 +23,11 @@ export function DateList({ coupleId }: DateListProps) {
   const dates = useImportantDates(coupleId);
 
   if (dates.isPending) {
-    return <ActivityIndicator color={colors.primary} style={styles.loader} />;
+    return <LoadingState />;
   }
 
   if (dates.isError) {
-    return (
-      <View style={styles.message}>
-        <Text tone="danger" align="center">
-          No se pudieron cargar las fechas. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
-        <Button title="Reintentar" onPress={() => dates.refetch()} />
-      </View>
-    );
+    return <ErrorState title="No se pudieron cargar las fechas" onRetry={() => dates.refetch()} />;
   }
 
   return (
@@ -45,6 +35,7 @@ export function DateList({ coupleId }: DateListProps) {
       data={sortByUpcoming(dates.data, startOfToday())}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
       renderItem={({ item }) => <DateRow item={item} />}
       refreshControl={
         <RefreshControl
@@ -55,9 +46,11 @@ export function DateList({ coupleId }: DateListProps) {
         />
       }
       ListEmptyComponent={
-        <Text tone="muted" align="center" style={styles.empty}>
-          Aún no hay fechas. Agrega aniversarios y cumpleaños para no olvidarlos.
-        </Text>
+        <EmptyState
+          icon={CalendarHeart}
+          title="Aún no hay fechas"
+          description="Agrega aniversarios y cumpleaños con el botón + para no olvidarlos."
+        />
       }
     />
   );
@@ -66,55 +59,46 @@ export function DateList({ coupleId }: DateListProps) {
 function DateRow({ item }: { item: UpcomingDate }) {
   const { occurrence } = item;
   const years = formatYears(occurrence?.years ?? null);
-  const when = item.repeats_yearly
-    ? formatDayWithoutYear(occurrence?.date ?? parseDay(item.date))
-    : formatDay(item.date);
+  const date = occurrence?.date ?? parseDay(item.date);
+  const when = item.repeats_yearly ? formatDayWithoutYear(date) : formatDay(item.date);
 
   return (
-    <Pressable
+    <Card
       onPress={() => router.push({ pathname: '/dates/[id]', params: { id: item.id } })}
-      style={({ pressed }) => pressed && styles.pressed}
+      style={styles.row}
     >
-      <Card style={styles.row}>
-        <View style={styles.info}>
-          <Text variant="subtitle">{item.title}</Text>
-          <Text variant="caption" tone="muted">
-            {years ? `${when} - ${years}` : when}
-          </Text>
-        </View>
-        <Text tone={occurrence ? 'primary' : 'muted'}>
-          {occurrence ? formatDaysLeft(occurrence.daysLeft) : 'Ya pasó'}
+      <DateBadge date={date} highlighted={occurrence?.daysLeft === 0} muted={!occurrence} />
+      <View style={styles.info}>
+        <Text variant="bodyStrong" numberOfLines={1} tone={occurrence ? 'default' : 'muted'}>
+          {item.title}
         </Text>
-      </Card>
-    </Pressable>
+        <Text variant="caption" tone="muted">
+          {years ? `${when} · ${years}` : when}
+        </Text>
+      </View>
+      {occurrence ? (
+        <DaysLeftPill daysLeft={occurrence.daysLeft} />
+      ) : (
+        <Text variant="caption" tone="muted">
+          Ya pasó
+        </Text>
+      )}
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  loader: {
-    marginTop: spacing.xl,
-  },
-  message: {
-    gap: spacing.md,
-    marginTop: spacing.xl,
-  },
   content: {
-    gap: spacing.sm,
+    gap: spacing.md - spacing.xs,
     paddingBottom: spacing.xl * 3,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.md - spacing.xs,
   },
   info: {
     flex: 1,
-    gap: spacing.xs,
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-  empty: {
-    marginTop: spacing.xl,
+    gap: spacing.xxs,
   },
 });
