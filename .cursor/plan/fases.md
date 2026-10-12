@@ -130,7 +130,14 @@ Fases 10 a 13 terminadas en código:
 - Fase 12: tabla `places`, mapa con MapLibre y estilo Positron de OpenFreeMap, lugares marcados con la ubicación actual o manteniendo presionado el mapa. El mapa no funciona en Expo Go.
 - Fase 13: tabla `pets` con funciones `adopt_pet` y `care_for_pet`, gato en SVG con cinco ánimos, niveles por experiencia y tarjeta en el inicio.
 
-Falta compilar y probar en los teléfonos. Se compila una sola vez, cuando el usuario lo pida.
+Versión 3 de producción instalada. Ajustes después de probarla:
+
+- Inicio simple: días juntos con el ánimo de cada uno, toques en una fila, el dragón libre sobre el fondo y los próximos planes. Tu ánimo se elige tocando tu avatar.
+- Lugares pasa a ser pestaña, con búsqueda de direcciones en Nominatim de OpenStreetMap. La barra inferior se desliza cuando hay más de cinco pestañas y Ajustes queda al final.
+- La mascota es un dragón que evoluciona por nivel: bebé desde el nivel 1, pequeño desde el 3, joven desde el 6 y adulto desde el 10. Tiene racha diaria, que suma cuando cualquiera de los dos lo cuida ese día. El día lo envía el teléfono en su hora local.
+- Los widgets declaran `minResizeWidth` y `minResizeHeight` con el plugin local `plugins/with-widget-resize.js`, porque `react-native-android-widget` no los permite. Ese plugin va antes del de widgets en `app.json`, porque los mods se ejecutan en orden inverso.
+
+Para probar cambios de JavaScript sin compilar se usa el development build con `npm run start:tunnel`.
 
 ## Costos
 
