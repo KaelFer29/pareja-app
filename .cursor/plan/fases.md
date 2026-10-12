@@ -132,9 +132,11 @@ Fases 10 a 13 terminadas en código:
 
 Versión 3 de producción instalada. Ajustes después de probarla:
 
-- Inicio simple: días juntos con el ánimo de cada uno, toques en una fila, el dragón libre sobre el fondo y los próximos planes. Tu ánimo se elige tocando tu avatar.
+- Inicio simple: días juntos con el ánimo de cada uno, toques en una fila, la mascota libre sobre el fondo y los próximos planes. Tu ánimo se elige tocando tu avatar.
 - Lugares pasa a ser pestaña, con búsqueda de direcciones en Nominatim de OpenStreetMap. La barra inferior se desliza cuando hay más de cinco pestañas y Ajustes queda al final.
-- La mascota es un dragón que evoluciona por nivel: bebé desde el nivel 1, pequeño desde el 3, joven desde el 6 y adulto desde el 10. Tiene racha diaria, que suma cuando cualquiera de los dos lo cuida ese día. El día lo envía el teléfono en su hora local.
+- La mascota es un perrito panzón en estilo 3D. Crece por nivel: recién nacido desde el nivel 1, cachorro desde el 4 y adulto desde el 8. Cada etapa tiene una imagen por ánimo en `assets/pet/`, con fondo transparente, y la app la anima: respira, se balancea, salta cuando está feliz y suelta corazones al tocarlo. Tiene racha diaria, que suma cuando cualquiera de los dos lo cuida ese día. El día lo envía el teléfono en su hora local.
+- El cálculo de ánimo y etapa vive en `src/shared/utils/pet.ts` y las imágenes en `src/shared/lib/pet-art.ts`, porque los usan la mascota y el widget.
+- Widget de la mascota: imagen fija del ánimo actual, nombre, racha y nivel. Android no permite animaciones en widgets.
 - Los widgets declaran `minResizeWidth` y `minResizeHeight` con el plugin local `plugins/with-widget-resize.js`, porque `react-native-android-widget` no los permite. Ese plugin va antes del de widgets en `app.json`, porque los mods se ejecutan en orden inverso.
 
 Para probar cambios de JavaScript sin compilar se usa el development build con `npm run start:tunnel`.
