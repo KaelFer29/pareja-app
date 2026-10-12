@@ -140,6 +140,8 @@ Versión 3 de producción instalada. Ajustes después de probarla:
 - Cada 7 días de racha el perrito propone una salida al azar de la tabla `outing_ideas`: cine, helado, cafetería, museo o exposición, caminata o quedarse en casita. La crea `care_for_pet` en `pet_outings`, sin repetir la idea anterior, y avisa con push a la pareja. Al aceptarla se elige un día desde el siguiente al que se cumplió la racha, y `schedule_outing` crea el plan con `outing_streak`. También se puede descartar con `dismiss_outing`.
 - Los planes que nacen de una racha muestran una llamita en el mes, en la agenda, en el detalle del plan y en el widget de próximos planes.
 - En el mapa, al buscar un lugar que ya está guardado a menos de 75 metros, se abre ese lugar en vez de crear otro alfiler.
+- Fotos como álbum de polaroids agrupado por mes, en dos columnas, con marco blanco, leve inclinación y la descripción o la fecha en letra manuscrita. La foto abierta es una polaroid grande que respeta su proporción.
+- Notas adhesivas en dos columnas, con cinta o chinche si están fijadas. Cada nota tiene un color guardado en `notes.color` y se elige en el editor. La letra manuscrita es Caveat, de `@expo-google-fonts/caveat`.
 - Widget de la mascota: imagen fija del ánimo actual, nombre, racha y nivel. Android no permite animaciones en widgets.
 - Los widgets declaran `minResizeWidth` y `minResizeHeight` con el plugin local `plugins/with-widget-resize.js`, porque `react-native-android-widget` no los permite. Ese plugin va antes del de widgets en `app.json`, porque los mods se ejecutan en orden inverso.
 
