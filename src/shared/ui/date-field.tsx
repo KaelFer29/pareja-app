@@ -16,9 +16,17 @@ type DateFieldProps = {
   placeholder: string;
   label?: string;
   maximumDate?: Date;
+  minimumDate?: Date;
 };
 
-export function DateField({ value, onChange, placeholder, label, maximumDate }: DateFieldProps) {
+export function DateField({
+  value,
+  onChange,
+  placeholder,
+  label,
+  maximumDate,
+  minimumDate,
+}: DateFieldProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isIos = Platform.OS === 'ios';
 
@@ -47,6 +55,7 @@ export function DateField({ value, onChange, placeholder, label, maximumDate }: 
             mode="date"
             display={isIos ? 'inline' : 'default'}
             maximumDate={maximumDate}
+            minimumDate={minimumDate}
             accentColor={colors.primary}
             onValueChange={(_event, date) => {
               if (!isIos) setIsOpen(false);

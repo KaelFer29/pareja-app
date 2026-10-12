@@ -55,6 +55,38 @@ export function formatWeekday(date: Date) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+export function formatMonthYear(date: Date) {
+  const text = date.toLocaleDateString('es', { month: 'long', year: 'numeric' });
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+export function formatTime(time: string) {
+  return time.slice(0, 5);
+}
+
+export function timeToDate(time: string, base = new Date()) {
+  const [hours, minutes] = time.split(':').map(Number);
+  return new Date(base.getFullYear(), base.getMonth(), base.getDate(), hours, minutes);
+}
+
+export function dateToTime(date: Date) {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+export function addDays(date: Date, amount: number) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + amount);
+}
+
+export function startOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+export function addMonths(date: Date, amount: number) {
+  return new Date(date.getFullYear(), date.getMonth() + amount, 1);
+}
+
 export function formatMonthShort(date: Date) {
   return date.toLocaleDateString('es', { month: 'short' }).replace('.', '').toUpperCase();
 }

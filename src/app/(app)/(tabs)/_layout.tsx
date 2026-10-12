@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import {
   House,
   Images,
-  ListChecks,
+  CalendarDays,
   NotebookPen,
   Settings,
   type LucideIcon,
@@ -37,7 +37,10 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" options={{ title: 'Inicio', tabBarIcon: tabIcon(House) }} />
       <Tabs.Screen name="photos" options={{ title: 'Fotos', tabBarIcon: tabIcon(Images) }} />
       <Tabs.Screen name="notes" options={{ title: 'Notas', tabBarIcon: tabIcon(NotebookPen) }} />
-      <Tabs.Screen name="lists" options={{ title: 'Listas', tabBarIcon: tabIcon(ListChecks) }} />
+      <Tabs.Screen
+        name="calendar"
+        options={{ title: 'Calendario', tabBarIcon: tabIcon(CalendarDays) }}
+      />
       <Tabs.Screen name="settings" options={{ title: 'Ajustes', tabBarIcon: tabIcon(Settings) }} />
     </Tabs>
   );
