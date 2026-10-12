@@ -8,7 +8,9 @@ import { useCouple } from '@/features/couple/couple-provider';
 import { NextDateCard } from '@/features/dates/components/next-date-card';
 import { PinnedNotesCard } from '@/features/notes/components/pinned-notes-card';
 import { NudgeCard } from '@/features/nudges/components/nudge-card';
+import { PetCard } from '@/features/pet/components/pet-card';
 import { LatestPhotoCard } from '@/features/photos/components/latest-photo-card';
+import { PlacesCard } from '@/features/places/components/places-card';
 import { MoodBadge } from '@/features/profile/components/mood-badge';
 import { MoodPicker } from '@/features/profile/components/mood-picker';
 import { useProfile } from '@/features/profile/hooks';
@@ -64,10 +66,16 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <SectionHeader
             title="Próxima fecha"
-            actionLabel="Ver todas"
-            onAction={() => router.push('/dates')}
+            actionLabel="Ver calendario"
+            onAction={() => router.push('/calendar')}
           />
           <NextDateCard coupleId={couple.id} />
+        </View>
+
+        <View style={styles.section}>
+          <SectionHeader title="Juntos" />
+          <PetCard coupleId={couple.id} />
+          <PlacesCard coupleId={couple.id} />
         </View>
 
         <View style={styles.section}>
