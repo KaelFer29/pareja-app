@@ -139,6 +139,8 @@ Versión 3 de producción instalada. Ajustes después de probarla:
 
 Para probar cambios de JavaScript sin compilar se usa el development build con `npm run start:tunnel`.
 
+Para revisar las pantallas en el computador se usa `npm run web` y el modo de dispositivo del navegador. En web el mapa muestra su aviso de no disponible, porque `src/features/places/native.web.ts` reemplaza a MapLibre. Los widgets no existen en web.
+
 ## Costos
 
 - Todo el proyecto cabe en planes gratuitos. Los dos teléfonos son Android, así que no hace falta la cuenta de Apple Developer.
