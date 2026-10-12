@@ -101,7 +101,7 @@ Fase 3 probada en los teléfonos: migración `notes` con RLS verificada, lista c
 
 Fase 4 terminada en código: migración `important_dates` con RLS verificada, `couples` en Realtime para que la fecha de inicio llegue a los dos, selector de fechas de `@react-native-community/datetimepicker` (incluido en Expo Go), contador de días, fechas que se repiten cada año y pantalla de inicio con contador, próxima fecha, última foto y notas fijadas. Las fechas sin hora se leen en hora local con `parseDay` para no correrse un día. Falta probarla en los teléfonos.
 
-Fase 5 terminada en código: migración `nudges_and_mood` con RLS verificada. Cuatro toques (pienso en ti, te extraño, te quiero, un abrazo) que llegan como aviso animado arriba de la pantalla si la app está abierta, y seis estados de ánimo visibles en el inicio de la otra persona. Falta probarla en los teléfonos.
+Fase 5 terminada en código: migración `nudges_and_mood` con RLS verificada. Cuatro toques (pienso en ti, te extraño, te amo, un abrazo) que llegan como aviso animado arriba de la pantalla si la app está abierta, y seis estados de ánimo visibles en el inicio de la otra persona. Falta probarla en los teléfonos.
 
 Fase 6 terminada en código: migración `lists` con RLS verificada. Varias listas, elementos que se marcan como hechos con actualización inmediata, `done_by` llenado por trigger, renombrar y eliminar listas, y tiempo real. Un elemento solo puede pertenecer a una lista de la misma pareja gracias a una clave foránea compuesta. Falta probarla en los teléfonos.
 

@@ -31,7 +31,7 @@ App privada para dos personas. Cada una instala la app en su teléfono, crea su 
 
 ### 5. Toques
 
-- Botones rápidos para enviar un gesto ("pienso en ti", "te extraño", "te quiero").
+- Botones rápidos para enviar un gesto ("pienso en ti", "te extraño", "te amo").
 - Estado de ánimo actual visible para la otra persona.
 - Cada toque genera una notificación.
 
