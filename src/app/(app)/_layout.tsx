@@ -9,6 +9,7 @@ import { useImportantDatesRealtime } from '@/features/dates/realtime';
 import { useNotesRealtime } from '@/features/notes/realtime';
 import { useNotificationNavigation, usePushRegistration } from '@/features/notifications/hooks';
 import { NudgeToast } from '@/features/nudges/components/nudge-toast';
+import { usePet } from '@/features/pet/hooks';
 import { usePetRealtime } from '@/features/pet/realtime';
 import { useLatestPhoto } from '@/features/photos/hooks';
 import { usePhotosRealtime } from '@/features/photos/realtime';
@@ -32,6 +33,7 @@ export default function AppLayout() {
   const latestPhoto = useLatestPhoto(couple?.id);
   const dates = useImportantDates(couple?.id);
   const events = useEvents(couple?.id);
+  const pet = usePet(couple?.id);
   useWidgetsSync(
     [
       latestPhoto.data?.id,
@@ -39,6 +41,8 @@ export default function AppLayout() {
       partner?.profile?.display_name,
       dates.dataUpdatedAt,
       events.dataUpdatedAt,
+      pet.data?.updated_at,
+      pet.data?.name,
     ].join('|'),
   );
 

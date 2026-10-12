@@ -3,8 +3,15 @@ import { supabase } from '@/shared/lib/supabase';
 import { buildAgenda } from '@/shared/utils/agenda';
 import { addDays, daysBetween, parseDay, startOfToday, toDay } from '@/shared/utils/date';
 import { sortByUpcoming } from '@/shared/utils/occurrence';
+import { getPetStats } from '@/shared/utils/pet';
 
-import type { WidgetAgendaItem, WidgetCouple, WidgetNextDate, WidgetPhoto } from './types';
+import type {
+  WidgetAgendaItem,
+  WidgetCouple,
+  WidgetNextDate,
+  WidgetPet,
+  WidgetPhoto,
+} from './types';
 
 const AGENDA_DAYS = 60;
 
@@ -67,6 +74,25 @@ export async function getLatestPhotoForWidget(): Promise<WidgetPhoto | null> {
     caption: data.caption,
     authorName: data.uploaded_by ? (couple.names.get(data.uploaded_by) ?? null) : null,
     createdAt: data.created_at,
+  };
+}
+
+export async function getPetForWidget(): Promise<WidgetPet | null> {
+  const { data: auth } = await supabase.auth.getSession();
+  if (!auth.session) return null;
+
+  const { data, error } = await supabase.from('pets').select('*').maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+
+  const stats = getPetStats(data);
+  return {
+    name: data.name,
+    mood: stats.mood,
+    stage: stats.stage,
+    level: stats.level,
+    streak: stats.streak,
+    caredToday: stats.caredToday,
   };
 }
 

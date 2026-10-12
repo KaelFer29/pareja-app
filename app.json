@@ -84,6 +84,10 @@
             "UpcomingPlans": {
               "minResizeWidth": "160dp",
               "minResizeHeight": "100dp"
+            },
+            "Pet": {
+              "minResizeWidth": "90dp",
+              "minResizeHeight": "90dp"
             }
           }
         }
@@ -143,6 +147,18 @@
               "targetCellHeight": 3,
               "resizeMode": "horizontal|vertical",
               "previewImage": "./assets/widgets/widget-upcoming-plans.png",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "Pet",
+              "label": "Mascota",
+              "description": "Su perrito y cómo se siente.",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/widgets/widget-pet.png",
               "updatePeriodMillis": 1800000
             }
           ]

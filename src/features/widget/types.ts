@@ -1,3 +1,5 @@
+import type { PetMood, PetStage } from '@/shared/utils/pet';
+
 export type WidgetPhoto = {
   id: string;
   url: string;
@@ -22,6 +24,15 @@ export type WidgetAgendaItem = {
   startTime: string | null;
   endTime: string | null;
   years: number | null;
+};
+
+export type WidgetPet = {
+  name: string;
+  mood: PetMood;
+  stage: PetStage;
+  level: number;
+  streak: number;
+  caredToday: boolean;
 };
 
 export type WidgetNextDate = {
