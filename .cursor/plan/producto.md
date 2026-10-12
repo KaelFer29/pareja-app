@@ -35,10 +35,11 @@ App privada para dos personas. Cada una instala la app en su teléfono, crea su 
 - Estado de ánimo actual visible para la otra persona.
 - Cada toque genera una notificación.
 
-### 6. Listas compartidas
+### 6. Calendario compartido
 
-- Varias listas (planes, deseos, pendientes) con elementos que se pueden marcar como hechos.
-- Se sincronizan en tiempo real.
+- Planes de uno o varios días, con hora opcional, junto a las fechas importantes.
+- Un plan se puede copiar al calendario del teléfono.
+- Se sincroniza en tiempo real y tiene su propio widget.
 
 ### 7. Notificaciones push
 
@@ -48,6 +49,12 @@ App privada para dos personas. Cada una instala la app en su teléfono, crea su 
 
 - Widget en la pantalla de inicio del teléfono con la última foto de la pareja.
 - Se actualiza cuando llega una foto nueva.
+
+### 9. Extras
+
+- Reacciones con emoji en fotos y notas.
+- Mapa de los lugares que visitan juntos.
+- Mascota virtual que cuidan entre los dos.
 
 ## Fuera del alcance
 

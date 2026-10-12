@@ -9,9 +9,12 @@ src/
     (auth)/                     sin sesión: sign-in, sign-up
     (onboarding)/               con sesión pero sin pareja: crear o unirse
     (app)/                      con sesión y pareja
-      (tabs)/                   inicio, fotos, notas, listas, ajustes
+      (tabs)/                   inicio, fotos, notas, calendario, ajustes
       photos/[id].tsx           foto en pantalla completa
       notes/[id].tsx            editor de nota
+      calendar/[id].tsx         editor de plan
+      places/                   mapa de lugares
+      pet.tsx                   mascota
   features/
     auth/
     couple/
@@ -20,7 +23,10 @@ src/
     notes/
     dates/
     nudges/
-    lists/
+    reactions/
+    calendar/
+    places/
+    pet/
     notifications/
     widget/
   shared/
@@ -57,11 +63,11 @@ features/photos/
 
 `src/app/_layout.tsx` decide qué grupo mostrar con `Stack.Protected`:
 
-| Estado | Grupo visible |
-| --- | --- |
-| Sin sesión | `(auth)` |
+| Estado                 | Grupo visible  |
+| ---------------------- | -------------- |
+| Sin sesión             | `(auth)`       |
 | Con sesión, sin pareja | `(onboarding)` |
-| Con sesión y pareja | `(app)` |
+| Con sesión y pareja    | `(app)`        |
 
 La sesión viene de `AuthProvider` y la pareja de `CoupleProvider`, ambos en `src/features/auth` y `src/features/couple`. `CoupleProvider` recibe el `userId` como prop desde el layout raíz, así `couple` no depende de `auth`.
 
@@ -69,14 +75,14 @@ Una pareja con un solo miembro sigue en `(onboarding)`, mostrando el código par
 
 ## Decisiones
 
-| Tema | Decisión |
-| --- | --- |
-| Estado del servidor | TanStack Query |
-| Tiempo real | Supabase Realtime que actualiza la caché |
-| Estilos | StyleSheet con tokens de `shared/theme` |
-| Sesión | AsyncStorage, según la recomendación de Supabase |
-| Imágenes | `expo-image` con URLs firmadas y caché en disco |
-| Compresión de fotos | Lado mayor 1600 px, JPEG, unos 300 a 500 KB por foto para cuidar el 1 GB gratis |
+| Tema                 | Decisión                                                                                     |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+| Estado del servidor  | TanStack Query                                                                               |
+| Tiempo real          | Supabase Realtime que actualiza la caché                                                     |
+| Estilos              | StyleSheet con tokens de `shared/theme`                                                      |
+| Sesión               | AsyncStorage, según la recomendación de Supabase                                             |
+| Imágenes             | `expo-image` con URLs firmadas y caché en disco                                              |
+| Compresión de fotos  | Lado mayor 1600 px, JPEG, unos 300 a 500 KB por foto para cuidar el 1 GB gratis              |
 | Plataforma de prueba | Los dos teléfonos son Android. Se mantiene compatibilidad con iOS, pero se prueba en Android |
-| Notificaciones | Trigger en Postgres que llama a una Edge Function, que envía con el servicio push de Expo |
-| Widget | Se investiga la opción vigente para iOS y Android al llegar a esa fase |
+| Notificaciones       | Trigger en Postgres que llama a una Edge Function, que envía con el servicio push de Expo    |
+| Widget               | Se investiga la opción vigente para iOS y Android al llegar a esa fase                       |

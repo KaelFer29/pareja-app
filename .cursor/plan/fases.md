@@ -62,6 +62,32 @@ Terminado cuando: un toque enviado desde un teléfono llega como notificación a
 - Ícono, splash, `bundleIdentifier` y `package`.
 - Builds de producción con EAS e instalación en ambos teléfonos.
 
+## Fase 10 - Ajustes y reacciones
+
+- Widget de foto desde 2 por 2 y widget de próxima fecha desde 1 bloque de alto.
+- Foto de perfil propia y de la pareja en pantalla completa.
+- Tabla `reactions` con un emoji por persona en fotos y notas, en tiempo real y con notificación push.
+
+## Fase 11 - Calendario compartido
+
+- Tabla `events` con título, fecha, hora opcional, nota y autor, en tiempo real.
+- Vista de mes propia, con el estilo de la app. Las fechas importantes aparecen junto a los planes. No se usa `react-native-calendars` porque sus dependencias son antiguas y no asegura compatibilidad con React 19.
+- Botón para copiar un evento al calendario del teléfono con `expo-calendar`.
+- El calendario reemplaza la pestaña de listas. Las listas se eliminan, código y tablas.
+- Widget de Android con los próximos eventos.
+
+## Fase 12 - Mapa de lugares
+
+- Tabla `places` con nombre, coordenadas, fecha de visita, nota y foto opcional.
+- Mapa con MapLibre y mapas de OpenStreetMap, sin cuenta de Google.
+- Marcar un lugar con la ubicación actual o tocando el mapa.
+
+## Fase 13 - Mascota compartida
+
+- Tabla `pets` con nombre, hambre, ánimo y nivel, en tiempo real.
+- El estado baja con el tiempo sin tareas programadas. Se calcula desde `updated_at` al leerla y al cuidarla, en la app y en la función `care_for_pet`. Los dos la alimentan, la miman y juegan con ella desde la app.
+- Ilustraciones en SVG con el estilo de la app.
+
 ## Estado actual
 
 - Fase 0: proyecto Supabase en `sa-east-1`, `supabase/` inicializado, estructura en `app/`, `features/` y `shared/`, TanStack Query y Prettier.
@@ -95,10 +121,21 @@ Rediseño de la interfaz: paleta blanca, rosada y café, tipografía Nunito, íc
 
 Fase 9 en curso: ícono de dos corazones (café y rosado) generado como SVG, splash con la misma marca y tres widgets de Android: `LatestPhoto`, `DaysTogether` y `NextDate`, con fuentes Nunito y vistas previas en `assets/widgets`. El cálculo de próximas fechas está en `shared/utils/occurrence.ts` porque lo usan las fechas y los widgets. El perfil `production` genera un APK para instalarlo directo en los dos teléfonos.
 
-Siguiente: compilar la versión de producción cuando el usuario lo pida e instalarla en ambos teléfonos.
+Fase 9 terminada: versión de producción instalada en ambos teléfonos como APK.
+
+Fases 10 a 13 terminadas en código:
+
+- Fase 10: widgets más flexibles, visor de la foto de perfil y reacciones con seis emojis en fotos y notas, con push a quien publicó.
+- Fase 11: tabla `events`, pestaña Calendario en lugar de Listas, planes de uno o varios días con hora opcional, fechas importantes en el mismo mes, botón para agregar un plan al calendario del teléfono con `expo-calendar` y widget `UpcomingPlans`. Las listas se eliminaron, código y tablas.
+- Fase 12: tabla `places`, mapa con MapLibre y estilo Positron de OpenFreeMap, lugares marcados con la ubicación actual o manteniendo presionado el mapa. El mapa no funciona en Expo Go.
+- Fase 13: tabla `pets` con funciones `adopt_pet` y `care_for_pet`, gato en SVG con cinco ánimos, niveles por experiencia y tarjeta en el inicio.
+
+Falta compilar y probar en los teléfonos. Se compila una sola vez, cuando el usuario lo pida.
 
 ## Costos
 
 - Todo el proyecto cabe en planes gratuitos. Los dos teléfonos son Android, así que no hace falta la cuenta de Apple Developer.
 - Supabase gratis: 1 GB de almacenamiento, 5 GB de descarga al mes, pausa tras 7 días sin uso y sin respaldos automáticos.
 - EAS gratis: 15 compilaciones de Android al mes, suficiente para las fases 7 a 9.
+- Notificaciones push sin costo: Expo Push Service y Firebase Cloud Messaging no cobran por mensaje.
+- MapLibre y las teselas de OpenStreetMap no requieren tarjeta ni cuenta de pago.
