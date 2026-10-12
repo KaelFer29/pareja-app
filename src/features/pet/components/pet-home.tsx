@@ -60,6 +60,8 @@ function PetCorner({ pet }: { pet: Pet }) {
         <LevelBadge level={stats.level} />
       </View>
 
+      <OutingProposal coupleId={pet.couple_id} petName={pet.name} />
+
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`Hacerle mimos a ${pet.name}`}
@@ -92,8 +94,6 @@ function PetCorner({ pet }: { pet: Pet }) {
       </View>
 
       <PetActions petName={pet.name} onCare={cheer} size="sm" />
-
-      <OutingProposal coupleId={pet.couple_id} petName={pet.name} stage={stats.stage} />
     </View>
   );
 }

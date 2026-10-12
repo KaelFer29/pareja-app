@@ -67,6 +67,7 @@ export function PetView({ pet, userId, names }: PetViewProps) {
           <StreakBadge streak={stats.streak} caredToday={stats.caredToday} />
           <LevelBadge level={stats.level} />
         </View>
+        <OutingProposal coupleId={pet.couple_id} petName={pet.name} />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Hacerle mimos a ${pet.name}`}
@@ -114,9 +115,6 @@ export function PetView({ pet, userId, names }: PetViewProps) {
           {MOOD_MESSAGES[stats.mood](pet.name)}
         </Text>
       </Card>
-
-      <OutingProposal coupleId={pet.couple_id} petName={pet.name} stage={stats.stage} />
-
       <PetActions petName={pet.name} onCare={cheer} />
 
       <Card style={styles.stats}>
