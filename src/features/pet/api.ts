@@ -1,7 +1,7 @@
 import { supabase } from '@/shared/lib/supabase';
 import { toDay } from '@/shared/utils/date';
 
-import type { Pet, PetAction } from './types';
+import type { Pet, PetAction, PetOuting } from './types';
 
 export async function getPet(coupleId: string): Promise<Pet | null> {
   const { data, error } = await supabase
@@ -39,12 +39,41 @@ export async function renamePet({ coupleId, name }: { coupleId: string; name: st
   return data;
 }
 
+export async function getPendingOuting(coupleId: string): Promise<PetOuting | null> {
+  const { data, error } = await supabase
+    .from('pet_outings')
+    .select('*, idea:outing_ideas(*)')
+    .eq('couple_id', coupleId)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function scheduleOuting({ outingId, day }: { outingId: string; day: string }) {
+  const { data, error } = await supabase.rpc('schedule_outing', {
+    outing_id: outingId,
+    outing_day: day,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function dismissOuting(outingId: string) {
+  const { error } = await supabase.rpc('dismiss_outing', { outing_id: outingId });
+  if (error) throw error;
+}
+
 export function subscribeToPet(coupleId: string, onChange: () => void) {
+  const filter = `couple_id=eq.${coupleId}`;
   const channel = supabase
     .channel(`pets:${coupleId}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'pets', filter }, onChange)
     .on(
       'postgres_changes',
-      { event: '*', schema: 'public', table: 'pets', filter: `couple_id=eq.${coupleId}` },
+      { event: '*', schema: 'public', table: 'pet_outings', filter },
       onChange,
     )
     .subscribe((status) => {

@@ -14,7 +14,8 @@ import { getPetStats, MOOD_MESSAGES } from '../stats';
 import type { Pet } from '../types';
 import { PetActions, useCare } from './pet-actions';
 import { PetAvatar, type PetAvatarHandle } from './pet-avatar';
-import { LevelBadge, StreakBadge } from './streak-badge';
+import { OutingProposal } from './outing-proposal';
+import { LevelBadge, StreakBadge, StreakHint } from './streak-badge';
 
 type PetHomeProps = {
   coupleId: string;
@@ -83,12 +84,16 @@ function PetCorner({ pet }: { pet: Pet }) {
         </Text>
       </Pressable>
 
+      <StreakHint streak={stats.streak} caredToday={stats.caredToday} />
+
       <View style={styles.bars}>
         <MiniBar label="Pancita" value={stats.fullness} color={colors.accent} />
         <MiniBar label="Ánimo" value={stats.happiness} color={colors.primary} />
       </View>
 
       <PetActions petName={pet.name} onCare={cheer} size="sm" />
+
+      <OutingProposal coupleId={pet.couple_id} petName={pet.name} stage={stats.stage} />
     </View>
   );
 }

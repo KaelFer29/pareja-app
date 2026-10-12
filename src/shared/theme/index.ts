@@ -11,6 +11,8 @@ export const colors = {
   text: '#3A2A23',
   textMuted: '#937E73',
   border: '#EFE4DD',
+  streak: '#E8742C',
+  streakSoft: '#FFEEDD',
   danger: '#C2453D',
   dangerSoft: '#FBEAE8',
   shadow: '#5C3D2E',

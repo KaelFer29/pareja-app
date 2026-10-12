@@ -74,6 +74,7 @@ export type Database = {
           end_time: string | null;
           ends_on: string | null;
           id: string;
+          outing_streak: number | null;
           start_time: string | null;
           starts_on: string;
           title: string;
@@ -87,6 +88,7 @@ export type Database = {
           end_time?: string | null;
           ends_on?: string | null;
           id?: string;
+          outing_streak?: number | null;
           start_time?: string | null;
           starts_on: string;
           title: string;
@@ -100,6 +102,7 @@ export type Database = {
           end_time?: string | null;
           ends_on?: string | null;
           id?: string;
+          outing_streak?: number | null;
           start_time?: string | null;
           starts_on?: string;
           title?: string;
@@ -241,6 +244,89 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
+          },
+        ];
+      };
+      outing_ideas: {
+        Row: {
+          emoji: string;
+          key: string;
+          title: string;
+        };
+        Insert: {
+          emoji: string;
+          key: string;
+          title: string;
+        };
+        Update: {
+          emoji?: string;
+          key?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      pet_outings: {
+        Row: {
+          couple_id: string;
+          created_at: string;
+          created_by: string | null;
+          event_id: string | null;
+          id: string;
+          idea_key: string;
+          reached_on: string;
+          status: string;
+          streak: number;
+        };
+        Insert: {
+          couple_id: string;
+          created_at?: string;
+          created_by?: string | null;
+          event_id?: string | null;
+          id?: string;
+          idea_key: string;
+          reached_on: string;
+          status?: string;
+          streak: number;
+        };
+        Update: {
+          couple_id?: string;
+          created_at?: string;
+          created_by?: string | null;
+          event_id?: string | null;
+          id?: string;
+          idea_key?: string;
+          reached_on?: string;
+          status?: string;
+          streak?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pet_outings_couple_id_fkey';
+            columns: ['couple_id'];
+            isOneToOne: false;
+            referencedRelation: 'couples';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pet_outings_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pet_outings_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'pet_outings_idea_key_fkey';
+            columns: ['idea_key'];
+            isOneToOne: false;
+            referencedRelation: 'outing_ideas';
+            referencedColumns: ['key'];
           },
         ];
       };
@@ -524,6 +610,15 @@ export type Database = {
       };
       register_push_token: {
         Args: { new_platform: string; new_token: string };
+        Returns: undefined;
+      };
+      schedule_outing: {
+        Args: { outing_day: string; outing_id: string };
+        Returns: Database['public']['Tables']['events']['Row'];
+        SetofOptions: { from: '*'; to: 'events'; isOneToOne: true; isSetofReturn: false };
+      };
+      dismiss_outing: {
+        Args: { outing_id: string };
         Returns: undefined;
       };
     };

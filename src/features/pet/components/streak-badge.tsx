@@ -5,31 +5,69 @@ import { colors, fonts, radius, spacing } from '@/shared/theme';
 import { Icon } from '@/shared/ui/icon';
 import { Text } from '@/shared/ui/text';
 
-type StreakBadgeProps = {
+export const OUTING_EVERY = 7;
+
+type StreakProps = {
   streak: number;
   caredToday: boolean;
 };
 
-export function StreakBadge({ streak, caredToday }: StreakBadgeProps) {
-  const active = streak > 0 && caredToday;
-  const label = streak === 1 ? '1 día' : `${streak} días`;
+type StreakState = 'active' | 'risk' | 'none';
+
+function streakState({ streak, caredToday }: StreakProps): StreakState {
+  if (streak === 0) return 'none';
+  return caredToday ? 'active' : 'risk';
+}
+
+function days(count: number) {
+  return count === 1 ? '1 día' : `${count} días`;
+}
+
+export function StreakBadge({ streak, caredToday }: StreakProps) {
+  const state = streakState({ streak, caredToday });
+  const label = state === 'none' ? 'Sin racha' : days(streak);
+  const tint = state === 'none' ? colors.textMuted : colors.streak;
 
   return (
     <View
-      style={[styles.badge, active ? styles.active : styles.idle]}
-      accessibilityLabel={`Racha de ${label}`}
+      style={[styles.badge, styles[state]]}
+      accessibilityLabel={state === 'none' ? 'Sin racha' : `Racha de ${label}`}
     >
       <Icon
         icon={Flame}
-        size={14}
-        color={active ? colors.primaryText : colors.primary}
-        fill={active ? colors.primaryText : 'none'}
-        strokeWidth={2.2}
+        size={15}
+        color={tint}
+        fill={state === 'active' ? colors.streak : 'none'}
+        strokeWidth={state === 'active' ? 2.2 : 2}
       />
-      <Text style={[styles.text, { color: active ? colors.primaryText : colors.primary }]}>
+      <Text style={[styles.text, { color: state === 'none' ? colors.textMuted : colors.text }]}>
         {label}
       </Text>
     </View>
+  );
+}
+
+export function streakHint({ streak, caredToday }: StreakProps) {
+  if (streak === 0) return 'Cuídenlo hoy para empezar una racha.';
+  if (!caredToday) return `Cuídenlo hoy para no perder la racha de ${days(streak)}.`;
+  const left = OUTING_EVERY - (streak % OUTING_EVERY);
+  if (left === OUTING_EVERY) return `¡Cumplieron ${days(streak)} de racha!`;
+  return left === 1
+    ? 'Mañana propone una salida si siguen la racha.'
+    : `En ${days(left)} propone una salida.`;
+}
+
+export function StreakHint(props: StreakProps) {
+  const state = streakState(props);
+  return (
+    <Text
+      variant="caption"
+      align="center"
+      style={state === 'risk' ? styles.riskHint : undefined}
+      tone={state === 'risk' ? undefined : 'muted'}
+    >
+      {streakHint(props)}
+    </Text>
   );
 }
 
@@ -49,12 +87,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm + spacing.xxs,
     paddingVertical: spacing.xs,
     borderRadius: radius.pill,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
   },
   active: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.streakSoft,
+    borderColor: colors.streak,
   },
-  idle: {
-    backgroundColor: colors.primarySoft,
+  risk: {
+    backgroundColor: colors.surface,
+    borderColor: colors.streak,
+    borderStyle: 'dashed',
+  },
+  none: {
+    backgroundColor: colors.surfaceMuted,
   },
   level: {
     backgroundColor: colors.accentSoft,
@@ -63,5 +109,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.extrabold,
     fontSize: 12,
     lineHeight: 16,
+  },
+  riskHint: {
+    color: colors.streak,
+    fontFamily: fonts.bold,
   },
 });

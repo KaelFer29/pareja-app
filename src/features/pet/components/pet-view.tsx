@@ -1,4 +1,4 @@
-import { Check, Flame, Pencil, Sparkles, Trophy } from 'lucide-react-native';
+import { CalendarHeart, Check, Flame, Pencil, Sparkles, Trophy } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -16,7 +16,8 @@ import { describeLastCare, getPetStats, isPetAction, MOOD_MESSAGES, stageLabel }
 import type { Pet } from '../types';
 import { PetActions, useCare } from './pet-actions';
 import { PetAvatar, type PetAvatarHandle } from './pet-avatar';
-import { LevelBadge, StreakBadge } from './streak-badge';
+import { OutingProposal } from './outing-proposal';
+import { LevelBadge, OUTING_EVERY, StreakBadge, streakHint } from './streak-badge';
 
 type PetViewProps = {
   pet: Pet;
@@ -114,6 +115,8 @@ export function PetView({ pet, userId, names }: PetViewProps) {
         </Text>
       </Card>
 
+      <OutingProposal coupleId={pet.couple_id} petName={pet.name} stage={stats.stage} />
+
       <PetActions petName={pet.name} onCare={cheer} />
 
       <Card style={styles.stats}>
@@ -138,13 +141,10 @@ export function PetView({ pet, userId, names }: PetViewProps) {
       </Card>
 
       <Card style={styles.stats}>
+        <InfoRow icon={Flame} text={streakHint(stats)} />
         <InfoRow
-          icon={Flame}
-          text={
-            stats.streak > 0
-              ? `Racha de ${stats.streak === 1 ? '1 día' : `${stats.streak} días`}.${stats.caredToday ? '' : ' Cuídenlo hoy para no perderla.'}`
-              : 'Cuídenlo hoy para empezar una racha.'
-          }
+          icon={CalendarHeart}
+          text={`Cada ${OUTING_EVERY} días de racha, ${pet.name} les propone una salida.`}
         />
         <InfoRow
           icon={Trophy}

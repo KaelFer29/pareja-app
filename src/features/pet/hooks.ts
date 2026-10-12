@@ -1,13 +1,51 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import { adoptPet, careForPet, getPet, renamePet } from './api';
+import {
+  adoptPet,
+  careForPet,
+  dismissOuting,
+  getPendingOuting,
+  getPet,
+  renamePet,
+  scheduleOuting,
+} from './api';
 import type { Pet } from './types';
 
 export const petKeys = {
   all: ['pet'] as const,
   detail: (coupleId: string) => [...petKeys.all, coupleId] as const,
+  outing: (coupleId: string) => [...petKeys.all, 'outing', coupleId] as const,
 };
+
+const EVENTS_KEY = ['events'];
+
+export function usePendingOuting(coupleId: string | undefined) {
+  return useQuery({
+    queryKey: petKeys.outing(coupleId ?? ''),
+    queryFn: () => getPendingOuting(coupleId as string),
+    enabled: !!coupleId,
+  });
+}
+
+export function useScheduleOuting(coupleId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: scheduleOuting,
+    onSuccess: () => {
+      queryClient.setQueryData(petKeys.outing(coupleId), null);
+      queryClient.invalidateQueries({ queryKey: EVENTS_KEY });
+    },
+  });
+}
+
+export function useDismissOuting(coupleId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: dismissOuting,
+    onSuccess: () => queryClient.setQueryData(petKeys.outing(coupleId), null),
+  });
+}
 
 export function usePet(coupleId: string | undefined) {
   return useQuery({
@@ -29,7 +67,16 @@ export function useAdoptPet() {
 
 export function useCareForPet() {
   const setPet = useSetPet();
-  return useMutation({ mutationFn: careForPet, onSuccess: setPet });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: careForPet,
+    onSuccess: (pet) => {
+      setPet(pet);
+      if (pet.streak > 0 && pet.streak % 7 === 0) {
+        queryClient.invalidateQueries({ queryKey: petKeys.outing(pet.couple_id) });
+      }
+    },
+  });
 }
 
 export function useRenamePet() {
