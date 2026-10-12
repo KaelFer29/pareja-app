@@ -17,15 +17,17 @@ import { useCreatePlace, useDeletePlace, useUpdatePlace } from '../hooks';
 import { getCurrentLocation, suggestPlaceName } from '../location';
 import type { Coordinates, Place } from '../types';
 import { PlaceMap } from './place-map';
+import { PlaceSearch } from './place-search';
 
 type PlaceFormProps = {
   coupleId: string;
   place?: Place;
   initialCoordinates?: Coordinates;
+  initialName?: string;
 };
 
-export function PlaceForm({ coupleId, place, initialCoordinates }: PlaceFormProps) {
-  const [name, setName] = useState(place?.name ?? '');
+export function PlaceForm({ coupleId, place, initialCoordinates, initialName }: PlaceFormProps) {
+  const [name, setName] = useState(place?.name ?? initialName ?? '');
   const [note, setNote] = useState(place?.note ?? '');
   const [visitedOn, setVisitedOn] = useState<string | null>(place?.visited_on ?? null);
   const [coordinates, setCoordinates] = useState<Coordinates | null>(
@@ -41,11 +43,11 @@ export function PlaceForm({ coupleId, place, initialCoordinates }: PlaceFormProp
   const canSave = name.trim() !== '' && coordinates !== null;
 
   useEffect(() => {
-    if (place || !initialCoordinates) return;
+    if (place || !initialCoordinates || initialName) return;
     suggestPlaceName(initialCoordinates).then((suggestion) => {
       if (suggestion) setName((current) => current || suggestion);
     });
-  }, [place, initialCoordinates]);
+  }, [place, initialCoordinates, initialName]);
 
   async function locateMe() {
     setLocating(true);
@@ -109,6 +111,12 @@ export function PlaceForm({ coupleId, place, initialCoordinates }: PlaceFormProp
       showsVerticalScrollIndicator={false}
     >
       <Card style={styles.card}>
+        <PlaceSearch
+          onSelect={(result) => {
+            setCoordinates({ latitude: result.latitude, longitude: result.longitude });
+            setName((current) => (place ? current || result.name : result.name));
+          }}
+        />
         {coordinates ? (
           <PlaceMap
             key={`${coordinates.latitude},${coordinates.longitude}`}
@@ -122,7 +130,7 @@ export function PlaceForm({ coupleId, place, initialCoordinates }: PlaceFormProp
               <ActivityIndicator color={colors.primary} />
             ) : (
               <Text tone="muted" align="center">
-                Usa tu ubicación actual o mantén presionado el mapa de lugares para marcar uno.
+                Busca una dirección o usa tu ubicación actual.
               </Text>
             )}
           </View>

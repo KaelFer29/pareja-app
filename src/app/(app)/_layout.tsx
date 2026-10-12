@@ -64,7 +64,6 @@ export default function AppLayout() {
         <Stack.Screen name="dates/[id]" options={{ title: 'Fecha' }} />
         <Stack.Screen name="calendar/new" options={{ title: 'Nuevo plan' }} />
         <Stack.Screen name="calendar/[id]" options={{ title: 'Plan' }} />
-        <Stack.Screen name="places/index" options={{ title: 'Nuestros lugares' }} />
         <Stack.Screen name="places/new" options={{ title: 'Nuevo lugar' }} />
         <Stack.Screen name="places/[id]" options={{ title: 'Lugar' }} />
         <Stack.Screen name="pet" options={{ title: 'Mascota' }} />

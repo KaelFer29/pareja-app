@@ -5,7 +5,7 @@ import { useCouple } from '@/features/couple/couple-provider';
 import { PlaceForm } from '@/features/places/components/place-form';
 
 export default function NewPlaceScreen() {
-  const { lat, lng } = useLocalSearchParams<{ lat?: string; lng?: string }>();
+  const { lat, lng, name } = useLocalSearchParams<{ lat?: string; lng?: string; name?: string }>();
   const { couple } = useCouple();
 
   const initialCoordinates = useMemo(() => {
@@ -17,5 +17,7 @@ export default function NewPlaceScreen() {
 
   if (!couple) return null;
 
-  return <PlaceForm coupleId={couple.id} initialCoordinates={initialCoordinates} />;
+  return (
+    <PlaceForm coupleId={couple.id} initialCoordinates={initialCoordinates} initialName={name} />
+  );
 }

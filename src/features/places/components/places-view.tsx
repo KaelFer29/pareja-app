@@ -14,6 +14,7 @@ import { formatDay } from '@/shared/utils/date';
 import { usePlaces } from '../hooks';
 import type { Coordinates, Place } from '../types';
 import { PlaceMap } from './place-map';
+import { PlaceSearch } from './place-search';
 
 type PlacesViewProps = {
   coupleId: string;
@@ -23,11 +24,15 @@ function openPlace(id: string) {
   router.push({ pathname: '/places/[id]', params: { id } });
 }
 
-function addPlace(coordinates?: Coordinates) {
+function addPlace(coordinates?: Coordinates, name?: string) {
   router.push({
     pathname: '/places/new',
     params: coordinates
-      ? { lat: String(coordinates.latitude), lng: String(coordinates.longitude) }
+      ? {
+          lat: String(coordinates.latitude),
+          lng: String(coordinates.longitude),
+          ...(name ? { name } : {}),
+        }
       : {},
   });
 }
@@ -50,6 +55,7 @@ export function PlacesView({ coupleId }: PlacesViewProps) {
   return (
     <>
       <View style={styles.header}>
+        <PlaceSearch onSelect={(result) => addPlace(result, result.name)} />
         <PlaceMap
           key={places.data.map((place) => place.id).join()}
           points={places.data}
@@ -118,7 +124,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   map: {
-    height: 300,
+    height: 260,
   },
   row: {
     flexDirection: 'row',
