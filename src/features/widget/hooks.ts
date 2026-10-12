@@ -1,16 +1,10 @@
 import { useEffect } from 'react';
-import { AppState, Platform } from 'react-native';
-import { requestWidgetUpdate } from 'react-native-android-widget';
+import { AppState } from 'react-native';
 
-import { LATEST_PHOTO_WIDGET } from './latest-photo-widget';
-import { renderLatestPhotoWidget } from './render';
+import { widgetRuntime } from './native';
 
 function refreshLatestPhotoWidget() {
-  if (Platform.OS !== 'android') return;
-  requestWidgetUpdate({
-    widgetName: LATEST_PHOTO_WIDGET,
-    renderWidget: renderLatestPhotoWidget,
-  }).catch(() => undefined);
+  widgetRuntime?.refreshLatestPhotoWidget().catch(() => undefined);
 }
 
 export function useLatestPhotoWidgetSync(latestPhotoId: string | null) {

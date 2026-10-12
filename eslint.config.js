@@ -6,6 +6,12 @@ module.exports = defineConfig([
   expoConfig,
   eslintPluginPrettierRecommended,
   {
+    files: ['src/features/widget/native.ts'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
     ignores: ['dist/*', 'src/shared/lib/database.types.ts'],
   },
 ]);
