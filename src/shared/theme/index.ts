@@ -24,7 +24,20 @@ export const fonts = {
   semibold: 'Nunito_600SemiBold',
   bold: 'Nunito_700Bold',
   extrabold: 'Nunito_800ExtraBold',
+  hand: 'Caveat_600SemiBold',
+  handBold: 'Caveat_700Bold',
 } as const;
+
+export const noteColors = {
+  yellow: { paper: '#FFF1B8', ink: '#7A5A12' },
+  pink: { paper: '#FFDCE7', ink: '#9A3D5E' },
+  peach: { paper: '#FFE2CF', ink: '#94502A' },
+  mint: { paper: '#D8F1E2', ink: '#2F6B4B' },
+  lilac: { paper: '#E7DFFA', ink: '#5B4596' },
+  sky: { paper: '#D9ECFB', ink: '#2F5F86' },
+} as const;
+
+export type NoteColor = keyof typeof noteColors;
 
 export const spacing = {
   xxs: 2,

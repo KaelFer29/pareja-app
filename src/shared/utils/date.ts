@@ -20,6 +20,19 @@ export function formatRelative(isoDate: string, now = new Date()) {
   return `el ${formatLongDate(isoDate)}`;
 }
 
+export function formatRelativeShort(isoDate: string, now = new Date()) {
+  const date = new Date(isoDate);
+  if (now.getTime() - date.getTime() < DAY_MS) return formatRelative(isoDate, now);
+  const sameYear = date.getFullYear() === now.getFullYear();
+  return date
+    .toLocaleDateString('es', {
+      day: 'numeric',
+      month: 'short',
+      year: sameYear ? undefined : 'numeric',
+    })
+    .replace('.', '');
+}
+
 export function parseDay(day: string) {
   const [year, month, date] = day.split('-').map(Number);
   return new Date(year, month - 1, date);

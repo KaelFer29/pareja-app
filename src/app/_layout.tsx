@@ -1,3 +1,4 @@
+import { Caveat_600SemiBold, Caveat_700Bold } from '@expo-google-fonts/caveat';
 import {
   Nunito_400Regular,
   Nunito_600SemiBold,
@@ -27,6 +28,8 @@ function RootNavigator() {
     Nunito_600SemiBold,
     Nunito_700Bold,
     Nunito_800ExtraBold,
+    Caveat_600SemiBold,
+    Caveat_700Bold,
   });
   const isReady = !isLoading && (fontsLoaded || !!fontsError);
 
