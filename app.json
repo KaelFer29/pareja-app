@@ -45,6 +45,18 @@
       ],
       "@react-native-community/datetimepicker",
       [
+        "expo-calendar",
+        {
+          "calendarPermission": "Pareja usa tu calendario para guardar los planes que compartes con tu pareja."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Pareja usa tu ubicación para marcar los lugares que visitan juntos."
+        }
+      ],
+      [
         "expo-notifications",
         {
           "icon": "./assets/android-icon-monochrome.png",
@@ -110,7 +122,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#FFFAF7"
         }
-      ]
+      ],
+      "@maplibre/maplibre-react-native"
     ],
     "extra": {
       "router": {},
