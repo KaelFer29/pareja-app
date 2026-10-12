@@ -15,9 +15,10 @@ import type { Note } from '../types';
 type NoteEditorProps = {
   coupleId: string;
   note?: Note;
+  footer?: React.ReactNode;
 };
 
-export function NoteEditor({ coupleId, note }: NoteEditorProps) {
+export function NoteEditor({ coupleId, note, footer }: NoteEditorProps) {
   const [title, setTitle] = useState(note?.title ?? '');
   const [content, setContent] = useState(note?.content ?? '');
   const createNote = useCreateNote();
@@ -129,6 +130,7 @@ export function NoteEditor({ coupleId, note }: NoteEditorProps) {
             autoFocus={!note}
           />
         </View>
+        {footer}
         {saveFailed && (
           <Notice message="No se pudo guardar la nota. Revisa tu conexión e inténtalo de nuevo." />
         )}

@@ -17,9 +17,10 @@ type PhotoViewerProps = {
   photo: Photo;
   authorName: string;
   canDelete: boolean;
+  footer?: React.ReactNode;
 };
 
-export function PhotoViewer({ photo, authorName, canDelete }: PhotoViewerProps) {
+export function PhotoViewer({ photo, authorName, canDelete, footer }: PhotoViewerProps) {
   const deletePhoto = useDeletePhoto();
 
   function confirmDelete() {
@@ -70,6 +71,7 @@ export function PhotoViewer({ photo, authorName, canDelete }: PhotoViewerProps) 
             />
           ))}
       </View>
+      {footer && <View style={styles.footer}>{footer}</View>}
     </SafeAreaView>
   );
 }
@@ -99,5 +101,9 @@ const styles = StyleSheet.create({
   texts: {
     flex: 1,
     gap: spacing.xs,
+  },
+  footer: {
+    paddingHorizontal: SCREEN_PADDING,
+    paddingBottom: spacing.md,
   },
 });
