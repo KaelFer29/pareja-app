@@ -33,12 +33,50 @@ export function HeartsMark({ size, cutColor }: { size: number; cutColor: string 
   return <SvgWidget svg={heartsSvg(cutColor)} style={{ width: size, height: size * 0.75 }} />;
 }
 
+export function WidgetRowMessage({ title, description }: WidgetMessageProps) {
+  return (
+    <FlexWidget
+      clickAction="OPEN_APP"
+      style={{
+        height: 'match_parent',
+        width: 'match_parent',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 14,
+        borderRadius: WIDGET_RADIUS,
+        backgroundGradient: {
+          from: color(colors.primarySoft),
+          to: color(colors.accentSoft),
+          orientation: 'LEFT_RIGHT',
+        },
+      }}
+    >
+      <HeartsMark size={36} cutColor={colors.primarySoft} />
+      <FlexWidget style={{ flex: 1, marginLeft: 10 }}>
+        <TextWidget
+          text={title}
+          maxLines={1}
+          truncate="END"
+          style={{ fontSize: 14, fontFamily: fonts.bold, color: color(colors.text) }}
+        />
+        <TextWidget
+          text={description}
+          maxLines={1}
+          truncate="END"
+          style={{ fontSize: 12, fontFamily: fonts.semibold, color: color(colors.textMuted) }}
+        />
+      </FlexWidget>
+    </FlexWidget>
+  );
+}
+
 type WidgetMessageProps = {
   title: string;
   description: string;
+  compact?: boolean;
 };
 
-export function WidgetMessage({ title, description }: WidgetMessageProps) {
+export function WidgetMessage({ title, description, compact = false }: WidgetMessageProps) {
   return (
     <FlexWidget
       clickAction="OPEN_APP"
@@ -47,7 +85,7 @@ export function WidgetMessage({ title, description }: WidgetMessageProps) {
         width: 'match_parent',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 16,
+        padding: compact ? 10 : 16,
         borderRadius: WIDGET_RADIUS,
         backgroundGradient: {
           from: color(colors.primarySoft),
@@ -56,31 +94,33 @@ export function WidgetMessage({ title, description }: WidgetMessageProps) {
         },
       }}
     >
-      <HeartsMark size={44} cutColor={colors.primarySoft} />
+      <HeartsMark size={compact ? 36 : 44} cutColor={colors.primarySoft} />
       <TextWidget
         text={title}
         maxLines={2}
         truncate="END"
         style={{
-          marginTop: 10,
-          fontSize: 14,
+          marginTop: compact ? 6 : 10,
+          fontSize: compact ? 13 : 14,
           fontFamily: fonts.bold,
           color: color(colors.text),
           textAlign: 'center',
         }}
       />
-      <TextWidget
-        text={description}
-        maxLines={2}
-        truncate="END"
-        style={{
-          marginTop: 2,
-          fontSize: 12,
-          fontFamily: fonts.semibold,
-          color: color(colors.textMuted),
-          textAlign: 'center',
-        }}
-      />
+      {compact ? null : (
+        <TextWidget
+          text={description}
+          maxLines={2}
+          truncate="END"
+          style={{
+            marginTop: 2,
+            fontSize: 12,
+            fontFamily: fonts.semibold,
+            color: color(colors.textMuted),
+            textAlign: 'center',
+          }}
+        />
+      )}
     </FlexWidget>
   );
 }

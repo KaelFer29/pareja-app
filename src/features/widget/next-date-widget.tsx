@@ -5,7 +5,7 @@ import { formatDayWithoutYear, formatMonthShort } from '@/shared/utils/date';
 import { formatDaysLeft, formatYears } from '@/shared/utils/occurrence';
 
 import type { WidgetNextDate } from './types';
-import { color, WIDGET_RADIUS, WidgetMessage } from './widget-ui';
+import { color, WIDGET_RADIUS, WidgetRowMessage } from './widget-ui';
 
 type NextDateWidgetProps = {
   next: WidgetNextDate | null;
@@ -14,13 +14,14 @@ type NextDateWidgetProps = {
 export function NextDateWidget({ next }: NextDateWidgetProps) {
   if (!next) {
     return (
-      <WidgetMessage
+      <WidgetRowMessage
         title="Sin fechas próximas"
-        description="Agrega aniversarios y cumpleaños en Pareja."
+        description="Agrega fechas importantes en Pareja."
       />
     );
   }
 
+  const isToday = next.daysLeft === 0;
   const isSoon = next.daysLeft <= 7;
   const years = formatYears(next.years);
   const subtitle = [formatDayWithoutYear(next.date), years].filter(Boolean).join(' · ');
@@ -34,54 +35,44 @@ export function NextDateWidget({ next }: NextDateWidgetProps) {
         width: 'match_parent',
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 14,
-        paddingVertical: 10,
+        paddingHorizontal: 12,
         borderRadius: WIDGET_RADIUS,
         backgroundColor: color(colors.surface),
       }}
     >
       <FlexWidget
         style={{
-          width: 52,
-          height: 56,
-          borderRadius: 16,
+          width: 42,
+          height: 42,
+          borderRadius: 14,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: color(next.daysLeft === 0 ? colors.primary : colors.accentSoft),
+          backgroundColor: color(isToday ? colors.primary : colors.accentSoft),
         }}
       >
         <TextWidget
           text={formatMonthShort(next.date)}
           style={{
-            fontSize: 10,
+            fontSize: 9,
             fontFamily: fonts.bold,
-            color: color(next.daysLeft === 0 ? colors.primaryText : colors.primary),
+            color: color(isToday ? colors.primaryText : colors.primary),
           }}
         />
         <TextWidget
           text={String(next.date.getDate())}
           style={{
-            fontSize: 22,
+            fontSize: 17,
             fontFamily: fonts.extrabold,
-            color: color(next.daysLeft === 0 ? colors.primaryText : colors.accent),
+            color: color(isToday ? colors.primaryText : colors.accent),
           }}
         />
       </FlexWidget>
-      <FlexWidget style={{ flex: 1, marginLeft: 12, marginRight: 8 }}>
-        <TextWidget
-          text="PRÓXIMA FECHA"
-          style={{
-            fontSize: 10,
-            fontFamily: fonts.bold,
-            letterSpacing: 0.1,
-            color: color(colors.textMuted),
-          }}
-        />
+      <FlexWidget style={{ flex: 1, marginLeft: 10, marginRight: 8 }}>
         <TextWidget
           text={next.title}
           maxLines={1}
           truncate="END"
-          style={{ fontSize: 15, fontFamily: fonts.bold, color: color(colors.text) }}
+          style={{ fontSize: 14, fontFamily: fonts.bold, color: color(colors.text) }}
         />
         <TextWidget
           text={subtitle}

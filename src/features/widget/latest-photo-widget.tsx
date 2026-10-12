@@ -19,12 +19,20 @@ type LatestPhotoWidgetProps = {
 };
 
 export function LatestPhotoWidget({ photo, width, height }: LatestPhotoWidgetProps) {
+  const compact = Math.min(width, height) < 150;
+
   if (!photo) {
     return (
-      <WidgetMessage title="Aún no hay fotos" description="Comparte la primera desde Pareja." />
+      <WidgetMessage
+        title="Aún no hay fotos"
+        description="Comparte la primera desde Pareja."
+        compact={compact}
+      />
     );
   }
 
+  const caption = compact ? null : photo.caption;
+  const badge = compact ? 24 : 30;
   const meta = [photo.authorName, formatDayWithoutYear(new Date(photo.createdAt))]
     .filter(Boolean)
     .join(' · ');
@@ -49,26 +57,31 @@ export function LatestPhotoWidget({ photo, width, height }: LatestPhotoWidgetPro
           justifyContent: 'space-between',
         }}
       >
-        <FlexWidget style={{ width: 'match_parent', alignItems: 'flex-end', padding: 10 }}>
+        <FlexWidget
+          style={{ width: 'match_parent', alignItems: 'flex-end', padding: compact ? 8 : 10 }}
+        >
           <FlexWidget
             style={{
-              width: 30,
-              height: 30,
-              borderRadius: 15,
+              width: badge,
+              height: badge,
+              borderRadius: badge / 2,
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: color(colors.surface),
             }}
           >
-            <SvgWidget svg={heartsSvg(colors.surface)} style={{ width: 22, height: 17 }} />
+            <SvgWidget
+              svg={heartsSvg(colors.surface)}
+              style={{ width: badge * 0.72, height: badge * 0.56 }}
+            />
           </FlexWidget>
         </FlexWidget>
         <FlexWidget
           style={{
             width: 'match_parent',
-            paddingTop: 28,
-            paddingBottom: 12,
-            paddingHorizontal: 14,
+            paddingTop: compact ? 18 : 28,
+            paddingBottom: compact ? 9 : 12,
+            paddingHorizontal: compact ? 10 : 14,
             borderBottomLeftRadius: WIDGET_RADIUS,
             borderBottomRightRadius: WIDGET_RADIUS,
             backgroundGradient: {
@@ -78,9 +91,9 @@ export function LatestPhotoWidget({ photo, width, height }: LatestPhotoWidgetPro
             },
           }}
         >
-          {photo.caption ? (
+          {caption ? (
             <TextWidget
-              text={photo.caption}
+              text={caption}
               maxLines={2}
               truncate="END"
               style={{ fontSize: 14, fontFamily: fonts.bold, color: color(colors.primaryText) }}
@@ -91,7 +104,7 @@ export function LatestPhotoWidget({ photo, width, height }: LatestPhotoWidgetPro
             maxLines={1}
             truncate="END"
             style={{
-              marginTop: photo.caption ? 2 : 0,
+              marginTop: caption ? 2 : 0,
               fontSize: 11,
               fontFamily: fonts.semibold,
               color: 'rgba(255, 255, 255, 0.85)',
