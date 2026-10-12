@@ -1,21 +1,21 @@
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useAuth } from '@/features/auth/auth-provider';
+import { UpcomingPlans } from '@/features/calendar/components/upcoming-plans';
+import { useEvents } from '@/features/calendar/hooks';
 import { CoupleAvatars } from '@/features/couple/components/couple-avatars';
 import { DaysTogetherCard } from '@/features/couple/components/days-together-card';
 import { useCouple } from '@/features/couple/couple-provider';
-import { NextDateCard } from '@/features/dates/components/next-date-card';
-import { PinnedNotesCard } from '@/features/notes/components/pinned-notes-card';
+import { useImportantDates } from '@/features/dates/hooks';
 import { NudgeCard } from '@/features/nudges/components/nudge-card';
-import { PetCard } from '@/features/pet/components/pet-card';
-import { LatestPhotoCard } from '@/features/photos/components/latest-photo-card';
-import { PlacesCard } from '@/features/places/components/places-card';
+import { PetHome } from '@/features/pet/components/pet-home';
 import { MoodBadge } from '@/features/profile/components/mood-badge';
-import { MoodPicker } from '@/features/profile/components/mood-picker';
+import { MoodEmoji } from '@/features/profile/components/mood-emoji';
+import { MoodSheet } from '@/features/profile/components/mood-sheet';
 import { useProfile } from '@/features/profile/hooks';
-import { spacing } from '@/shared/theme';
-import { Card } from '@/shared/ui/card';
+import { colors, spacing } from '@/shared/theme';
 import { Screen, ScreenHeader } from '@/shared/ui/screen';
 import { SectionHeader } from '@/shared/ui/section-header';
 import { formatWeekday } from '@/shared/utils/date';
@@ -25,14 +25,36 @@ export default function HomeScreen() {
   const userId = session?.user.id ?? '';
   const profile = useProfile(userId);
   const { couple, partner } = useCouple();
+  const events = useEvents(couple?.id);
+  const dates = useImportantDates(couple?.id);
+  const [moodOpen, setMoodOpen] = useState(false);
   const myName = profile.data?.display_name || 'Tú';
   const partnerName = partner?.profile?.display_name || 'Tu pareja';
 
   if (!couple) return null;
 
+  const refreshing = events.isRefetching || dates.isRefetching;
+
+  function refresh() {
+    events.refetch();
+    dates.refetch();
+    profile.refetch();
+  }
+
   return (
     <Screen>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+      >
         <ScreenHeader
           title={profile.data?.display_name ? `Hola, ${profile.data.display_name}` : 'Hola'}
           subtitle={formatWeekday(new Date())}
@@ -43,59 +65,45 @@ export default function HomeScreen() {
           header={
             <View style={styles.couple}>
               <CoupleAvatars
-                me={{ name: myName, avatarPath: profile.data?.avatar_path }}
-                partner={{ name: partnerName, avatarPath: partner?.profile?.avatar_path }}
+                me={{
+                  name: myName,
+                  avatarPath: profile.data?.avatar_path,
+                  badge: <MoodEmoji mood={profile.data?.mood} editable />,
+                }}
+                partner={{
+                  name: partnerName,
+                  avatarPath: partner?.profile?.avatar_path,
+                  badge: <MoodEmoji mood={partner?.profile?.mood} />,
+                }}
+                onPressMe={() => setMoodOpen(true)}
+                pressMeLabel="Elegir cómo te sientes"
               />
               <MoodBadge mood={partner?.profile?.mood} name={partnerName} />
             </View>
           }
         />
 
-        <View style={styles.section}>
-          <SectionHeader title={`Envía un toque a ${partnerName}`} />
-          <NudgeCard coupleId={couple.id} userId={userId} partnerName={partnerName} />
-        </View>
+        <NudgeCard coupleId={couple.id} userId={userId} partnerName={partnerName} />
 
-        <View style={styles.section}>
-          <SectionHeader title="¿Cómo te sientes?" />
-          <Card>
-            <MoodPicker userId={userId} mood={profile.data?.mood ?? null} />
-          </Card>
-        </View>
+        <PetHome coupleId={couple.id} />
 
         <View style={styles.section}>
           <SectionHeader
-            title="Próxima fecha"
+            title="Próximos planes"
             actionLabel="Ver calendario"
             onAction={() => router.push('/calendar')}
           />
-          <NextDateCard coupleId={couple.id} />
-        </View>
-
-        <View style={styles.section}>
-          <SectionHeader title="Juntos" />
-          <PetCard coupleId={couple.id} />
-          <PlacesCard coupleId={couple.id} />
-        </View>
-
-        <View style={styles.section}>
-          <SectionHeader
-            title="Última foto"
-            actionLabel="Ver todas"
-            onAction={() => router.push('/photos')}
-          />
-          <LatestPhotoCard coupleId={couple.id} />
-        </View>
-
-        <View style={styles.section}>
-          <SectionHeader
-            title="Notas fijadas"
-            actionLabel="Ver todas"
-            onAction={() => router.push('/notes')}
-          />
-          <PinnedNotesCard coupleId={couple.id} />
+          <UpcomingPlans events={events.data ?? []} specials={dates.data ?? []} />
         </View>
       </ScrollView>
+
+      <MoodSheet
+        userId={userId}
+        mood={profile.data?.mood ?? null}
+        partnerName={partnerName}
+        visible={moodOpen}
+        onClose={() => setMoodOpen(false)}
+      />
     </Screen>
   );
 }

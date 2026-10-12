@@ -10,9 +10,10 @@ import { MOODS } from '../moods';
 type MoodPickerProps = {
   userId: string;
   mood: string | null;
+  onChange?: () => void;
 };
 
-export function MoodPicker({ userId, mood }: MoodPickerProps) {
+export function MoodPicker({ userId, mood, onChange }: MoodPickerProps) {
   const updateMood = useUpdateMood();
 
   return (
@@ -26,7 +27,10 @@ export function MoodPicker({ userId, mood }: MoodPickerProps) {
               emoji={option.emoji}
               label={option.label}
               selected={isSelected}
-              onPress={() => updateMood.mutate({ userId, mood: isSelected ? null : option.value })}
+              onPress={() => {
+                updateMood.mutate({ userId, mood: isSelected ? null : option.value });
+                onChange?.();
+              }}
             />
           );
         })}
