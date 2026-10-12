@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { LogOut, WifiOff } from 'lucide-react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { useSignOut } from '@/features/auth/hooks';
 import { CoupleChoice } from '@/features/couple/components/couple-choice';
@@ -6,31 +7,34 @@ import { InviteCodeCard } from '@/features/couple/components/invite-code-card';
 import { useCouple } from '@/features/couple/couple-provider';
 import { spacing } from '@/shared/theme';
 import { Button } from '@/shared/ui/button';
+import { EmptyState } from '@/shared/ui/empty-state';
 import { Screen } from '@/shared/ui/screen';
-import { Text } from '@/shared/ui/text';
 
 export default function OnboardingScreen() {
   const { couple, error, refetch } = useCouple();
   const signOut = useSignOut();
 
   return (
-    <Screen style={styles.container}>
-      {error ? (
-        <View style={styles.error}>
-          <Text tone="danger" align="center">
-            No se pudo cargar tu información. Revisa tu conexión e inténtalo de nuevo.
-          </Text>
-          <Button title="Reintentar" onPress={refetch} />
-        </View>
-      ) : couple ? (
-        <InviteCodeCard code={couple.invite_code} />
-      ) : (
-        <CoupleChoice />
-      )}
+    <Screen>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {error ? (
+          <EmptyState
+            icon={WifiOff}
+            title="No se pudo cargar tu información"
+            description="Revisa tu conexión e inténtalo de nuevo."
+            action={<Button title="Reintentar" onPress={refetch} />}
+          />
+        ) : couple ? (
+          <InviteCodeCard code={couple.invite_code} />
+        ) : (
+          <CoupleChoice />
+        )}
+      </ScrollView>
       <View style={styles.footer}>
         <Button
           title="Cerrar sesión"
-          variant="secondary"
+          variant="ghost"
+          icon={LogOut}
           onPress={() => signOut.mutate()}
           loading={signOut.isPending}
         />
@@ -40,16 +44,12 @@ export default function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  content: {
+    flexGrow: 1,
     justifyContent: 'center',
-  },
-  error: {
-    gap: spacing.md,
+    paddingVertical: spacing.lg,
   },
   footer: {
-    position: 'absolute',
-    left: spacing.md,
-    right: spacing.md,
-    bottom: spacing.lg,
+    paddingBottom: spacing.md,
   },
 });
