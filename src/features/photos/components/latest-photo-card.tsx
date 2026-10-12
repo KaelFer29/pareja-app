@@ -1,10 +1,13 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { ImagePlus } from 'lucide-react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { colors, radius } from '@/shared/theme';
+import { colors, radius, spacing } from '@/shared/theme';
 import { Card } from '@/shared/ui/card';
+import { Icon } from '@/shared/ui/icon';
 import { Text } from '@/shared/ui/text';
+import { formatRelative } from '@/shared/utils/date';
 
 import { usePhotos } from '../hooks';
 
@@ -18,51 +21,77 @@ export function LatestPhotoCard({ coupleId }: LatestPhotoCardProps) {
 
   if (!latest) {
     return (
-      <Pressable
-        onPress={() => router.push('/photos')}
-        style={({ pressed }) => pressed && styles.pressed}
-      >
-        <Card>
-          <Text variant="caption" tone="muted">
-            Última foto
-          </Text>
-          <Text tone="muted">
-            {photos.isPending ? 'Cargando fotos.' : 'Aún no hay fotos. Sube la primera.'}
-          </Text>
-        </Card>
-      </Pressable>
+      <Card onPress={() => router.push('/photos')} style={styles.emptyRow}>
+        <View style={styles.emptyIcon}>
+          <Icon icon={ImagePlus} size={24} color={colors.primary} />
+        </View>
+        <Text tone="muted" style={styles.flex}>
+          {photos.isPending ? 'Cargando fotos.' : 'Aún no hay fotos. Sube la primera.'}
+        </Text>
+      </Card>
     );
   }
 
   return (
-    <Pressable
+    <Card
       onPress={() => router.push({ pathname: '/photos/[id]', params: { id: latest.id } })}
-      style={({ pressed }) => pressed && styles.pressed}
+      accessibilityLabel="Ver la última foto"
+      style={styles.card}
     >
-      <Card>
-        <Text variant="caption" tone="muted">
-          Última foto
-        </Text>
+      <View style={styles.clip}>
         <Image
           source={latest.url ? { uri: latest.url, cacheKey: latest.storage_path } : null}
           style={[styles.image, { aspectRatio: latest.width / latest.height }]}
           contentFit="cover"
           transition={150}
         />
-        {latest.caption && <Text numberOfLines={2}>{latest.caption}</Text>}
-      </Card>
-    </Pressable>
+        <View style={styles.footer}>
+          {latest.caption && (
+            <Text variant="bodyStrong" numberOfLines={2}>
+              {latest.caption}
+            </Text>
+          )}
+          <Text variant="caption" tone="muted">
+            {formatRelative(latest.created_at)}
+          </Text>
+        </View>
+      </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  emptyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md - spacing.xs,
+  },
+  emptyIcon: {
+    width: 52,
+    height: 56,
+    borderRadius: radius.md,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  card: {
+    padding: 0,
+  },
+  clip: {
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+  },
   image: {
     width: '100%',
-    maxHeight: 260,
-    borderRadius: radius.md,
-    backgroundColor: colors.border,
+    maxHeight: 320,
+    backgroundColor: colors.surfaceMuted,
   },
-  pressed: {
-    opacity: 0.8,
+  footer: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md - spacing.xs,
+    gap: spacing.xxs,
   },
 });

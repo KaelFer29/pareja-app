@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { Images } from 'lucide-react-native';
 import {
   ActivityIndicator,
   FlatList,
@@ -7,18 +8,18 @@ import {
   RefreshControl,
   StyleSheet,
   useWindowDimensions,
-  View,
 } from 'react-native';
 
 import { colors, radius, spacing } from '@/shared/theme';
-import { Button } from '@/shared/ui/button';
-import { Text } from '@/shared/ui/text';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { SCREEN_PADDING } from '@/shared/ui/screen';
+import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 import { usePhotos } from '../hooks';
 import type { Photo } from '../types';
 
 const COLUMNS = 3;
-const GAP = spacing.xs;
+const GAP = spacing.xs + spacing.xxs;
 
 type PhotoGridProps = {
   coupleId: string;
@@ -27,22 +28,15 @@ type PhotoGridProps = {
 export function PhotoGrid({ coupleId }: PhotoGridProps) {
   const photos = usePhotos(coupleId);
   const { width } = useWindowDimensions();
-  const tileSize = (width - spacing.md * 2 - GAP * (COLUMNS - 1)) / COLUMNS;
+  const tileSize = (width - SCREEN_PADDING * 2 - GAP * (COLUMNS - 1)) / COLUMNS;
   const items = photos.data?.pages.flatMap((page) => page.photos) ?? [];
 
   if (photos.isPending) {
-    return <ActivityIndicator color={colors.primary} style={styles.loader} />;
+    return <LoadingState />;
   }
 
   if (photos.isError) {
-    return (
-      <View style={styles.message}>
-        <Text tone="danger" align="center">
-          No se pudieron cargar las fotos. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
-        <Button title="Reintentar" onPress={() => photos.refetch()} />
-      </View>
-    );
+    return <ErrorState title="No se pudieron cargar las fotos" onRetry={() => photos.refetch()} />;
   }
 
   return (
@@ -52,6 +46,7 @@ export function PhotoGrid({ coupleId }: PhotoGridProps) {
       numColumns={COLUMNS}
       columnWrapperStyle={styles.row}
       contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
       renderItem={({ item }) => <PhotoTile photo={item} size={tileSize} />}
       onEndReached={() => {
         if (photos.hasNextPage && !photos.isFetchingNextPage) photos.fetchNextPage();
@@ -66,9 +61,11 @@ export function PhotoGrid({ coupleId }: PhotoGridProps) {
         />
       }
       ListEmptyComponent={
-        <Text tone="muted" align="center" style={styles.empty}>
-          Aún no hay fotos. Sube la primera para que tu pareja la vea al instante.
-        </Text>
+        <EmptyState
+          icon={Images}
+          title="Aún no hay fotos"
+          description="Sube la primera con el botón + y tu pareja la verá al instante."
+        />
       }
       ListFooterComponent={
         photos.isFetchingNextPage ? <ActivityIndicator color={colors.primary} /> : null
@@ -84,7 +81,12 @@ type PhotoTileProps = {
 
 function PhotoTile({ photo, size }: PhotoTileProps) {
   return (
-    <Pressable onPress={() => router.push({ pathname: '/photos/[id]', params: { id: photo.id } })}>
+    <Pressable
+      accessibilityRole="imagebutton"
+      accessibilityLabel={photo.caption || 'Foto'}
+      onPress={() => router.push({ pathname: '/photos/[id]', params: { id: photo.id } })}
+      style={({ pressed }) => pressed && styles.pressed}
+    >
       <Image
         source={photo.url ? { uri: photo.url, cacheKey: photo.storage_path } : null}
         style={[styles.tile, { width: size, height: size }]}
@@ -97,13 +99,6 @@ function PhotoTile({ photo, size }: PhotoTileProps) {
 }
 
 const styles = StyleSheet.create({
-  loader: {
-    marginTop: spacing.xl,
-  },
-  message: {
-    gap: spacing.md,
-    marginTop: spacing.xl,
-  },
   content: {
     gap: GAP,
     paddingBottom: spacing.xl * 3,
@@ -112,10 +107,10 @@ const styles = StyleSheet.create({
     gap: GAP,
   },
   tile: {
-    borderRadius: radius.sm,
-    backgroundColor: colors.border,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceMuted,
   },
-  empty: {
-    marginTop: spacing.xl,
+  pressed: {
+    opacity: 0.8,
   },
 });

@@ -6,6 +6,7 @@ import { useCouple } from '@/features/couple/couple-provider';
 import { NewPhotoForm } from '@/features/photos/components/new-photo-form';
 import { getPendingPhoto } from '@/features/photos/pending-photo';
 import { spacing } from '@/shared/theme';
+import { SCREEN_PADDING } from '@/shared/ui/screen';
 
 export default function NewPhotoScreen() {
   const [image] = useState(getPendingPhoto);
@@ -27,6 +28,7 @@ export default function NewPhotoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: spacing.md,
+    paddingHorizontal: SCREEN_PADDING,
+    paddingTop: spacing.md,
   },
 });
