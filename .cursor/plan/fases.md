@@ -136,6 +136,10 @@ Versión 3 de producción instalada. Ajustes después de probarla:
 - Lugares pasa a ser pestaña, con búsqueda de direcciones en Nominatim de OpenStreetMap. La barra inferior se desliza cuando hay más de cinco pestañas y Ajustes queda al final.
 - La mascota es un perrito panzón en estilo 3D. Crece por nivel: recién nacido desde el nivel 1, cachorro desde el 4 y adulto desde el 8. Cada etapa tiene una imagen por ánimo en `assets/pet/`, con fondo transparente, y la app la anima: respira, se balancea, salta cuando está feliz y suelta corazones al tocarlo. Tiene racha diaria, que suma cuando cualquiera de los dos lo cuida ese día. El día lo envía el teléfono en su hora local.
 - El cálculo de ánimo y etapa vive en `src/shared/utils/pet.ts` y las imágenes en `src/shared/lib/pet-art.ts`, porque los usan la mascota y el widget.
+- La racha tiene tres estados visibles, no solo por color: llama encendida si ya lo cuidaron hoy, llama con borde punteado si la racha está en riesgo y "Sin racha" si se perdió. Debajo del nombre se indica cuánto falta para la próxima salida.
+- Cada 7 días de racha el perrito propone una salida al azar de la tabla `outing_ideas`: cine, helado, cafetería, museo o exposición, caminata o quedarse en casita. La crea `care_for_pet` en `pet_outings`, sin repetir la idea anterior, y avisa con push a la pareja. Al aceptarla se elige un día desde el siguiente al que se cumplió la racha, y `schedule_outing` crea el plan con `outing_streak`. También se puede descartar con `dismiss_outing`.
+- Los planes que nacen de una racha muestran una llamita en el mes, en la agenda, en el detalle del plan y en el widget de próximos planes.
+- En el mapa, al buscar un lugar que ya está guardado a menos de 75 metros, se abre ese lugar en vez de crear otro alfiler.
 - Widget de la mascota: imagen fija del ánimo actual, nombre, racha y nivel. Android no permite animaciones en widgets.
 - Los widgets declaran `minResizeWidth` y `minResizeHeight` con el plugin local `plugins/with-widget-resize.js`, porque `react-native-android-widget` no los permite. Ese plugin va antes del de widgets en `app.json`, porque los mods se ejecutan en orden inverso.
 
