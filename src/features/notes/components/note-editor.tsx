@@ -1,11 +1,13 @@
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
+import { Check, Pin, PinOff, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 
-import { spacing } from '@/shared/theme';
+import { colors, fonts, radius, shadows, spacing, typography } from '@/shared/theme';
 import { Button } from '@/shared/ui/button';
-import { Text } from '@/shared/ui/text';
-import { TextField } from '@/shared/ui/text-field';
+import { IconButton } from '@/shared/ui/icon-button';
+import { Notice } from '@/shared/ui/notice';
+import { SCREEN_PADDING } from '@/shared/ui/screen';
 
 import { useCreateNote, useDeleteNote, useUpdateNote } from '../hooks';
 import type { Note } from '../types';
@@ -69,70 +71,114 @@ export function NoteEditor({ coupleId, note }: NoteEditorProps) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <TextField
-        placeholder="Título"
-        maxLength={120}
-        value={title}
-        onChangeText={setTitle}
-        style={styles.title}
-      />
-      <TextField
-        placeholder="Escribe tu nota"
-        maxLength={10000}
-        multiline
-        value={content}
-        onChangeText={setContent}
-        style={styles.body}
-        autoFocus={!note}
-      />
-      {saveFailed && (
-        <Text variant="caption" tone="danger">
-          No se pudo guardar la nota. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
-      )}
-      <Button title="Guardar" onPress={save} loading={isSaving} disabled={isEmpty || !hasChanges} />
+    <>
       {note && (
-        <View style={styles.actions}>
-          <View style={styles.action}>
-            <Button
-              title={note.pinned ? 'Desfijar' : 'Fijar'}
-              variant="secondary"
-              onPress={togglePinned}
-              loading={pinNote.isPending}
-            />
-          </View>
-          <View style={styles.action}>
-            <Button
-              title="Eliminar"
-              variant="secondary"
-              onPress={confirmDelete}
-              loading={deleteNote.isPending}
-            />
-          </View>
-        </View>
+        <Stack.Screen
+          options={{
+            headerRight: () => (
+              <View style={styles.headerActions}>
+                <IconButton
+                  icon={note.pinned ? PinOff : Pin}
+                  tone="primary"
+                  size={38}
+                  active={note.pinned}
+                  disabled={pinNote.isPending}
+                  accessibilityLabel={note.pinned ? 'Desfijar nota' : 'Fijar nota'}
+                  onPress={togglePinned}
+                />
+                <IconButton
+                  icon={Trash2}
+                  tone="danger"
+                  size={38}
+                  disabled={deleteNote.isPending}
+                  accessibilityLabel="Eliminar nota"
+                  onPress={confirmDelete}
+                />
+              </View>
+            ),
+          }}
+        />
       )}
-    </ScrollView>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.paper}>
+          <TextInput
+            placeholder="Título"
+            placeholderTextColor={colors.textMuted}
+            selectionColor={colors.primary}
+            cursorColor={colors.primary}
+            maxLength={120}
+            value={title}
+            onChangeText={setTitle}
+            style={styles.title}
+          />
+          <View style={styles.separator} />
+          <TextInput
+            placeholder="Escribe tu nota"
+            placeholderTextColor={colors.textMuted}
+            selectionColor={colors.primary}
+            cursorColor={colors.primary}
+            maxLength={10000}
+            multiline
+            value={content}
+            onChangeText={setContent}
+            style={styles.body}
+            autoFocus={!note}
+          />
+        </View>
+        {saveFailed && (
+          <Notice message="No se pudo guardar la nota. Revisa tu conexión e inténtalo de nuevo." />
+        )}
+        <Button
+          title="Guardar"
+          icon={Check}
+          onPress={save}
+          loading={isSaving}
+          disabled={isEmpty || !hasChanges}
+        />
+      </ScrollView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    gap: spacing.md,
-    padding: spacing.md,
-  },
-  title: {
-    fontWeight: '600',
-  },
-  body: {
-    minHeight: 200,
-    textAlignVertical: 'top',
-  },
-  actions: {
+  headerActions: {
     flexDirection: 'row',
     gap: spacing.sm,
   },
-  action: {
-    flex: 1,
+  content: {
+    gap: spacing.md,
+    paddingHorizontal: SCREEN_PADDING,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
+  },
+  paper: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.md + spacing.xs,
+    ...shadows.card,
+  },
+  title: {
+    fontFamily: fonts.bold,
+    fontSize: 21,
+    lineHeight: 28,
+    color: colors.text,
+    paddingVertical: spacing.xs,
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.border,
+    marginVertical: spacing.sm,
+  },
+  body: {
+    ...typography.body,
+    lineHeight: 25,
+    color: colors.text,
+    minHeight: 260,
+    textAlignVertical: 'top',
+    paddingVertical: spacing.xs,
   },
 });

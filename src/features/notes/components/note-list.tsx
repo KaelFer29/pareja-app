@@ -1,18 +1,14 @@
 import { router } from 'expo-router';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { NotebookPen, Pin } from 'lucide-react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { colors, spacing } from '@/shared/theme';
-import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { Icon } from '@/shared/ui/icon';
+import { ErrorState, LoadingState } from '@/shared/ui/states';
 import { Text } from '@/shared/ui/text';
-import { formatLongDate } from '@/shared/utils/date';
+import { formatRelative } from '@/shared/utils/date';
 
 import { useNotes } from '../hooks';
 import type { Note } from '../types';
@@ -26,18 +22,11 @@ export function NoteList({ coupleId, authorNames }: NoteListProps) {
   const notes = useNotes(coupleId);
 
   if (notes.isPending) {
-    return <ActivityIndicator color={colors.primary} style={styles.loader} />;
+    return <LoadingState />;
   }
 
   if (notes.isError) {
-    return (
-      <View style={styles.message}>
-        <Text tone="danger" align="center">
-          No se pudieron cargar las notas. Revisa tu conexión e inténtalo de nuevo.
-        </Text>
-        <Button title="Reintentar" onPress={() => notes.refetch()} />
-      </View>
-    );
+    return <ErrorState title="No se pudieron cargar las notas" onRetry={() => notes.refetch()} />;
   }
 
   return (
@@ -45,6 +34,7 @@ export function NoteList({ coupleId, authorNames }: NoteListProps) {
       data={notes.data}
       keyExtractor={(note) => note.id}
       contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
         <NoteCard note={item} authorName={authorNames[item.author_id ?? ''] ?? 'Alguien'} />
       )}
@@ -57,9 +47,11 @@ export function NoteList({ coupleId, authorNames }: NoteListProps) {
         />
       }
       ListEmptyComponent={
-        <Text tone="muted" align="center" style={styles.empty}>
-          Aún no hay notas. Escribe la primera para compartirla con tu pareja.
-        </Text>
+        <EmptyState
+          icon={NotebookPen}
+          title="Aún no hay notas"
+          description="Escribe la primera con el botón + para compartirla con tu pareja."
+        />
       }
     />
   );
@@ -72,45 +64,41 @@ type NoteCardProps = {
 
 function NoteCard({ note, authorName }: NoteCardProps) {
   return (
-    <Pressable
-      onPress={() => router.push({ pathname: '/notes/[id]', params: { id: note.id } })}
-      style={({ pressed }) => pressed && styles.pressed}
-    >
-      <Card style={note.pinned && styles.pinned}>
-        {note.pinned && (
-          <Text variant="caption" tone="primary">
-            Fijada
-          </Text>
-        )}
-        {note.title !== '' && <Text variant="subtitle">{note.title}</Text>}
-        {note.content !== '' && <Text numberOfLines={3}>{note.content}</Text>}
-        <Text variant="caption" tone="muted">
-          {authorName} - {formatLongDate(note.updated_at)}
+    <Card onPress={() => router.push({ pathname: '/notes/[id]', params: { id: note.id } })}>
+      <View style={styles.header}>
+        <Text variant="heading" numberOfLines={1} style={styles.title}>
+          {note.title || note.content.split('\n')[0]}
         </Text>
-      </Card>
-    </Pressable>
+        {note.pinned && (
+          <Icon icon={Pin} size={18} color={colors.primary} fill={colors.primarySoft} />
+        )}
+      </View>
+      {note.title !== '' && note.content !== '' && (
+        <Text tone="muted" numberOfLines={3}>
+          {note.content}
+        </Text>
+      )}
+      <Text variant="caption" tone="muted" style={styles.meta}>
+        {authorName} · {formatRelative(note.updated_at)}
+      </Text>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  loader: {
-    marginTop: spacing.xl,
-  },
-  message: {
-    gap: spacing.md,
-    marginTop: spacing.xl,
-  },
   content: {
-    gap: spacing.sm,
+    gap: spacing.md - spacing.xs,
     paddingBottom: spacing.xl * 3,
   },
-  pinned: {
-    borderColor: colors.primary,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
-  pressed: {
-    opacity: 0.8,
+  title: {
+    flex: 1,
   },
-  empty: {
-    marginTop: spacing.xl,
+  meta: {
+    marginTop: spacing.xs,
   },
 });
