@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "624730430220",
+    "project_id": "pareja-app-2fa6c",
+    "storage_bucket": "pareja-app-2fa6c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624730430220:android:49f2b12888a5c011e64729",
+        "android_client_info": {
+          "package_name": "com.kaelfernandez.pareja"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpR2LDXLAWG1l4Oi-KzqboznXgqZ-Rxb8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

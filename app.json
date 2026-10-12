@@ -1,25 +1,82 @@
 {
   "expo": {
-    "name": "pareja-app",
+    "name": "Pareja",
     "slug": "pareja-app",
+    "owner": "kaelfernandez",
     "version": "1.0.0",
+    "scheme": "pareja",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "experiments": {
+      "typedRoutes": true
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kaelfernandez.pareja"
     },
     "android": {
+      "package": "com.kaelfernandez.pareja",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-image",
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Pareja necesita acceso a tus fotos para que puedas compartirlas con tu pareja.",
+          "cameraPermission": "Pareja necesita acceso a la cámara para que puedas tomar fotos y compartirlas."
+        }
+      ],
+      "@react-native-community/datetimepicker",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/android-icon-monochrome.png",
+          "color": "#E75480",
+          "defaultChannel": "default"
+        }
+      ],
+      "expo-dev-client",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "LatestPhoto",
+              "label": "Última foto",
+              "description": "La última foto que compartieron.",
+              "minWidth": "180dp",
+              "minHeight": "180dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7504b320-00a6-4f98-9577-c2b1be6de840"
+      }
     }
   }
 }
