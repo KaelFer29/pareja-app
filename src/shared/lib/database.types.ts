@@ -595,6 +595,7 @@ export type Database = {
           id: string
           mood_emoji: string | null
           mood_text: string | null
+          notification_prefs: Json
           updated_at: string
         }
         Insert: {
@@ -603,6 +604,7 @@ export type Database = {
           id: string
           mood_emoji?: string | null
           mood_text?: string | null
+          notification_prefs?: Json
           updated_at?: string
         }
         Update: {
@@ -611,6 +613,7 @@ export type Database = {
           id?: string
           mood_emoji?: string | null
           mood_text?: string | null
+          notification_prefs?: Json
           updated_at?: string
         }
         Relationships: []

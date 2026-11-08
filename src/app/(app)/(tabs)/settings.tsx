@@ -9,6 +9,7 @@ import { StorageUsageCard } from '@/features/couple/components/storage-usage-car
 import { useCouple } from '@/features/couple/couple-provider';
 import { unregisterThisDevice } from '@/features/notifications/hooks';
 import { AvatarPicker } from '@/features/profile/components/avatar-picker';
+import { NotificationPrefsCard } from '@/features/profile/components/notification-prefs-card';
 import { ProfileForm } from '@/features/profile/components/profile-form';
 import { useProfile } from '@/features/profile/hooks';
 import { colors, spacing } from '@/shared/theme';
@@ -98,6 +99,8 @@ export default function SettingsScreen() {
         </View>
 
         <StorageUsageCard />
+
+        {profile.data && <NotificationPrefsCard profile={profile.data} />}
 
         <Card style={styles.menu}>
           <ListRow
