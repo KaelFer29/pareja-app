@@ -188,6 +188,58 @@ export type Database = {
           },
         ]
       }
+      note_replies: {
+        Row: {
+          author_id: string | null
+          content: string
+          couple_id: string
+          created_at: string
+          id: string
+          note_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          couple_id: string
+          created_at?: string
+          id?: string
+          note_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          couple_id?: string
+          created_at?: string
+          id?: string
+          note_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_replies_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "note_replies_couple_id_fkey"
+            columns: ["couple_id"]
+            isOneToOne: false
+            referencedRelation: "couples"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "note_replies_note_couple_fkey"
+            columns: ["note_id", "couple_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id", "couple_id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           author_id: string | null

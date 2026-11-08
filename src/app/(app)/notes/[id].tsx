@@ -4,17 +4,22 @@ import { FileX } from 'lucide-react-native';
 import { useAuth } from '@/features/auth/auth-provider';
 import { useCouple } from '@/features/couple/couple-provider';
 import { NoteEditor } from '@/features/notes/components/note-editor';
+import { NoteReplies } from '@/features/notes/components/note-replies';
 import { useNote } from '@/features/notes/hooks';
 import { ReactionBar } from '@/features/reactions/components/reaction-bar';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { FormKeyboardAvoiding } from '@/shared/ui/form-keyboard-avoiding';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
+import { View } from 'react-native';
+
+import { spacing } from '@/shared/theme';
 
 export default function NoteScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const note = useNote(id);
   const { session } = useAuth();
   const { partner } = useCouple();
+  const userId = session?.user.id ?? '';
 
   if (note.isPending) {
     return <LoadingState />;
@@ -34,11 +39,14 @@ export default function NoteScreen() {
         coupleId={note.data.couple_id}
         note={note.data}
         footer={
-          <ReactionBar
-            target={{ kind: 'note', id: note.data.id, coupleId: note.data.couple_id }}
-            userId={session?.user.id ?? ''}
-            partnerName={partner?.profile?.display_name || 'Tu pareja'}
-          />
+          <View style={{ gap: spacing.md }}>
+            <ReactionBar
+              target={{ kind: 'note', id: note.data.id, coupleId: note.data.couple_id }}
+              userId={userId}
+              partnerName={partner?.profile?.display_name || 'Tu pareja'}
+            />
+            <NoteReplies coupleId={note.data.couple_id} noteId={note.data.id} userId={userId} />
+          </View>
         }
       />
     </FormKeyboardAvoiding>
