@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { router, Stack } from 'expo-router';
 import { Check, Pin, PinOff, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
@@ -57,6 +58,7 @@ export function NoteEditor({ coupleId, note, footer }: NoteEditorProps) {
 
   function togglePinned() {
     if (!note) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     pinNote.mutate(
       { id: note.id, pinned: !note.pinned },
       {
@@ -73,7 +75,8 @@ export function NoteEditor({ coupleId, note, footer }: NoteEditorProps) {
       {
         text: 'Eliminar',
         style: 'destructive',
-        onPress: () =>
+        onPress: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
           deleteNote.mutate(note.id, {
             onSuccess: () => router.back(),
             onError: () =>
@@ -81,7 +84,8 @@ export function NoteEditor({ coupleId, note, footer }: NoteEditorProps) {
                 'No se pudo eliminar la nota',
                 'Revisa tu conexión e inténtalo de nuevo.',
               ),
-          }),
+          });
+        },
       },
     ]);
   }

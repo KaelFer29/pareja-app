@@ -320,7 +320,7 @@ Todas las tablas viven en `public` con RLS activado. Salvo `profiles` y `push_to
 | `couples`         | `id`, `started_on`, `invite_code` (único), `created_at`                                                                           |
 | `couple_members`  | `couple_id`, `user_id` (único, referencia a `profiles`), `joined_at`                                                              |
 | `photos`          | `id`, `couple_id`, `uploaded_by`, `storage_path`, `caption`, `width`, `height`, `created_at`, `updated_at`                        |
-| `notes`           | `id`, `couple_id`, `author_id`, `title`, `content`, `pinned`, `created_at`, `updated_at`                                          |
+| `notes`           | `id`, `couple_id`, `author_id`, `title`, `content`, `pinned`, `position`, `color`, `created_at`, `updated_at`                     |
 | `note_replies`    | `id`, `couple_id`, `note_id`, `author_id`, `content`, `created_at`, `updated_at`                                                  |
 | `important_dates` | `id`, `couple_id`, `title`, `date`, `repeats_yearly`, `created_at`                                                                |
 | `nudges`          | `id`, `couple_id`, `sender_id`, `kind`, `created_at`                                                                              |
@@ -517,7 +517,7 @@ Versión 3 de producción instalada. Ajustes después de probarla:
 - Notas adhesivas en dos columnas, con cinta o chinche si están fijadas. Cada nota tiene un color guardado en `notes.color` y se elige en el editor. La letra manuscrita es Caveat, de `@expo-google-fonts/caveat`.
 - Widget de la mascota: imagen fija del ánimo actual, nombre, racha y nivel. Android no permite animaciones en widgets.
 - Los widgets declaran `minResizeWidth` y `minResizeHeight` con el plugin local `plugins/with-widget-resize.js`, porque `react-native-android-widget` no los permite. Ese plugin va antes del de widgets en `app.json`, porque los mods se ejecutan en orden inverso.
-- Pulido final en curso: teclado de formularios, fechas en zona Chile, edición de descripción de fotos con zoom, `photos.updated_at` y política UPDATE de caption.
+- Pulido final terminado en código (T1-T8): teclado en formularios, fechas/horas en `America/Santiago`, edición y zoom de fotos, descarga y acceso compartido, push al crear o editar, respuestas anidadas en notas, ánimo libre con emoji y texto, orden de notas por arrastre (`notes.position` + `reorder_notes`) y filtros/animaciones en fotos. Falta un development build nuevo para `expo-media-library`, gestos y arrastre, y probar en los dos teléfonos.
 
 Para probar cambios de JavaScript sin compilar se usa el development build con `npm run start:tunnel`.
 

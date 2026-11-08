@@ -249,6 +249,7 @@ export type Database = {
           created_at: string
           id: string
           pinned: boolean
+          position: number
           title: string
           updated_at: string
         }
@@ -260,6 +261,7 @@ export type Database = {
           created_at?: string
           id?: string
           pinned?: boolean
+          position?: number
           title?: string
           updated_at?: string
         }
@@ -271,6 +273,7 @@ export type Database = {
           created_at?: string
           id?: string
           pinned?: boolean
+          position?: number
           title?: string
           updated_at?: string
         }
@@ -784,6 +787,10 @@ export type Database = {
       }
       register_push_token: {
         Args: { new_platform: string; new_token: string }
+        Returns: undefined
+      }
+      reorder_notes: {
+        Args: { ordered_ids: string[]; target_couple_id: string }
         Returns: undefined
       }
       schedule_outing: {

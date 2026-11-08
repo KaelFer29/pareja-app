@@ -1,8 +1,13 @@
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { NotebookPen, Pin } from 'lucide-react-native';
-import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { GripVertical, NotebookPen, Pin } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
+import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { colors, fonts, noteColors, radius, spacing } from '@/shared/theme';
+import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { Icon } from '@/shared/ui/icon';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
@@ -11,7 +16,7 @@ import { formatChileDateTimeShort, wasEditedAfterCreate } from '@/shared/utils/d
 import { tiltFor } from '@/shared/utils/tilt';
 
 import { noteColorOf } from '../colors';
-import { useNotes } from '../hooks';
+import { useNotes, useReorderNotes } from '../hooks';
 import type { Note } from '../types';
 
 type NoteListProps = {
@@ -37,6 +42,12 @@ function splitColumns(notes: Note[]) {
 
 export function NoteList({ coupleId, authorNames }: NoteListProps) {
   const notes = useNotes(coupleId);
+  const reorder = useReorderNotes(coupleId);
+  const [sorting, setSorting] = useState(false);
+  const [draft, setDraft] = useState<Note[]>([]);
+
+  const unpinned = useMemo(() => (notes.data ?? []).filter((note) => !note.pinned), [notes.data]);
+  const pinned = useMemo(() => (notes.data ?? []).filter((note) => note.pinned), [notes.data]);
 
   if (notes.isPending) {
     return <LoadingState />;
@@ -56,33 +67,103 @@ export function NoteList({ coupleId, authorNames }: NoteListProps) {
     );
   }
 
+  if (sorting) {
+    return (
+      <View style={styles.sortWrap}>
+        <Text variant="caption" tone="muted">
+          Arrastra para ordenar. Las fijadas siguen arriba.
+        </Text>
+        <DraggableFlatList
+          data={draft}
+          keyExtractor={(item) => item.id}
+          onDragBegin={() => Haptics.selectionAsync()}
+          onDragEnd={({ data }) => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            setDraft(data);
+          }}
+          containerStyle={styles.sortList}
+          renderItem={({ item, drag, isActive }) => (
+            <ScaleDecorator>
+              <Pressable
+                onLongPress={drag}
+                disabled={isActive}
+                style={[styles.sortRow, isActive && styles.sortActive]}
+              >
+                <Icon icon={GripVertical} size={18} color={colors.textMuted} />
+                <Text style={styles.sortTitle} numberOfLines={1}>
+                  {item.title || item.content.split('\n')[0] || 'Nota'}
+                </Text>
+              </Pressable>
+            </ScaleDecorator>
+          )}
+        />
+        <View style={styles.sortActions}>
+          <Button title="Cancelar" variant="ghost" onPress={() => setSorting(false)} />
+          <Button
+            title="Guardar orden"
+            loading={reorder.isPending}
+            onPress={() => {
+              const orderedIds = [
+                ...pinned.map((note) => note.id),
+                ...draft.map((note) => note.id),
+              ];
+              reorder.mutate(orderedIds, {
+                onSuccess: () => setSorting(false),
+                onError: () => {
+                  Alert.alert(
+                    'No se pudo guardar el orden',
+                    'Revisa tu conexión e inténtalo de nuevo.',
+                  );
+                },
+              });
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+
   const columns = splitColumns(notes.data);
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={notes.isRefetching}
-          onRefresh={() => notes.refetch()}
-          tintColor={colors.primary}
-          colors={[colors.primary]}
+    <View style={styles.wrap}>
+      {unpinned.length > 1 && (
+        <Button
+          title="Ordenar"
+          variant="ghost"
+          size="sm"
+          onPress={() => {
+            setDraft(unpinned);
+            setSorting(true);
+          }}
         />
-      }
-    >
-      {columns.map((column, index) => (
-        <View key={index} style={styles.column}>
-          {column.map((note) => (
-            <StickyNote
-              key={note.id}
-              note={note}
-              authorName={authorNames[note.author_id ?? ''] ?? 'Alguien'}
-            />
-          ))}
-        </View>
-      ))}
-    </ScrollView>
+      )}
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={notes.isRefetching}
+            onRefresh={() => notes.refetch()}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+      >
+        {columns.map((column, index) => (
+          <View key={index} style={styles.column}>
+            {column.map((note, noteIndex) => (
+              <Animated.View key={note.id} entering={FadeInDown.delay(noteIndex * 40)}>
+                <StickyNote
+                  note={note}
+                  authorName={authorNames[note.author_id ?? ''] ?? 'Alguien'}
+                />
+              </Animated.View>
+            ))}
+          </View>
+        ))}
+      </ScrollView>
+    </View>
   );
 }
 
@@ -100,7 +181,10 @@ function StickyNote({ note, authorName }: StickyNoteProps) {
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
-      onPress={() => router.push({ pathname: '/notes/[id]', params: { id: note.id } })}
+      onPress={() => {
+        Haptics.selectionAsync();
+        router.push({ pathname: '/notes/[id]', params: { id: note.id } });
+      }}
       style={({ pressed }) => [
         styles.note,
         { backgroundColor: palette.paper, transform: [{ rotate: tiltFor(note.id) }] },
@@ -133,6 +217,10 @@ function StickyNote({ note, authorName }: StickyNoteProps) {
 }
 
 const styles = StyleSheet.create({
+  wrap: {
+    flex: 1,
+    gap: spacing.sm,
+  },
   content: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -150,47 +238,69 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.sm + spacing.xs,
     paddingHorizontal: spacing.sm + spacing.xs,
     borderRadius: radius.sm / 2,
-    borderBottomRightRadius: radius.lg,
-    shadowColor: colors.shadow,
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
   },
   pressed: {
-    opacity: 0.85,
+    opacity: 0.92,
+    transform: [{ scale: 0.98 }],
+  },
+  pin: {
+    position: 'absolute',
+    top: -6,
+    right: 10,
   },
   tape: {
     position: 'absolute',
     top: -8,
     alignSelf: 'center',
     width: 54,
-    height: 18,
+    height: 16,
     borderRadius: 2,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 0.55)',
     transform: [{ rotate: '-4deg' }],
-  },
-  pin: {
-    position: 'absolute',
-    top: -10,
-    alignSelf: 'center',
   },
   title: {
     fontFamily: fonts.handBold,
-    fontSize: 23,
+    fontSize: 22,
     lineHeight: 26,
   },
   body: {
-    fontFamily: fonts.regular,
-    fontSize: 14,
-    lineHeight: 20,
+    fontFamily: fonts.hand,
+    fontSize: 18,
+    lineHeight: 22,
     color: colors.text,
   },
   meta: {
     marginTop: spacing.xs,
-    fontFamily: fonts.semibold,
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 12,
     opacity: 0.7,
+  },
+  sortWrap: {
+    flex: 1,
+    gap: spacing.md,
+    paddingBottom: spacing.xl,
+  },
+  sortList: {
+    flex: 1,
+  },
+  sortRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceMuted,
+  },
+  sortActive: {
+    backgroundColor: colors.primarySoft,
+  },
+  sortTitle: {
+    flex: 1,
+    color: colors.text,
+  },
+  sortActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
   },
 });
