@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { useAuth } from '@/features/auth/auth-provider';
 import { useSignOut } from '@/features/auth/hooks';
 import { StartedOnField } from '@/features/couple/components/started-on-field';
+import { StorageUsageCard } from '@/features/couple/components/storage-usage-card';
 import { useCouple } from '@/features/couple/couple-provider';
 import { unregisterThisDevice } from '@/features/notifications/hooks';
 import { AvatarPicker } from '@/features/profile/components/avatar-picker';
@@ -95,6 +96,8 @@ export default function SettingsScreen() {
             />
           </Card>
         </View>
+
+        <StorageUsageCard />
 
         <Card style={styles.menu}>
           <ListRow
