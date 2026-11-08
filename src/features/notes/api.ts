@@ -8,6 +8,7 @@ export async function listNotes(coupleId: string): Promise<Note[]> {
     .select('*')
     .eq('couple_id', coupleId)
     .order('pinned', { ascending: false })
+    .order('position', { ascending: true })
     .order('updated_at', { ascending: false });
   if (error) throw error;
   return data;
@@ -48,6 +49,14 @@ export async function updateNote({
 
 export async function deleteNote(id: string) {
   const { error } = await supabase.from('notes').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function reorderNotes(coupleId: string, orderedIds: string[]) {
+  const { error } = await supabase.rpc('reorder_notes', {
+    target_couple_id: coupleId,
+    ordered_ids: orderedIds,
+  });
   if (error) throw error;
 }
 

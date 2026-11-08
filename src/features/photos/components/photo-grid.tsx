@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Images } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -10,8 +11,10 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 
 import { colors, fonts, spacing } from '@/shared/theme';
+import { Chip } from '@/shared/ui/chip';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { SCREEN_PADDING } from '@/shared/ui/screen';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
@@ -25,6 +28,8 @@ import type { Photo } from '../types';
 const COLUMNS = 2;
 const GAP = spacing.md;
 const FRAME = spacing.sm;
+
+type PhotoFilter = 'all' | 'mine' | 'partner';
 
 type AlbumItem =
   { kind: 'month'; key: string; label: string } | { kind: 'row'; key: string; photos: Photo[] };
@@ -61,13 +66,23 @@ function buildAlbum(photos: Photo[]) {
 
 type PhotoGridProps = {
   coupleId: string;
+  userId: string;
 };
 
-export function PhotoGrid({ coupleId }: PhotoGridProps) {
+export function PhotoGrid({ coupleId, userId }: PhotoGridProps) {
   const photos = usePhotos(coupleId);
   const { width } = useWindowDimensions();
+  const [filter, setFilter] = useState<PhotoFilter>('all');
   const cardWidth = (width - SCREEN_PADDING * 2 - GAP * (COLUMNS - 1)) / COLUMNS;
-  const items = buildAlbum(photos.data?.pages.flatMap((page) => page.photos) ?? []);
+
+  const filtered = useMemo(() => {
+    const all = photos.data?.pages.flatMap((page) => page.photos) ?? [];
+    if (filter === 'mine') return all.filter((photo) => photo.uploaded_by === userId);
+    if (filter === 'partner') return all.filter((photo) => photo.uploaded_by !== userId);
+    return all;
+  }, [filter, photos.data, userId]);
+
+  const items = buildAlbum(filtered);
 
   if (photos.isPending) {
     return <LoadingState />;
@@ -78,48 +93,59 @@ export function PhotoGrid({ coupleId }: PhotoGridProps) {
   }
 
   return (
-    <FlatList
-      data={items}
-      keyExtractor={(item) => item.key}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-      renderItem={({ item }) =>
-        item.kind === 'month' ? (
-          <View style={styles.month}>
-            <Text style={styles.monthText}>{item.label}</Text>
-            <View style={styles.monthLine} />
-          </View>
-        ) : (
-          <View style={styles.row}>
-            {item.photos.map((photo) => (
-              <Polaroid key={photo.id} photo={photo} width={cardWidth} />
-            ))}
-          </View>
-        )
-      }
-      onEndReached={() => {
-        if (photos.hasNextPage && !photos.isFetchingNextPage) photos.fetchNextPage();
-      }}
-      onEndReachedThreshold={0.5}
-      refreshControl={
-        <RefreshControl
-          refreshing={photos.isRefetching && !photos.isFetchingNextPage}
-          onRefresh={() => photos.refetch()}
-          tintColor={colors.primary}
-          colors={[colors.primary]}
+    <View style={styles.wrap}>
+      <View style={styles.filters}>
+        <Chip label="Todas" selected={filter === 'all'} onPress={() => setFilter('all')} />
+        <Chip label="Mías" selected={filter === 'mine'} onPress={() => setFilter('mine')} />
+        <Chip
+          label="De mi pareja"
+          selected={filter === 'partner'}
+          onPress={() => setFilter('partner')}
         />
-      }
-      ListEmptyComponent={
-        <EmptyState
-          icon={Images}
-          title="Aún no hay fotos"
-          description="Sube la primera con el botón + y tu pareja la verá al instante."
-        />
-      }
-      ListFooterComponent={
-        photos.isFetchingNextPage ? <ActivityIndicator color={colors.primary} /> : null
-      }
-    />
+      </View>
+      <FlatList
+        data={items}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item, index }) =>
+          item.kind === 'month' ? (
+            <View style={styles.month}>
+              <Text style={styles.monthText}>{item.label}</Text>
+              <View style={styles.monthLine} />
+            </View>
+          ) : (
+            <Animated.View entering={FadeInUp.delay(Math.min(index, 8) * 35)} style={styles.row}>
+              {item.photos.map((photo) => (
+                <Polaroid key={photo.id} photo={photo} width={cardWidth} />
+              ))}
+            </Animated.View>
+          )
+        }
+        onEndReached={() => {
+          if (photos.hasNextPage && !photos.isFetchingNextPage) photos.fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
+        refreshControl={
+          <RefreshControl
+            refreshing={photos.isRefetching && !photos.isFetchingNextPage}
+            onRefresh={() => photos.refetch()}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+        ListEmptyComponent={
+          <EmptyState
+            icon={Images}
+            title="Aún no hay fotos"
+            description="Sube la primera con el botón + y tu pareja la verá al instante."
+          />
+        }
+        ListFooterComponent={
+          photos.isFetchingNextPage ? <ActivityIndicator color={colors.primary} /> : null
+        }
+      />
+    </View>
   );
 }
 
@@ -158,6 +184,15 @@ function Polaroid({ photo, width }: PolaroidProps) {
 }
 
 const styles = StyleSheet.create({
+  wrap: {
+    flex: 1,
+    gap: spacing.sm,
+  },
+  filters: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
   content: {
     gap: GAP,
     paddingBottom: spacing.xl * 3,
@@ -196,6 +231,7 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.85,
+    transform: [{ scale: 0.98 }],
   },
   image: {
     borderRadius: 1,
