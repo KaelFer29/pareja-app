@@ -68,6 +68,18 @@ export async function uploadPhoto({ coupleId, image, caption }: NewPhotoInput) {
   }
 }
 
+export async function updatePhotoCaption(id: string, caption: string) {
+  const { data, error } = await supabase
+    .from('photos')
+    .update({ caption: caption.trim() || null })
+    .eq('id', id)
+    .select('*')
+    .single();
+  if (error) throw error;
+  const [photo] = await withUrls([data]);
+  return photo;
+}
+
 export async function deletePhoto(photo: Pick<PhotoRow, 'id' | 'storage_path'>) {
   await removeFiles('photos', [photo.storage_path]);
   const { error } = await supabase.from('photos').delete().eq('id', photo.id);
@@ -80,6 +92,11 @@ export function subscribeToPhotos(coupleId: string, onChange: () => void) {
     .on(
       'postgres_changes',
       { event: 'INSERT', schema: 'public', table: 'photos', filter: `couple_id=eq.${coupleId}` },
+      onChange,
+    )
+    .on(
+      'postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'photos', filter: `couple_id=eq.${coupleId}` },
       onChange,
     )
     .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'photos' }, onChange)
