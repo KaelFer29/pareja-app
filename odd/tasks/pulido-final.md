@@ -115,7 +115,7 @@ Implicancia: columna `position` en `notes` con grant de UPDATE y RPC de reordena
 | T4 | S4 | `feat/fotos-compartidas` | item 2 (RLS y Storage compartidos) | hecha | - |
 | T5 | S5 | `feat/push-ediciones` | ninguno | hecha | - |
 | T6 | S7 | `feat/respuestas-notas` | ninguno (tabla nueva) | hecha | - |
-| T7 | S1 | `feat/animo-libre` | item 1 (migra valores de `mood`) | pendiente | - |
+| T7 | S1 | `feat/animo-libre` | item 1 (migra valores de `mood`) | hecha | - |
 | T8 | S8 | `feat/interaccion-notas-fotos` | ninguno | pendiente | - |
 
 Orden sugerido: T1 y T2 son rápidos y sin migración. T3 y T4 comparten `photos` y conviene hacerlos seguidos (PRs en serie). T5 depende de T3 y se completa con T6. T7 y T8 son independientes. Cada tarea es una rama y un PR. Las que agregan librerías nativas (T1 si usa keyboard-controller, T3, T4, T8) necesitan un development build. Agruparlas en una sola compilación para cuidar las 15 mensuales de EAS.
@@ -147,3 +147,4 @@ Cada tarea cierra con lint, typecheck, avisos de `npx supabase db advisors --lin
 - L7 (2026-11-08) T4: DELETE de fotos y storage para cualquier miembro, descarga a galería con `expo-media-library`. Próximo: T5.
 - L8 (2026-11-08) T5: triggers UPDATE de push en fotos, notas (título/contenido/pin, no color), planes y lugares. Próximo: T6.
 - L9 (2026-11-08) T6: tabla `note_replies` con RLS, realtime y push. UI de respuestas en el editor. Próximo: T7.
+- L10 (2026-11-08) T7: `mood_emoji` + `mood_text` (máx 15), sugerencias rápidas. Próximo: T8.

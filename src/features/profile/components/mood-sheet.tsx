@@ -8,13 +8,14 @@ import { MoodPicker } from './mood-picker';
 
 type MoodSheetProps = {
   userId: string;
-  mood: string | null;
+  emoji: string | null;
+  text: string | null;
   partnerName: string;
   visible: boolean;
   onClose: () => void;
 };
 
-export function MoodSheet({ userId, mood, partnerName, visible, onClose }: MoodSheetProps) {
+export function MoodSheet({ userId, emoji, text, partnerName, visible, onClose }: MoodSheetProps) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -28,7 +29,7 @@ export function MoodSheet({ userId, mood, partnerName, visible, onClose }: MoodS
             {partnerName} lo verá en su inicio.
           </Text>
         </View>
-        <MoodPicker userId={userId} mood={mood} onChange={onClose} />
+        <MoodPicker userId={userId} emoji={emoji} text={text} onChange={onClose} />
       </View>
     </Modal>
   );

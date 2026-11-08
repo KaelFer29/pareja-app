@@ -6,7 +6,7 @@ export async function getMyCouple(): Promise<Couple | null> {
   const { data, error } = await supabase
     .from('couples')
     .select(
-      'id, started_on, invite_code, created_at, members:couple_members(user_id, joined_at, profile:profiles(id, display_name, avatar_path, mood))',
+      'id, started_on, invite_code, created_at, members:couple_members(user_id, joined_at, profile:profiles(id, display_name, avatar_path, mood_emoji, mood_text))',
     )
     .maybeSingle();
   if (error) throw error;

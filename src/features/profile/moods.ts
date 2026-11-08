@@ -1,14 +1,22 @@
-import type { Mood } from './types';
+export const MOOD_SUGGESTIONS = [
+  { emoji: '😊', text: 'Feliz' },
+  { emoji: '🥰', text: 'Con amor' },
+  { emoji: '😌', text: 'En calma' },
+  { emoji: '😴', text: 'Con sueño' },
+  { emoji: '😢', text: 'Triste' },
+  { emoji: '😣', text: 'Con estrés' },
+] as const;
 
-export const MOODS: { value: Mood; emoji: string; label: string }[] = [
-  { value: 'happy', emoji: '😊', label: 'Feliz' },
-  { value: 'loving', emoji: '🥰', label: 'Con amor' },
-  { value: 'calm', emoji: '😌', label: 'En calma' },
-  { value: 'tired', emoji: '😴', label: 'Con sueño' },
-  { value: 'sad', emoji: '😢', label: 'Triste' },
-  { value: 'stressed', emoji: '😣', label: 'Con estrés' },
-];
+export const MOOD_TEXT_MAX = 15;
 
-export function findMood(value: string | null | undefined) {
-  return MOODS.find((mood) => mood.value === value) ?? null;
+export function hasMood(emoji: string | null | undefined, text?: string | null) {
+  return !!emoji || !!text?.trim();
+}
+
+export function moodLabel(emoji: string | null | undefined, text: string | null | undefined) {
+  const trimmed = text?.trim() ?? '';
+  if (emoji && trimmed) return `${emoji} ${trimmed}`;
+  if (emoji) return emoji;
+  if (trimmed) return trimmed;
+  return null;
 }

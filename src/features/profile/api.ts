@@ -22,8 +22,14 @@ export async function updateProfile({ userId, displayName }: UpdateProfileInput)
   if (error) throw error;
 }
 
-export async function updateMood({ userId, mood }: UpdateMoodInput) {
-  const { error } = await supabase.from('profiles').update({ mood }).eq('id', userId);
+export async function updateMood({ userId, emoji, text }: UpdateMoodInput) {
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      mood_emoji: emoji,
+      mood_text: text?.trim() || null,
+    })
+    .eq('id', userId);
   if (error) throw error;
 }
 

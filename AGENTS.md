@@ -316,7 +316,7 @@ Todas las tablas viven en `public` con RLS activado. Salvo `profiles` y `push_to
 
 | Tabla             | Columnas principales                                                                                                              |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `profiles`        | `id` (= auth.users.id), `display_name`, `avatar_path`, `mood`, `updated_at`                                                       |
+| `profiles`        | `id` (= auth.users.id), `display_name`, `avatar_path`, `mood_emoji`, `mood_text`, `updated_at`                                     |
 | `couples`         | `id`, `started_on`, `invite_code` (único), `created_at`                                                                           |
 | `couple_members`  | `couple_id`, `user_id` (único, referencia a `profiles`), `joined_at`                                                              |
 | `photos`          | `id`, `couple_id`, `uploaded_by`, `storage_path`, `caption`, `width`, `height`, `created_at`, `updated_at`                        |

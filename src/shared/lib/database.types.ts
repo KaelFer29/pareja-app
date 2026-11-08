@@ -590,21 +590,24 @@ export type Database = {
           avatar_path: string | null
           display_name: string
           id: string
-          mood: string | null
+          mood_emoji: string | null
+          mood_text: string | null
           updated_at: string
         }
         Insert: {
           avatar_path?: string | null
           display_name?: string
           id: string
-          mood?: string | null
+          mood_emoji?: string | null
+          mood_text?: string | null
           updated_at?: string
         }
         Update: {
           avatar_path?: string | null
           display_name?: string
           id?: string
-          mood?: string | null
+          mood_emoji?: string | null
+          mood_text?: string | null
           updated_at?: string
         }
         Relationships: []
