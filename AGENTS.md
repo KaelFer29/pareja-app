@@ -518,7 +518,7 @@ Versión 3 de producción instalada. Ajustes después de probarla:
 - Widget de la mascota: imagen fija del ánimo actual, nombre, racha y nivel. Android no permite animaciones en widgets.
 - Los widgets declaran `minResizeWidth` y `minResizeHeight` con el plugin local `plugins/with-widget-resize.js`, porque `react-native-android-widget` no los permite. Ese plugin va antes del de widgets en `app.json`, porque los mods se ejecutan en orden inverso.
 - Pulido final terminado en código (T1-T8): teclado en formularios, fechas/horas en `America/Santiago`, edición y zoom de fotos, descarga y acceso compartido, push al crear o editar, respuestas anidadas en notas, ánimo libre con emoji y texto, orden de notas por arrastre (`notes.position` + `reorder_notes`) y filtros/animaciones en fotos.
-- Post-pulido inmediato terminado en código: ícono y dismiss de notificaciones, Action anti-pausa de Supabase, uso de almacenamiento en Ajustes, preferencias de push por tipo, recuperar/cambiar contraseña y cambiar correo. El respaldo del roadmap queda cubierto por guardar fotos en la galería. Falta instalar el APK de producción en los dos teléfonos y probar el bloque junto con el pulido (media-library, gestos y arrastre).
+- Post-pulido inmediato terminado: ícono y dismiss de notificaciones, Action anti-pausa de Supabase, uso de almacenamiento en Ajustes, preferencias de push por tipo, recuperar/cambiar contraseña y cambiar correo. El respaldo del roadmap queda cubierto por guardar fotos en la galería. APK de producción (versionCode 5) listo para instalar en los dos teléfonos y probar junto con el pulido (media-library, gestos y arrastre).
 
 Para probar cambios de JavaScript sin compilar se usa el development build con `npm run start:tunnel`.
 
