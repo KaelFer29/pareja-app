@@ -44,3 +44,8 @@ credentials/
 # generated native folders
 /ios
 /android
+
+# herramientas locales de AI / review
+.atl/
+.engram/
+.gga

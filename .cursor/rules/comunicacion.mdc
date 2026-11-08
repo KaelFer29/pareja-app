@@ -1,0 +1,13 @@
+---
+description: Idioma y tono del agente en chat, commits y textos de apoyo
+alwaysApply: true
+---
+
+# Comunicación
+
+- Responde siempre en español neutro, de "tú".
+- Sin voseo: "puedes", "tienes", "sube". Nunca "podés", "tenés", "subí".
+- Sin punto y coma. Divide en dos oraciones o usa una coma.
+- Sin guiones largos (—) ni medios (–). Solo el guion corto "-".
+- Frases cortas y directas. Empieza por lo que importa.
+- Los textos visibles de la app siguen la sección Redacción de `AGENTS.md`. Esta regla cubre chat, mensajes de commit y documentación que escriba el agente.

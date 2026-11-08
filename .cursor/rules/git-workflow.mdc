@@ -1,0 +1,44 @@
+---
+description: Ramas, Conventional Commits y flujo hacia PRs en main
+alwaysApply: true
+---
+
+# Flujo Git
+
+`main` es la rama estable. El trabajo sale en ramas propias y llega a `main` por PR.
+
+## Ramas
+
+- Una funcionalidad (unidad de PR) = una rama desde `main` actualizado.
+- Nombre: `tipo/slug-en-kebab`, alineado con el tipo del commit.
+- Ejemplos: `feat/edicion-fotos`, `fix/teclado-android`, `docs/agents-estado`, `chore/dependencias-expo`, `refactor/date-utils`, `test/rls-photos`.
+- Preferir slug sin tildes ni ñ para evitar fricción en remotes. Si `odd/` fija un nombre de rama, úsalo tal cual.
+- No trabajar directo en `main`. No mezclar funcionalidades distintas en la misma rama.
+
+## Commits
+
+Solo crear commits cuando el usuario lo pida. Cuando lo pida:
+
+- Formato Conventional Commits, solo el asunto. Sin cuerpo. Sin pie.
+- Asunto: `tipo(ámbito): resumen en español en imperativo o presente`.
+- Tipos: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`, `ci`.
+- Ámbito corto, en inglés cuando coincide con una feature (`photos`, `notes`, `pet`) o con el área tocada (`theme`, `db`, `widget`).
+- Un commit = una unidad funcional coherente dentro de la rama, no un archivo suelto ni un dump de toda la rama.
+- Si `odd/` define commits por tarea (T1, T2, ...), respeta ese corte.
+- Nunca añadir `Co-authored-by`, `Signed-off-by` del agente, ni trailers tipo "Made with Cursor" o autoría de la IA.
+- Tras cada `git commit`, verificar con `git log -1 --format=%B`. Si aparece `Co-authored-by: Cursor` u otro trailer de la IA, reescribir el commit al instante (mismo árbol, solo asunto) antes de hacer push. Cursor a veces lo inyecta solo.
+- No usar `--no-verify` ni enmendar commits ajenos o ya publicados, salvo pedido explícito del usuario.
+
+## Ejemplos
+
+```text
+feat(photos): permite editar la descripción en el visor
+fix(photos): evita que el teclado tape el campo de descripción
+docs(agents): actualiza el estado de la fase de pulido
+chore(deps): agrega expo-media-library
+```
+
+## PRs
+
+- El usuario levanta el PR a `main`. Si pide ayuda, el título del PR sigue el mismo estilo que el asunto del commit principal o resume la rama.
+- Antes de dar por cerrada una tarea de la rama: `npm run lint`, `npm run typecheck` y, si tocó nativo o Expo, `npx expo-doctor`.

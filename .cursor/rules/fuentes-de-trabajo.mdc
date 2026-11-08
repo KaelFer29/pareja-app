@@ -1,0 +1,32 @@
+---
+description: Dónde leer el trabajo pendiente: Engram, odd/ y AGENTS.md
+alwaysApply: true
+---
+
+# Fuentes de trabajo
+
+División clara entre planificación (Claude / ODD / Engram) y codificación (Cursor).
+
+| Fuente | Rol |
+| --- | --- |
+| Engram (proyecto `pareja-app`) | Resumen de funcionalidades, decisiones y roadmap. Arranque rápido. |
+| `odd/` | Detalle operable: specs, tareas, riesgos, orden y log. Fuente de verdad al implementar. |
+| `AGENTS.md` | Stack, arquitectura, Supabase, redacción de la app y alcance de fases. |
+
+## Antes de codificar
+
+1. Leer el resumen en Engram del tema (`mem_search` / `mem_context` con proyecto `pareja-app`).
+2. Abrir el documento en `odd/` que cite Engram y leerlo completo hasta `## Log` (o el final si no hay Log).
+3. Confirmar supuestos marcados en el ODD con el usuario si aún están pendientes.
+4. Crear o usar la rama que indique el ODD (o la regla de git si no hay nombre fijo).
+5. Codificar solo el alcance de la tarea activa. No adelantar specs siguientes.
+
+## Al cerrar una unidad
+
+- Actualizar el estado en el ODD (tabla de tareas / log) si el documento lo pide.
+- Actualizar la sección Estado actual de `AGENTS.md` cuando el cambio sea visible para el producto.
+- Guardar en Engram solo conclusiones duraderas (decisiones, hallazgos, riesgos confirmados), no el paso a paso del chat.
+
+## Conflicto entre fuentes
+
+Si Engram y `odd/` discrepan, manda `odd/` y avisa en una frase. Si `odd/` y `AGENTS.md` discrepan en arquitectura o RLS, manda `AGENTS.md` salvo que el ODD documente un cambio explícito de esquema o política.
