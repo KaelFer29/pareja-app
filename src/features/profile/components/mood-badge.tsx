@@ -3,22 +3,21 @@ import { StyleSheet, View } from 'react-native';
 import { colors, radius, spacing } from '@/shared/theme';
 import { Text } from '@/shared/ui/text';
 
-import { findMood } from '../moods';
+import { moodLabel } from '../moods';
 
 type MoodBadgeProps = {
-  mood: string | null | undefined;
+  emoji: string | null | undefined;
+  text: string | null | undefined;
   name: string;
 };
 
-export function MoodBadge({ mood, name }: MoodBadgeProps) {
-  const option = findMood(mood);
+export function MoodBadge({ emoji, text, name }: MoodBadgeProps) {
+  const label = moodLabel(emoji, text);
 
   return (
     <View style={styles.badge}>
-      <Text variant="caption" tone={option ? 'accent' : 'muted'}>
-        {option
-          ? `${name} está ${option.emoji} ${option.label.toLowerCase()}`
-          : `${name} aún no comparte cómo se siente`}
+      <Text variant="caption" tone={label ? 'accent' : 'muted'}>
+        {label ? `${name} está ${label}` : `${name} aún no comparte cómo se siente`}
       </Text>
     </View>
   );

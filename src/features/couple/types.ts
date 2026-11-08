@@ -2,7 +2,7 @@ import type { Tables } from '@/shared/lib/database.types';
 
 export type MemberProfile = Pick<
   Tables<'profiles'>,
-  'id' | 'display_name' | 'avatar_path' | 'mood'
+  'id' | 'display_name' | 'avatar_path' | 'mood_emoji' | 'mood_text'
 >;
 
 export type CoupleMember = Pick<Tables<'couple_members'>, 'user_id' | 'joined_at'> & {

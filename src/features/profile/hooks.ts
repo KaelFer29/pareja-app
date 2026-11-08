@@ -30,9 +30,9 @@ export function useUpdateMood() {
 
   return useMutation({
     mutationFn: updateMood,
-    onMutate: ({ userId, mood }) => {
+    onMutate: ({ userId, emoji, text }) => {
       queryClient.setQueryData<Profile>(profileKeys.detail(userId), (profile) =>
-        profile ? { ...profile, mood } : profile,
+        profile ? { ...profile, mood_emoji: emoji, mood_text: text?.trim() || null } : profile,
       );
     },
     onSettled: (_data, _error, { userId }) =>

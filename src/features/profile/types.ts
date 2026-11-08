@@ -14,9 +14,13 @@ export type UpdateProfileInput = {
   displayName: string;
 };
 
-export type Mood = 'happy' | 'loving' | 'calm' | 'tired' | 'sad' | 'stressed';
+export type MoodState = {
+  emoji: string | null;
+  text: string | null;
+};
 
 export type UpdateMoodInput = {
   userId: string;
-  mood: Mood | null;
+  emoji: string | null;
+  text: string | null;
 };

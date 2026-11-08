@@ -68,17 +68,32 @@ export default function HomeScreen() {
                 me={{
                   name: myName,
                   avatarPath: profile.data?.avatar_path,
-                  badge: <MoodEmoji mood={profile.data?.mood} editable />,
+                  badge: (
+                    <MoodEmoji
+                      emoji={profile.data?.mood_emoji}
+                      text={profile.data?.mood_text}
+                      editable
+                    />
+                  ),
                 }}
                 partner={{
                   name: partnerName,
                   avatarPath: partner?.profile?.avatar_path,
-                  badge: <MoodEmoji mood={partner?.profile?.mood} />,
+                  badge: (
+                    <MoodEmoji
+                      emoji={partner?.profile?.mood_emoji}
+                      text={partner?.profile?.mood_text}
+                    />
+                  ),
                 }}
                 onPressMe={() => setMoodOpen(true)}
                 pressMeLabel="Elegir cómo te sientes"
               />
-              <MoodBadge mood={partner?.profile?.mood} name={partnerName} />
+              <MoodBadge
+                emoji={partner?.profile?.mood_emoji}
+                text={partner?.profile?.mood_text}
+                name={partnerName}
+              />
             </View>
           }
         />
@@ -99,7 +114,8 @@ export default function HomeScreen() {
 
       <MoodSheet
         userId={userId}
-        mood={profile.data?.mood ?? null}
+        emoji={profile.data?.mood_emoji ?? null}
+        text={profile.data?.mood_text ?? null}
         partnerName={partnerName}
         visible={moodOpen}
         onClose={() => setMoodOpen(false)}
