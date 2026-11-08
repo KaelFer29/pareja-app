@@ -59,7 +59,7 @@ Entrega: Conventional Commits solo con asunto. Verificación: `npm run lint`, `n
 | N3 | S4 | `feat/uso-almacenamiento` | hecha | #13 |
 | N4 | S5 | `feat/prefs-notificaciones` | hecha | #14 |
 | N5 | S6 | `feat/cuenta-seguridad` | hecha | #15 |
-| N6 | cierre | (build production) | en curso | - |
+| N6 | cierre | (build production) | hecha | build abf82e82 |
 
 Orden: N1 → N2 → N3 → N4 → N5 → N6.
 
@@ -74,3 +74,5 @@ Orden: N1 → N2 → N3 → N4 → N5 → N6.
 - L4 (2026-11-08) N4 mergeado (#14). N5: reset/cambio de contraseña y correo, redirect `pareja://**` en Auth.
 
 - L5 (2026-11-08) N5 mergeado (#15). N6: docs, lint/typecheck/expo-doctor y `eas build --profile production`.
+
+- L6 (2026-11-08) Build production Android terminado (versionCode 5). APK: https://expo.dev/artifacts/eas/mkQjYdXJDIA0XSnZxc74PfhWig3zuOvVMB2Ka1n25s0.apk Logs: https://expo.dev/accounts/kaelfernandez/projects/pareja-app/builds/abf82e82-596e-4921-968d-3b1ef517750b
