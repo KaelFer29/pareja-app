@@ -10,3 +10,15 @@ export type SignUpInput = SignInInput & {
 export type SignUpResult = {
   needsEmailConfirmation: boolean;
 };
+
+export type ResetPasswordInput = {
+  email: string;
+};
+
+export type UpdatePasswordInput = {
+  password: string;
+};
+
+export type UpdateEmailInput = {
+  email: string;
+};
