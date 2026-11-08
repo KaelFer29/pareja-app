@@ -4,7 +4,7 @@ import { router, type Href } from 'expo-router';
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react';
 
 import { getSession, subscribeToSession } from './api';
-import { createSessionFromUrl, isAuthCallbackUrl } from './session-from-url';
+import { createSessionFromUrl, isAuthCallbackUrl, isResetPasswordUrl } from './session-from-url';
 
 const RESET_PASSWORD_HREF = '/auth/reset-password' as Href;
 
@@ -47,15 +47,27 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     async function handleUrl(url: string | null) {
-      if (!url || !isAuthCallbackUrl(url)) return;
-      try {
-        await createSessionFromUrl(url);
-        if (url.includes('reset-password') || url.includes('type=recovery')) {
-          setIsPasswordRecovery(true);
-          router.replace(RESET_PASSWORD_HREF);
+      if (!url) return;
+
+      if (isAuthCallbackUrl(url)) {
+        try {
+          await createSessionFromUrl(url);
+          if (isResetPasswordUrl(url)) {
+            setIsPasswordRecovery(true);
+            router.replace(RESET_PASSWORD_HREF);
+          }
+        } catch {
+          if (isResetPasswordUrl(url)) {
+            setIsPasswordRecovery(true);
+            router.replace(RESET_PASSWORD_HREF);
+          }
         }
-      } catch {
-        // El flujo de auth sigue con la sesión actual si el enlace falló.
+        return;
+      }
+
+      if (isResetPasswordUrl(url)) {
+        setIsPasswordRecovery(true);
+        router.replace(RESET_PASSWORD_HREF);
       }
     }
 

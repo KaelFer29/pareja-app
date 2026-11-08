@@ -1,8 +1,8 @@
-import { router } from 'expo-router';
+import { Link, router, type Href } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { spacing } from '@/shared/theme';
+import { colors, fonts, spacing, typography } from '@/shared/theme';
 import { Button } from '@/shared/ui/button';
 import { Notice } from '@/shared/ui/notice';
 import { TextField } from '@/shared/ui/text-field';
@@ -12,11 +12,22 @@ import { getAuthErrorMessage } from '../errors';
 import { useUpdatePassword } from '../hooks';
 
 export function ResetPasswordForm() {
-  const { clearPasswordRecovery } = useAuth();
+  const { session, clearPasswordRecovery } = useAuth();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const updatePassword = useUpdatePassword();
   const mismatch = confirm.length > 0 && password !== confirm;
+
+  if (!session) {
+    return (
+      <View style={styles.form}>
+        <Notice message="Este enlace no es válido o ya se usó. Pide uno nuevo desde la pantalla de recuperación." />
+        <Link href={'/forgot-password' as Href} replace style={styles.link}>
+          Pedir un enlace nuevo
+        </Link>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.form}>
@@ -69,5 +80,11 @@ const styles = StyleSheet.create({
   },
   action: {
     marginTop: spacing.sm,
+  },
+  link: {
+    ...typography.body,
+    fontFamily: fonts.bold,
+    color: colors.primary,
+    textAlign: 'center',
   },
 });
