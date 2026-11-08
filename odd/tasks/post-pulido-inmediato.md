@@ -55,7 +55,7 @@ Entrega: Conventional Commits solo con asunto. Verificación: `npm run lint`, `n
 | ID | Specs | Rama | Estado | PR |
 | --- | --- | --- | --- | --- |
 | N1 | S2 | `fix/notif-icono-dismiss` | hecha | - |
-| N2 | S3 | `chore/supabase-keepalive` | pendiente | - |
+| N2 | S3 | `chore/supabase-keepalive` | hecha | - |
 | N3 | S4 | `feat/uso-almacenamiento` | pendiente | - |
 | N4 | S5 | `feat/prefs-notificaciones` | pendiente | - |
 | N5 | S6 | `feat/cuenta-seguridad` | pendiente | - |
@@ -66,3 +66,5 @@ Orden: N1 → N2 → N3 → N4 → N5 → N6.
 ## Log
 
 - L1 (2026-11-08) Alcance confirmado. Respaldo = descarga de fotos ya existente. Probar junto al final con APK de producción.
+
+- L2 (2026-11-08) N1 mergeado. N2: Action diaria auth/v1/health. Configurar secretos SUPABASE_URL y SUPABASE_PUBLISHABLE_KEY en GitHub.
