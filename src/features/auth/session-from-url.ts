@@ -1,4 +1,5 @@
 import * as Linking from 'expo-linking';
+import type { EmailOtpType } from '@supabase/supabase-js';
 
 import { supabase } from '@/shared/lib/supabase';
 
@@ -34,6 +35,15 @@ export async function createSessionFromUrl(url: string) {
     throw new Error(params.error_description || params.error || params.error_code);
   }
 
+  if (params.token_hash && params.type) {
+    const { data, error } = await supabase.auth.verifyOtp({
+      token_hash: params.token_hash,
+      type: params.type as EmailOtpType,
+    });
+    if (error) throw error;
+    return data.session;
+  }
+
   if (params.code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(params.code);
     if (error) throw error;
@@ -53,8 +63,15 @@ export async function createSessionFromUrl(url: string) {
 }
 
 export function isAuthCallbackUrl(url: string) {
+  if (!url.startsWith('pareja://')) return false;
   return (
-    url.startsWith('pareja://') &&
-    (url.includes('access_token') || url.includes('refresh_token') || url.includes('code='))
+    url.includes('access_token') ||
+    url.includes('refresh_token') ||
+    url.includes('code=') ||
+    url.includes('token_hash=')
   );
+}
+
+export function isResetPasswordUrl(url: string) {
+  return url.includes('auth/reset-password') || url.includes('type=recovery');
 }
