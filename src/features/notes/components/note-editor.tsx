@@ -3,6 +3,7 @@ import { router, Stack } from 'expo-router';
 import { Check, Pin, PinOff, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   colors,
@@ -32,6 +33,7 @@ type NoteEditorProps = {
 };
 
 export function NoteEditor({ coupleId, note, footer }: NoteEditorProps) {
+  const insets = useSafeAreaInsets();
   const [title, setTitle] = useState(note?.title ?? '');
   const [content, setContent] = useState(note?.content ?? '');
   const [color, setColor] = useState<NoteColor>(note ? noteColorOf(note) : 'yellow');
@@ -120,7 +122,10 @@ export function NoteEditor({ coupleId, note, footer }: NoteEditorProps) {
         />
       )}
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: Math.max(insets.bottom, spacing.md) + spacing.xl * 2 },
+        ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
@@ -170,18 +175,11 @@ export function NoteEditor({ coupleId, note, footer }: NoteEditorProps) {
           />
         </View>
         {note && (
-          <View style={styles.timestamps}>
-            <Text variant="caption" tone="muted">
-              Creada {formatChileDateTime(note.created_at)}
-            </Text>
-            {wasEditedAfterCreate(note.created_at, note.updated_at) && (
-              <Text variant="caption" tone="muted">
-                Editada {formatChileDateTime(note.updated_at)}
-              </Text>
-            )}
-          </View>
+          <Text variant="caption" tone="muted">
+            Creada {formatChileDateTime(note.created_at)}
+            {wasEditedAfterCreate(note.created_at, note.updated_at) ? ' · editada' : ''}
+          </Text>
         )}
-        {footer}
         {saveFailed && (
           <Notice message="No se pudo guardar la nota. Revisa tu conexión e inténtalo de nuevo." />
         )}
@@ -192,6 +190,7 @@ export function NoteEditor({ coupleId, note, footer }: NoteEditorProps) {
           loading={isSaving}
           disabled={isEmpty || !hasChanges}
         />
+        {footer}
       </ScrollView>
     </>
   );
@@ -206,7 +205,6 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingHorizontal: SCREEN_PADDING,
     paddingTop: spacing.sm,
-    paddingBottom: spacing.lg,
   },
   swatches: {
     flexDirection: 'row',
@@ -262,8 +260,5 @@ const styles = StyleSheet.create({
     minHeight: 260,
     textAlignVertical: 'top',
     paddingVertical: spacing.xs,
-  },
-  timestamps: {
-    gap: spacing.xxs,
   },
 });

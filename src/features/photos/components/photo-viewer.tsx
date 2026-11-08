@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, fonts, shadows, spacing } from '@/shared/theme';
@@ -44,6 +45,7 @@ export function PhotoViewer({ photo, authorName, footer }: PhotoViewerProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(photo.caption ?? '');
   const [savingGallery, setSavingGallery] = useState(false);
+  const [zooming, setZooming] = useState(false);
 
   function startEditing() {
     setDraft(photo.caption ?? '');
@@ -125,84 +127,86 @@ export function PhotoViewer({ photo, authorName, footer }: PhotoViewerProps) {
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          scrollEnabled={!zooming}
+          bounces={!zooming}
         >
-          <View style={styles.stage}>
+          <GestureHandlerRootView style={styles.stage}>
             <View style={styles.polaroid}>
               <ZoomablePhoto
                 uri={photo.url}
                 cacheKey={photo.storage_path}
                 width={imageWidth}
                 height={imageHeight}
+                onZoomActiveChange={setZooming}
               />
-              {!editing && <Text style={styles.caption}>{caption || fallbackDay}</Text>}
-            </View>
-          </View>
-
-          <View style={styles.details}>
-            <View style={styles.texts}>
-              <Text variant="caption" tone="muted">
-                Compartida por {authorName}
-              </Text>
-              <Text variant="caption" tone="muted">
-                {formatChileDateTime(photo.created_at)}
-              </Text>
-              {edited && (
-                <Text variant="caption" tone="muted">
-                  Editada {formatChileDateTime(photo.updated_at)}
+              {!editing && (
+                <Text style={[styles.caption, { maxWidth: imageWidth }]}>
+                  {caption || fallbackDay}
                 </Text>
               )}
             </View>
-            <View style={styles.actions}>
-              {editing ? (
-                <>
+          </GestureHandlerRootView>
+
+          <View style={styles.meta}>
+            <Text variant="caption" tone="muted">
+              Compartida por {authorName}
+            </Text>
+            <Text variant="caption" tone="muted">
+              {formatChileDateTime(photo.created_at)}
+              {edited ? ' · editada' : ''}
+            </Text>
+          </View>
+
+          <View style={styles.actions}>
+            {editing ? (
+              <>
+                <IconButton
+                  icon={X}
+                  accessibilityLabel="Cancelar edición"
+                  onPress={() => {
+                    setDraft(photo.caption ?? '');
+                    setEditing(false);
+                  }}
+                />
+                {updateCaption.isPending ? (
+                  <ActivityIndicator color={colors.primary} />
+                ) : (
                   <IconButton
-                    icon={X}
-                    accessibilityLabel="Cancelar edición"
-                    onPress={() => {
-                      setDraft(photo.caption ?? '');
-                      setEditing(false);
-                    }}
+                    icon={Check}
+                    tone="primary"
+                    accessibilityLabel="Guardar descripción"
+                    onPress={saveCaption}
                   />
-                  {updateCaption.isPending ? (
-                    <ActivityIndicator color={colors.primary} />
-                  ) : (
-                    <IconButton
-                      icon={Check}
-                      tone="primary"
-                      accessibilityLabel="Guardar descripción"
-                      onPress={saveCaption}
-                    />
-                  )}
-                </>
-              ) : (
-                <IconButton
-                  icon={Pencil}
-                  tone="primary"
-                  accessibilityLabel="Editar descripción"
-                  onPress={startEditing}
-                />
-              )}
-              {savingGallery ? (
-                <ActivityIndicator color={colors.primary} />
-              ) : (
-                <IconButton
-                  icon={Download}
-                  tone="primary"
-                  accessibilityLabel="Descargar foto"
-                  onPress={downloadPhoto}
-                />
-              )}
-              {deletePhoto.isPending ? (
-                <ActivityIndicator color={colors.danger} />
-              ) : (
-                <IconButton
-                  icon={Trash2}
-                  tone="danger"
-                  accessibilityLabel="Eliminar foto"
-                  onPress={confirmDelete}
-                />
-              )}
-            </View>
+                )}
+              </>
+            ) : (
+              <IconButton
+                icon={Pencil}
+                tone="primary"
+                accessibilityLabel="Editar descripción"
+                onPress={startEditing}
+              />
+            )}
+            {savingGallery ? (
+              <ActivityIndicator color={colors.primary} />
+            ) : (
+              <IconButton
+                icon={Download}
+                tone="primary"
+                accessibilityLabel="Descargar foto"
+                onPress={downloadPhoto}
+              />
+            )}
+            {deletePhoto.isPending ? (
+              <ActivityIndicator color={colors.danger} />
+            ) : (
+              <IconButton
+                icon={Trash2}
+                tone="danger"
+                accessibilityLabel="Eliminar foto"
+                onPress={confirmDelete}
+              />
+            )}
           </View>
 
           {editing && (
@@ -251,33 +255,30 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.sm,
     backgroundColor: colors.surface,
     borderRadius: 4,
-    overflow: 'hidden',
     ...shadows.floating,
   },
   caption: {
     marginTop: spacing.sm,
-    maxWidth: '100%',
+    paddingHorizontal: spacing.xs,
     fontFamily: fonts.hand,
     fontSize: 26,
-    lineHeight: 32,
+    lineHeight: 34,
     color: colors.text,
     textAlign: 'center',
   },
-  details: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
+  meta: {
+    gap: spacing.xxs,
     paddingHorizontal: SCREEN_PADDING,
-    paddingVertical: spacing.md,
-  },
-  texts: {
-    flex: 1,
-    gap: spacing.xs,
+    paddingTop: spacing.md,
   },
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-start',
     gap: spacing.sm,
+    paddingHorizontal: SCREEN_PADDING,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
   },
   editor: {
     paddingHorizontal: SCREEN_PADDING,

@@ -1,4 +1,5 @@
-import { File, Paths } from 'expo-file-system';
+import { File } from 'expo-file-system';
+import { cacheDirectory, downloadAsync } from 'expo-file-system/legacy';
 import * as MediaLibrary from 'expo-media-library';
 
 export async function savePhotoToGallery(url: string) {
@@ -7,12 +8,23 @@ export async function savePhotoToGallery(url: string) {
     throw new Error('permission_denied');
   }
 
-  const destination = new File(Paths.cache, `pareja-download-${Date.now()}.jpg`);
-  const downloaded = await File.downloadFileAsync(url, destination, { idempotent: true });
-  await MediaLibrary.saveToLibraryAsync(downloaded.uri);
+  if (!cacheDirectory) {
+    throw new Error('download_failed');
+  }
+
+  const path = `${cacheDirectory}pareja-download-${Date.now()}.jpg`;
+  const downloaded = await downloadAsync(url, path);
+  if (downloaded.status !== 200) {
+    throw new Error('download_failed');
+  }
+
   try {
-    downloaded.delete();
-  } catch {
-    return;
+    await MediaLibrary.createAssetAsync(downloaded.uri);
+  } finally {
+    try {
+      new File(downloaded.uri).delete();
+    } catch {
+      // El archivo temporal no es critico si no se puede borrar.
+    }
   }
 }

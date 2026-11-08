@@ -1,13 +1,14 @@
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { GripVertical, NotebookPen, Pin } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
-import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { NotebookPen, Pin } from 'lucide-react-native';
+import { Alert, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import DraggableFlatList, {
+  ScaleDecorator,
+  type RenderItemParams,
+} from 'react-native-draggable-flatlist';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { colors, fonts, noteColors, radius, spacing } from '@/shared/theme';
-import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { Icon } from '@/shared/ui/icon';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
@@ -24,30 +25,9 @@ type NoteListProps = {
   authorNames: Record<string, string>;
 };
 
-function estimateHeight(note: Note) {
-  const lines = Math.min(6, Math.ceil(note.content.length / 18));
-  return 70 + (note.title ? 30 : 0) + lines * 20;
-}
-
-function splitColumns(notes: Note[]) {
-  const columns: [Note[], Note[]] = [[], []];
-  const heights = [0, 0];
-  for (const note of notes) {
-    const target = heights[0] <= heights[1] ? 0 : 1;
-    columns[target].push(note);
-    heights[target] += estimateHeight(note);
-  }
-  return columns;
-}
-
 export function NoteList({ coupleId, authorNames }: NoteListProps) {
   const notes = useNotes(coupleId);
   const reorder = useReorderNotes(coupleId);
-  const [sorting, setSorting] = useState(false);
-  const [draft, setDraft] = useState<Note[]>([]);
-
-  const unpinned = useMemo(() => (notes.data ?? []).filter((note) => !note.pinned), [notes.data]);
-  const pinned = useMemo(() => (notes.data ?? []).filter((note) => note.pinned), [notes.data]);
 
   if (notes.isPending) {
     return <LoadingState />;
@@ -67,78 +47,49 @@ export function NoteList({ coupleId, authorNames }: NoteListProps) {
     );
   }
 
-  if (sorting) {
+  function renderItem({ item, getIndex, drag, isActive }: RenderItemParams<Note>) {
+    const index = getIndex() ?? 0;
+    const side = index % 2 === 0 ? 'left' : 'right';
+
     return (
-      <View style={styles.sortWrap}>
-        <Text variant="caption" tone="muted">
-          Arrastra para ordenar. Las fijadas siguen arriba.
-        </Text>
-        <DraggableFlatList
-          data={draft}
-          keyExtractor={(item) => item.id}
-          onDragBegin={() => Haptics.selectionAsync()}
-          onDragEnd={({ data }) => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            setDraft(data);
-          }}
-          containerStyle={styles.sortList}
-          renderItem={({ item, drag, isActive }) => (
-            <ScaleDecorator>
-              <Pressable
-                onLongPress={drag}
-                disabled={isActive}
-                style={[styles.sortRow, isActive && styles.sortActive]}
-              >
-                <Icon icon={GripVertical} size={18} color={colors.textMuted} />
-                <Text style={styles.sortTitle} numberOfLines={1}>
-                  {item.title || item.content.split('\n')[0] || 'Nota'}
-                </Text>
-              </Pressable>
-            </ScaleDecorator>
-          )}
-        />
-        <View style={styles.sortActions}>
-          <Button title="Cancelar" variant="ghost" onPress={() => setSorting(false)} />
-          <Button
-            title="Guardar orden"
-            loading={reorder.isPending}
-            onPress={() => {
-              const orderedIds = [
-                ...pinned.map((note) => note.id),
-                ...draft.map((note) => note.id),
-              ];
-              reorder.mutate(orderedIds, {
-                onSuccess: () => setSorting(false),
-                onError: () => {
-                  Alert.alert(
-                    'No se pudo guardar el orden',
-                    'Revisa tu conexión e inténtalo de nuevo.',
-                  );
-                },
-              });
+      <ScaleDecorator activeScale={1.03}>
+        <View style={[styles.slot, side === 'left' ? styles.slotLeft : styles.slotRight]}>
+          <StickyNote
+            note={item}
+            authorName={authorNames[item.author_id ?? ''] ?? 'Alguien'}
+            dragging={isActive}
+            onLongPress={() => {
+              Haptics.selectionAsync();
+              drag();
             }}
           />
         </View>
-      </View>
+      </ScaleDecorator>
     );
   }
 
-  const columns = splitColumns(notes.data);
-
   return (
-    <View style={styles.wrap}>
-      {unpinned.length > 1 && (
-        <Button
-          title="Ordenar"
-          variant="ghost"
-          size="sm"
-          onPress={() => {
-            setDraft(unpinned);
-            setSorting(true);
-          }}
-        />
-      )}
-      <ScrollView
+    <GestureHandlerRootView style={styles.wrap}>
+      <DraggableFlatList
+        data={notes.data}
+        keyExtractor={(item) => item.id}
+        activationDistance={10}
+        onDragBegin={() => Haptics.selectionAsync()}
+        onDragEnd={({ data }) => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          reorder.mutate(
+            data.map((note) => note.id),
+            {
+              onError: () => {
+                Alert.alert(
+                  'No se pudo guardar el orden',
+                  'Revisa tu conexión e inténtalo de nuevo.',
+                );
+              },
+            },
+          );
+        }}
+        containerStyle={styles.list}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -149,46 +100,40 @@ export function NoteList({ coupleId, authorNames }: NoteListProps) {
             colors={[colors.primary]}
           />
         }
-      >
-        {columns.map((column, index) => (
-          <View key={index} style={styles.column}>
-            {column.map((note, noteIndex) => (
-              <Animated.View key={note.id} entering={FadeInDown.delay(noteIndex * 40)}>
-                <StickyNote
-                  note={note}
-                  authorName={authorNames[note.author_id ?? ''] ?? 'Alguien'}
-                />
-              </Animated.View>
-            ))}
-          </View>
-        ))}
-      </ScrollView>
-    </View>
+        renderItem={renderItem}
+      />
+    </GestureHandlerRootView>
   );
 }
 
 type StickyNoteProps = {
   note: Note;
   authorName: string;
+  dragging: boolean;
+  onLongPress: () => void;
 };
 
-function StickyNote({ note, authorName }: StickyNoteProps) {
+function StickyNote({ note, authorName, dragging, onLongPress }: StickyNoteProps) {
   const palette = noteColors[noteColorOf(note)];
   const title = note.title || note.content.split('\n')[0];
   const body = note.title ? note.content : note.content.split('\n').slice(1).join('\n');
+  const edited = wasEditedAfterCreate(note.created_at, note.updated_at);
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
+      delayLongPress={220}
+      onLongPress={onLongPress}
       onPress={() => {
+        if (dragging) return;
         Haptics.selectionAsync();
         router.push({ pathname: '/notes/[id]', params: { id: note.id } });
       }}
       style={({ pressed }) => [
         styles.note,
         { backgroundColor: palette.paper, transform: [{ rotate: tiltFor(note.id) }] },
-        pressed && styles.pressed,
+        (pressed || dragging) && styles.pressed,
       ]}
     >
       {note.pinned ? (
@@ -207,10 +152,8 @@ function StickyNote({ note, authorName }: StickyNoteProps) {
         </Text>
       )}
       <Text style={[styles.meta, { color: palette.ink }]} numberOfLines={1}>
-        {authorName},{' '}
-        {wasEditedAfterCreate(note.created_at, note.updated_at)
-          ? `editada ${formatChileDateTimeShort(note.updated_at)}`
-          : formatChileDateTimeShort(note.created_at)}
+        {authorName} · {formatChileDateTimeShort(note.created_at)}
+        {edited ? ' · editada' : ''}
       </Text>
     </Pressable>
   );
@@ -219,24 +162,29 @@ function StickyNote({ note, authorName }: StickyNoteProps) {
 const styles = StyleSheet.create({
   wrap: {
     flex: 1,
-    gap: spacing.sm,
+  },
+  list: {
+    flex: 1,
   },
   content: {
-    flexDirection: 'row',
-    gap: spacing.md,
     paddingTop: spacing.md,
-    paddingHorizontal: spacing.xxs,
     paddingBottom: spacing.xl * 3,
   },
-  column: {
-    flex: 1,
-    gap: spacing.lg,
+  slot: {
+    width: '78%',
+    marginBottom: spacing.md,
+  },
+  slotLeft: {
+    alignSelf: 'flex-start',
+  },
+  slotRight: {
+    alignSelf: 'flex-end',
   },
   note: {
     gap: spacing.xs,
     paddingTop: spacing.md + spacing.xs,
     paddingBottom: spacing.sm + spacing.xs,
-    paddingHorizontal: spacing.sm + spacing.xs,
+    paddingHorizontal: spacing.md,
     borderRadius: radius.sm / 2,
   },
   pressed: {
@@ -261,46 +209,17 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fonts.handBold,
     fontSize: 22,
-    lineHeight: 26,
+    lineHeight: 28,
   },
   body: {
     fontFamily: fonts.hand,
     fontSize: 18,
-    lineHeight: 22,
+    lineHeight: 24,
     color: colors.text,
   },
   meta: {
     marginTop: spacing.xs,
     fontSize: 12,
     opacity: 0.7,
-  },
-  sortWrap: {
-    flex: 1,
-    gap: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  sortList: {
-    flex: 1,
-  },
-  sortRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    backgroundColor: colors.surfaceMuted,
-  },
-  sortActive: {
-    backgroundColor: colors.primarySoft,
-  },
-  sortTitle: {
-    flex: 1,
-    color: colors.text,
-  },
-  sortActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: spacing.sm,
   },
 });

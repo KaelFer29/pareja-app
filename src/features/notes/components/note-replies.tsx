@@ -125,9 +125,7 @@ export function NoteReplies({ coupleId, noteId, userId }: NoteRepliesProps) {
                 <Text style={styles.content}>{reply.content}</Text>
                 <Text variant="caption" tone="muted">
                   {authorName(reply)} · {formatChileDateTime(reply.created_at)}
-                  {wasEditedAfterCreate(reply.created_at, reply.updated_at)
-                    ? ` · editada ${formatChileDateTime(reply.updated_at)}`
-                    : ''}
+                  {wasEditedAfterCreate(reply.created_at, reply.updated_at) ? ' · editada' : ''}
                 </Text>
                 <View style={styles.row}>
                   <IconButton
