@@ -9,6 +9,7 @@ import { CoupleAvatars } from '@/features/couple/components/couple-avatars';
 import { DaysTogetherCard } from '@/features/couple/components/days-together-card';
 import { useCouple } from '@/features/couple/couple-provider';
 import { useImportantDates } from '@/features/dates/hooks';
+import { useDismissNotificationsForPath } from '@/features/notifications/hooks';
 import { NudgeCard } from '@/features/nudges/components/nudge-card';
 import { PetHome } from '@/features/pet/components/pet-home';
 import { MoodBadge } from '@/features/profile/components/mood-badge';
@@ -21,6 +22,7 @@ import { SectionHeader } from '@/shared/ui/section-header';
 import { formatWeekday } from '@/shared/utils/date';
 
 export default function HomeScreen() {
+  useDismissNotificationsForPath('/');
   const { session } = useAuth();
   const userId = session?.user.id ?? '';
   const profile = useProfile(userId);

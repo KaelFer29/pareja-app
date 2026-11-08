@@ -6,6 +6,7 @@ import { useCouple } from '@/features/couple/couple-provider';
 import { NoteEditor } from '@/features/notes/components/note-editor';
 import { NoteReplies } from '@/features/notes/components/note-replies';
 import { useNote } from '@/features/notes/hooks';
+import { useDismissNotificationsForPath } from '@/features/notifications/hooks';
 import { ReactionBar } from '@/features/reactions/components/reaction-bar';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { FormKeyboardAvoiding } from '@/shared/ui/form-keyboard-avoiding';
@@ -16,6 +17,7 @@ import { spacing } from '@/shared/theme';
 
 export default function NoteScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  useDismissNotificationsForPath(id ? `/notes/${id}` : undefined);
   const note = useNote(id);
   const { session } = useAuth();
   const { partner } = useCouple();

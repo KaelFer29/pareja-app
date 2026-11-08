@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { MapPinOff } from 'lucide-react-native';
 
+import { useDismissNotificationsForPath } from '@/features/notifications/hooks';
 import { PlaceForm } from '@/features/places/components/place-form';
 import { usePlace } from '@/features/places/hooks';
 import { EmptyState } from '@/shared/ui/empty-state';
@@ -9,6 +10,7 @@ import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 export default function PlaceScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  useDismissNotificationsForPath(id ? `/places/${id}` : undefined);
   const place = usePlace(id);
 
   if (place.isPending) {

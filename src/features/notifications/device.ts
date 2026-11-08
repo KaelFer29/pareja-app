@@ -14,7 +14,7 @@ export function configureForegroundNotifications() {
       shouldPlaySound: false,
       shouldSetBadge: false,
       shouldShowBanner: false,
-      shouldShowList: true,
+      shouldShowList: false,
     }),
   });
 }

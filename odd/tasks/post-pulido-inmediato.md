@@ -54,7 +54,7 @@ Entrega: Conventional Commits solo con asunto. Verificación: `npm run lint`, `n
 
 | ID | Specs | Rama | Estado | PR |
 | --- | --- | --- | --- | --- |
-| N1 | S2 | `fix/notif-icono-dismiss` | pendiente | - |
+| N1 | S2 | `fix/notif-icono-dismiss` | hecha | - |
 | N2 | S3 | `chore/supabase-keepalive` | pendiente | - |
 | N3 | S4 | `feat/uso-almacenamiento` | pendiente | - |
 | N4 | S5 | `feat/prefs-notificaciones` | pendiente | - |
