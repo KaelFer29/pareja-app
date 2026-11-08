@@ -2,7 +2,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 
 import { SIGNED_URL_STALE_MS } from '@/shared/lib/storage';
 
-import { deletePhoto, getPhoto, listPhotos, uploadPhoto } from './api';
+import { deletePhoto, getPhoto, listPhotos, updatePhotoCaption, uploadPhoto } from './api';
 
 export const photoKeys = {
   all: ['photos'] as const,
@@ -46,6 +46,19 @@ export function useUploadPhoto() {
   return useMutation({
     mutationFn: uploadPhoto,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: photoKeys.all }),
+  });
+}
+
+export function useUpdatePhotoCaption() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, caption }: { id: string; caption: string }) =>
+      updatePhotoCaption(id, caption),
+    onSuccess: (photo) => {
+      queryClient.setQueryData(photoKeys.detail(photo.id), photo);
+      queryClient.invalidateQueries({ queryKey: photoKeys.all });
+    },
   });
 }
 
