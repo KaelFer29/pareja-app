@@ -1,8 +1,8 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Send } from 'lucide-react-native';
-import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Keyboard, ScrollView, StyleSheet, View } from 'react-native';
 
 import type { LocalImage } from '@/shared/lib/image';
 import { colors, radius, shadows, spacing } from '@/shared/theme';
@@ -19,14 +19,32 @@ type NewPhotoFormProps = {
 
 export function NewPhotoForm({ coupleId, image }: NewPhotoFormProps) {
   const [caption, setCaption] = useState('');
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const scrollRef = useRef<ScrollView>(null);
   const uploadPhoto = useUploadPhoto();
+
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardOpen(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   function share() {
     uploadPhoto.mutate({ coupleId, image, caption }, { onSuccess: () => router.back() });
   }
 
+  function keepCaptionVisible() {
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    });
+  }
+
   return (
     <ScrollView
+      ref={scrollRef}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
@@ -34,7 +52,11 @@ export function NewPhotoForm({ coupleId, image }: NewPhotoFormProps) {
       <View style={styles.frame}>
         <Image
           source={{ uri: image.uri }}
-          style={[styles.preview, { aspectRatio: image.width / image.height || 1 }]}
+          style={[
+            styles.preview,
+            keyboardOpen ? styles.previewCompact : null,
+            { aspectRatio: image.width / image.height || 1 },
+          ]}
           contentFit="cover"
         />
       </View>
@@ -45,6 +67,7 @@ export function NewPhotoForm({ coupleId, image }: NewPhotoFormProps) {
         multiline
         value={caption}
         onChangeText={setCaption}
+        onFocus={keepCaptionVisible}
         style={styles.caption}
       />
       {uploadPhoto.isError && (
@@ -57,6 +80,7 @@ export function NewPhotoForm({ coupleId, image }: NewPhotoFormProps) {
 
 const styles = StyleSheet.create({
   content: {
+    flexGrow: 1,
     gap: spacing.md,
     paddingBottom: spacing.lg,
   },
@@ -70,6 +94,9 @@ const styles = StyleSheet.create({
     maxHeight: 420,
     borderRadius: radius.lg,
     backgroundColor: colors.surfaceMuted,
+  },
+  previewCompact: {
+    maxHeight: 160,
   },
   caption: {
     minHeight: 88,

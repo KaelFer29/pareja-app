@@ -1,16 +1,10 @@
 import type { PropsWithChildren, ReactNode } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, spacing } from '@/shared/theme';
 
+import { FormKeyboardAvoiding } from './form-keyboard-avoiding';
 import { Text } from './text';
 
 type ScreenProps = PropsWithChildren<{
@@ -45,16 +39,7 @@ export function Screen({
       style={styles.safeArea}
       edges={withTopInset ? ['top', 'left', 'right'] : ['left', 'right']}
     >
-      {avoidKeyboard ? (
-        <KeyboardAvoidingView
-          style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-          {content}
-        </KeyboardAvoidingView>
-      ) : (
-        content
-      )}
+      {avoidKeyboard ? <FormKeyboardAvoiding>{content}</FormKeyboardAvoiding> : content}
     </SafeAreaView>
   );
 }

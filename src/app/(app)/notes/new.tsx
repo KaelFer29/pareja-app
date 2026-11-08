@@ -1,7 +1,6 @@
-import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
-
 import { useCouple } from '@/features/couple/couple-provider';
 import { NoteEditor } from '@/features/notes/components/note-editor';
+import { FormKeyboardAvoiding } from '@/shared/ui/form-keyboard-avoiding';
 
 export default function NewNoteScreen() {
   const { couple } = useCouple();
@@ -9,17 +8,8 @@ export default function NewNoteScreen() {
   if (!couple) return null;
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <FormKeyboardAvoiding>
       <NoteEditor coupleId={couple.id} />
-    </KeyboardAvoidingView>
+    </FormKeyboardAvoiding>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

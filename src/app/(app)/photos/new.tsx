@@ -1,11 +1,12 @@
 import { Redirect } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { useCouple } from '@/features/couple/couple-provider';
 import { NewPhotoForm } from '@/features/photos/components/new-photo-form';
 import { getPendingPhoto } from '@/features/photos/pending-photo';
 import { spacing } from '@/shared/theme';
+import { FormKeyboardAvoiding } from '@/shared/ui/form-keyboard-avoiding';
 import { SCREEN_PADDING } from '@/shared/ui/screen';
 
 export default function NewPhotoScreen() {
@@ -16,18 +17,14 @@ export default function NewPhotoScreen() {
   if (!couple) return null;
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <FormKeyboardAvoiding style={styles.container}>
       <NewPhotoForm coupleId={couple.id} image={image} />
-    </KeyboardAvoidingView>
+    </FormKeyboardAvoiding>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     paddingHorizontal: SCREEN_PADDING,
     paddingTop: spacing.md,
   },

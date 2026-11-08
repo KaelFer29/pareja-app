@@ -4,6 +4,7 @@ import { MapPinOff } from 'lucide-react-native';
 import { PlaceForm } from '@/features/places/components/place-form';
 import { usePlace } from '@/features/places/hooks';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { FormKeyboardAvoiding } from '@/shared/ui/form-keyboard-avoiding';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 export default function PlaceScreen() {
@@ -22,5 +23,9 @@ export default function PlaceScreen() {
     return <EmptyState icon={MapPinOff} title="Este lugar ya no existe" />;
   }
 
-  return <PlaceForm key={place.data.id} coupleId={place.data.couple_id} place={place.data} />;
+  return (
+    <FormKeyboardAvoiding>
+      <PlaceForm key={place.data.id} coupleId={place.data.couple_id} place={place.data} />
+    </FormKeyboardAvoiding>
+  );
 }

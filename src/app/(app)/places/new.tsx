@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 
 import { useCouple } from '@/features/couple/couple-provider';
 import { PlaceForm } from '@/features/places/components/place-form';
+import { FormKeyboardAvoiding } from '@/shared/ui/form-keyboard-avoiding';
 
 export default function NewPlaceScreen() {
   const { lat, lng, name } = useLocalSearchParams<{ lat?: string; lng?: string; name?: string }>();
@@ -18,6 +19,8 @@ export default function NewPlaceScreen() {
   if (!couple) return null;
 
   return (
-    <PlaceForm coupleId={couple.id} initialCoordinates={initialCoordinates} initialName={name} />
+    <FormKeyboardAvoiding>
+      <PlaceForm coupleId={couple.id} initialCoordinates={initialCoordinates} initialName={name} />
+    </FormKeyboardAvoiding>
   );
 }
