@@ -1,6 +1,9 @@
 const ALLOWED_NEXT = new Set(['reset-password', 'email-confirmed']);
+const ANDROID_PACKAGE = 'com.kaelfernandez.pareja';
 
-const html = `<!doctype html>
+function page(next: string) {
+  const safeNext = ALLOWED_NEXT.has(next) ? next : 'reset-password';
+  return `<!doctype html>
 <html lang="es">
   <head>
     <meta charset="utf-8" />
@@ -18,16 +21,31 @@ const html = `<!doctype html>
         padding: 24px;
         text-align: center;
       }
-      p { max-width: 28rem; line-height: 1.4; }
+      p { max-width: 28rem; line-height: 1.45; }
+      a.button {
+        display: inline-block;
+        margin-top: 16px;
+        padding: 14px 22px;
+        border-radius: 999px;
+        background: #d0668a;
+        color: #fff;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .muted { color: #937e73; font-size: 0.95rem; }
     </style>
   </head>
   <body>
-    <p>Abriendo Pareja…</p>
+    <div>
+      <p id="status">Toca el boton para volver a Pareja.</p>
+      <p class="muted">Si no pasa nada, abre el enlace otra vez desde el correo en este telefono.</p>
+      <a class="button" id="open" href="pareja://auth/${safeNext}">Abrir Pareja</a>
+    </div>
     <script>
       (function () {
         var allowed = ${JSON.stringify([...ALLOWED_NEXT])};
         var params = new URLSearchParams(window.location.search);
-        var next = params.get('next') || 'reset-password';
+        var next = params.get('next') || ${JSON.stringify(safeNext)};
         if (allowed.indexOf(next) === -1) next = 'reset-password';
         params.delete('next');
         var hash = window.location.hash.startsWith('#')
@@ -38,19 +56,33 @@ const html = `<!doctype html>
           if (!params.has(key)) params.set(key, value);
         });
         var query = params.toString();
-        var target = 'pareja://auth/' + next + (query ? '?' + query : '');
-        window.location.replace(target);
+        var path = 'auth/' + next + (query ? '?' + query : '');
+        var deep = 'pareja://' + path;
+        var intent =
+          'intent://' +
+          path +
+          '#Intent;scheme=pareja;package=${ANDROID_PACKAGE};end';
+        var isAndroid = /Android/i.test(navigator.userAgent || '');
+        var target = isAndroid ? intent : deep;
+        var link = document.getElementById('open');
+        link.setAttribute('href', target);
+        try {
+          window.location.replace(target);
+        } catch (e) {}
         setTimeout(function () {
-          document.querySelector('p').textContent =
-            'Si Pareja no se abrió, vuelve al correo y toca el enlace otra vez.';
-        }, 1500);
+          document.getElementById('status').textContent =
+            'Si Pareja no se abrio, toca Abrir Pareja.';
+        }, 800);
       })();
     </script>
   </body>
 </html>`;
+}
 
-Deno.serve((_req) => {
-  return new Response(html, {
+Deno.serve((req) => {
+  const url = new URL(req.url);
+  const next = url.searchParams.get('next') || 'reset-password';
+  return new Response(page(next), {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'no-store',

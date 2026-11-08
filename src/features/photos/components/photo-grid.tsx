@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   },
   polaroid: {
     padding: FRAME,
-    paddingBottom: spacing.xs,
+    paddingBottom: spacing.sm,
     backgroundColor: colors.surface,
     borderRadius: 3,
     shadowColor: colors.shadow,
@@ -238,9 +238,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceMuted,
   },
   caption: {
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.xs,
     fontFamily: fonts.hand,
     fontSize: 20,
-    lineHeight: 30,
+    lineHeight: 28,
     color: colors.text,
     textAlign: 'center',
   },
