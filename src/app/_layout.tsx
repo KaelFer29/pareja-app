@@ -51,9 +51,10 @@ function RootNavigator() {
 }
 
 function Routes({ hasSession }: { hasSession: boolean }) {
+  const { isPasswordRecovery } = useAuth();
   const { isComplete, isLoading } = useCouple();
 
-  if (hasSession && isLoading) {
+  if (hasSession && isLoading && !isPasswordRecovery) {
     return null;
   }
 
@@ -61,13 +62,14 @@ function Routes({ hasSession }: { hasSession: boolean }) {
     <Stack
       screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
     >
-      <Stack.Protected guard={hasSession && isComplete}>
+      <Stack.Screen name="auth/reset-password" />
+      <Stack.Protected guard={hasSession && isComplete && !isPasswordRecovery}>
         <Stack.Screen name="(app)" />
       </Stack.Protected>
-      <Stack.Protected guard={hasSession && !isComplete}>
+      <Stack.Protected guard={hasSession && !isComplete && !isPasswordRecovery}>
         <Stack.Screen name="(onboarding)" />
       </Stack.Protected>
-      <Stack.Protected guard={!hasSession}>
+      <Stack.Protected guard={!hasSession || isPasswordRecovery}>
         <Stack.Screen name="(auth)" />
       </Stack.Protected>
     </Stack>

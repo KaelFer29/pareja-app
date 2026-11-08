@@ -1,3 +1,4 @@
+import type { Href } from 'expo-router';
 import { ScrollView, StyleSheet } from 'react-native';
 
 import { AuthFooterLink } from '@/features/auth/components/auth-footer-link';
@@ -16,6 +17,11 @@ export default function SignInScreen() {
       >
         <BrandMark title="Pareja" subtitle="Su espacio para compartir lo de todos los días." />
         <SignInForm />
+        <AuthFooterLink
+          question="¿Olvidaste tu contraseña?"
+          action="Recupérala aquí"
+          href={'/forgot-password' as Href}
+        />
         <AuthFooterLink question="¿No tienes cuenta?" action="Créala aquí" href="/sign-up" />
       </ScrollView>
     </Screen>

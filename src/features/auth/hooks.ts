@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { signIn, signOut, signUp } from './api';
+import { requestPasswordReset, signIn, signOut, signUp, updateEmail, updatePassword } from './api';
 
 export function useSignIn() {
   return useMutation({ mutationFn: signIn });
@@ -8,6 +8,18 @@ export function useSignIn() {
 
 export function useSignUp() {
   return useMutation({ mutationFn: signUp });
+}
+
+export function useRequestPasswordReset() {
+  return useMutation({ mutationFn: requestPasswordReset });
+}
+
+export function useUpdatePassword() {
+  return useMutation({ mutationFn: updatePassword });
+}
+
+export function useUpdateEmail() {
+  return useMutation({ mutationFn: updateEmail });
 }
 
 export function useSignOut() {

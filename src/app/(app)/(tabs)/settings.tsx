@@ -3,6 +3,7 @@ import { CalendarHeart, LogOut, PawPrint } from 'lucide-react-native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { useAuth } from '@/features/auth/auth-provider';
+import { AccountSecurityCard } from '@/features/auth/components/account-security-card';
 import { useSignOut } from '@/features/auth/hooks';
 import { StartedOnField } from '@/features/couple/components/started-on-field';
 import { StorageUsageCard } from '@/features/couple/components/storage-usage-card';
@@ -101,6 +102,8 @@ export default function SettingsScreen() {
         <StorageUsageCard />
 
         {profile.data && <NotificationPrefsCard profile={profile.data} />}
+
+        {session?.user.email && <AccountSecurityCard currentEmail={session.user.email} />}
 
         <Card style={styles.menu}>
           <ListRow

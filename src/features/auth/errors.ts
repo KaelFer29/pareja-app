@@ -7,6 +7,8 @@ const messages: Record<string, string> = {
   user_already_exists: 'Ya existe una cuenta con este correo. Inicia sesión.',
   weak_password: 'La contraseña es muy corta. Usa al menos 6 caracteres.',
   email_address_invalid: 'El correo no es válido. Revísalo e inténtalo de nuevo.',
+  same_password: 'La nueva contraseña debe ser distinta a la actual.',
+  email_exists: 'Ese correo ya está en uso. Prueba con otro.',
   over_email_send_rate_limit:
     'Se enviaron demasiados correos. Espera unos minutos e inténtalo de nuevo.',
   over_request_rate_limit: 'Hiciste demasiados intentos. Espera unos minutos e inténtalo de nuevo.',
