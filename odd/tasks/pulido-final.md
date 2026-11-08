@@ -109,7 +109,7 @@ Implicancia: columna `position` en `notes` con grant de UPDATE y RPC de reordena
 
 | ID | Specs | Rama | Riesgo | Estado | PR |
 | --- | --- | --- | --- | --- | --- |
-| T1 | S2 | `fix/teclado-formularios` | ninguno | pendiente | - |
+| T1 | S2 | `fix/teclado-formularios` | ninguno | hecha | - |
 | T2 | S6 | `feat/fechas-chile` | ninguno | pendiente | - |
 | T3 | S3, S6 | `feat/edicion-fotos` | item 2 (política UPDATE en `photos`) | pendiente | - |
 | T4 | S4 | `feat/fotos-compartidas` | item 2 (RLS y Storage compartidos) | pendiente | - |
@@ -141,3 +141,4 @@ Cada tarea cierra con lint, typecheck, avisos de `npx supabase db advisors --lin
 
 - L2 (2026-11-07) Estado actual mapeado desde el código y las migraciones (última: `20261012202023_note_colors.sql`). Sin implementación todavía. La codificación se hará en Cursor leyendo este documento y su copia en Engram (`odd/pulido-final/tasks`). Las próximas funcionalidades propuestas quedan en Engram bajo `roadmap/proximas-funcionalidades`.
 - L3 (2026-11-08) Supuestos confirmados: S1 máximo 15 caracteres, S5 fijar sí notifica y color no, S7 y S8 como estaban. Ramas por tarea, no un epic único. Próximo paso: T1 en `fix/teclado-formularios`.
+- L4 (2026-11-08) T1: `FormKeyboardAvoiding` con `behavior="padding"` en Android e iOS (guía Expo SDK 57), offset por altura de header. Aplicado a fotos, notas, fechas, planes y lugares. En nueva foto la vista previa se compacta al abrir el teclado y el scroll lleva el campo a la vista. Sin `react-native-keyboard-controller` (evitaría development build ahora). Próximo: T2 `feat/fechas-chile`.
