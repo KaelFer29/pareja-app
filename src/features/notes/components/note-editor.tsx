@@ -17,6 +17,8 @@ import { Icon } from '@/shared/ui/icon';
 import { IconButton } from '@/shared/ui/icon-button';
 import { Notice } from '@/shared/ui/notice';
 import { SCREEN_PADDING } from '@/shared/ui/screen';
+import { Text } from '@/shared/ui/text';
+import { formatChileDateTime, wasEditedAfterCreate } from '@/shared/utils/date';
 
 import { COLOR_LABELS, NOTE_COLOR_KEYS, noteColorOf } from '../colors';
 import { useCreateNote, useDeleteNote, useUpdateNote } from '../hooks';
@@ -163,6 +165,18 @@ export function NoteEditor({ coupleId, note, footer }: NoteEditorProps) {
             autoFocus={!note}
           />
         </View>
+        {note && (
+          <View style={styles.timestamps}>
+            <Text variant="caption" tone="muted">
+              Creada {formatChileDateTime(note.created_at)}
+            </Text>
+            {wasEditedAfterCreate(note.created_at, note.updated_at) && (
+              <Text variant="caption" tone="muted">
+                Editada {formatChileDateTime(note.updated_at)}
+              </Text>
+            )}
+          </View>
+        )}
         {footer}
         {saveFailed && (
           <Notice message="No se pudo guardar la nota. Revisa tu conexión e inténtalo de nuevo." />
@@ -244,5 +258,8 @@ const styles = StyleSheet.create({
     minHeight: 260,
     textAlignVertical: 'top',
     paddingVertical: spacing.xs,
+  },
+  timestamps: {
+    gap: spacing.xxs,
   },
 });

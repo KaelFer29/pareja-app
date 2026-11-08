@@ -7,7 +7,7 @@ import { EmptyState } from '@/shared/ui/empty-state';
 import { Icon } from '@/shared/ui/icon';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 import { Text } from '@/shared/ui/text';
-import { formatRelativeShort } from '@/shared/utils/date';
+import { formatChileDateTimeShort, wasEditedAfterCreate } from '@/shared/utils/date';
 import { tiltFor } from '@/shared/utils/tilt';
 
 import { noteColorOf } from '../colors';
@@ -123,7 +123,10 @@ function StickyNote({ note, authorName }: StickyNoteProps) {
         </Text>
       )}
       <Text style={[styles.meta, { color: palette.ink }]} numberOfLines={1}>
-        {authorName}, {formatRelativeShort(note.updated_at)}
+        {authorName},{' '}
+        {wasEditedAfterCreate(note.created_at, note.updated_at)
+          ? `editada ${formatChileDateTimeShort(note.updated_at)}`
+          : formatChileDateTimeShort(note.created_at)}
       </Text>
     </Pressable>
   );

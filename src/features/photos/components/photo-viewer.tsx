@@ -8,7 +8,7 @@ import { colors, fonts, shadows, spacing } from '@/shared/theme';
 import { IconButton } from '@/shared/ui/icon-button';
 import { SCREEN_PADDING } from '@/shared/ui/screen';
 import { Text } from '@/shared/ui/text';
-import { formatDayWithoutYear, formatLongDate } from '@/shared/utils/date';
+import { formatChileDateTime, formatDayWithoutYear } from '@/shared/utils/date';
 
 import { useDeletePhoto } from '../hooks';
 import type { Photo } from '../types';
@@ -72,7 +72,10 @@ export function PhotoViewer({ photo, authorName, canDelete, footer }: PhotoViewe
       <View style={styles.details}>
         <View style={styles.texts}>
           <Text variant="caption" tone="muted">
-            Compartida por {authorName} el {formatLongDate(photo.created_at)}
+            Compartida por {authorName}
+          </Text>
+          <Text variant="caption" tone="muted">
+            {formatChileDateTime(photo.created_at)}
           </Text>
         </View>
         {canDelete &&

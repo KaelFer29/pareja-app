@@ -1,6 +1,7 @@
 const MINUTE_MS = 60 * 1000;
 const HOUR_MS = 60 * MINUTE_MS;
 const DAY_MS = 24 * HOUR_MS;
+const CHILE_TZ = 'America/Santiago';
 
 const LONG_DATE: Intl.DateTimeFormatOptions = {
   day: 'numeric',
@@ -8,8 +9,39 @@ const LONG_DATE: Intl.DateTimeFormatOptions = {
   year: 'numeric',
 };
 
+const CHILE_DATE_TIME: Intl.DateTimeFormatOptions = {
+  timeZone: CHILE_TZ,
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+};
+
+const CHILE_DATE_TIME_SHORT: Intl.DateTimeFormatOptions = {
+  timeZone: CHILE_TZ,
+  day: 'numeric',
+  month: 'short',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+};
+
 export function formatLongDate(isoDate: string) {
   return new Date(isoDate).toLocaleDateString('es', LONG_DATE);
+}
+
+export function formatChileDateTime(isoDate: string) {
+  return new Date(isoDate).toLocaleString('es-CL', CHILE_DATE_TIME);
+}
+
+export function formatChileDateTimeShort(isoDate: string) {
+  return new Date(isoDate).toLocaleString('es-CL', CHILE_DATE_TIME_SHORT).replace('.', '');
+}
+
+export function wasEditedAfterCreate(createdAt: string, updatedAt: string) {
+  return new Date(updatedAt).getTime() - new Date(createdAt).getTime() > 1000;
 }
 
 export function formatRelative(isoDate: string, now = new Date()) {

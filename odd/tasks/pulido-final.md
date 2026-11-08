@@ -109,8 +109,8 @@ Implicancia: columna `position` en `notes` con grant de UPDATE y RPC de reordena
 
 | ID | Specs | Rama | Riesgo | Estado | PR |
 | --- | --- | --- | --- | --- | --- |
-| T1 | S2 | `fix/teclado-formularios` | ninguno | hecha | - |
-| T2 | S6 | `feat/fechas-chile` | ninguno | pendiente | - |
+| T1 | S2 | `fix/teclado-formularios` | ninguno | hecha | [#1](https://github.com/KaelFer29/pareja-app/pull/1) |
+| T2 | S6 | `feat/fechas-chile` | ninguno | hecha | [#2](https://github.com/KaelFer29/pareja-app/pull/2) |
 | T3 | S3, S6 | `feat/edicion-fotos` | item 2 (política UPDATE en `photos`) | pendiente | - |
 | T4 | S4 | `feat/fotos-compartidas` | item 2 (RLS y Storage compartidos) | pendiente | - |
 | T5 | S5 | `feat/push-ediciones` | ninguno | pendiente | - |
@@ -141,4 +141,5 @@ Cada tarea cierra con lint, typecheck, avisos de `npx supabase db advisors --lin
 
 - L2 (2026-11-07) Estado actual mapeado desde el código y las migraciones (última: `20261012202023_note_colors.sql`). Sin implementación todavía. La codificación se hará en Cursor leyendo este documento y su copia en Engram (`odd/pulido-final/tasks`). Las próximas funcionalidades propuestas quedan en Engram bajo `roadmap/proximas-funcionalidades`.
 - L3 (2026-11-08) Supuestos confirmados: S1 máximo 15 caracteres, S5 fijar sí notifica y color no, S7 y S8 como estaban. Ramas por tarea, no un epic único. Próximo paso: T1 en `fix/teclado-formularios`.
-- L4 (2026-11-08) T1: `FormKeyboardAvoiding` con `behavior="padding"` en Android e iOS (guía Expo SDK 57), offset por altura de header. Aplicado a fotos, notas, fechas, planes y lugares. En nueva foto la vista previa se compacta al abrir el teclado y el scroll lleva el campo a la vista. Sin `react-native-keyboard-controller` (evitaría development build ahora). Próximo: T2 `feat/fechas-chile`.
+- L4 (2026-11-08) T1: `FormKeyboardAvoiding` con `behavior="padding"` en Android e iOS. Aplicado a fotos, notas, fechas, planes y lugares. PR #1 mergeado.
+- L5 (2026-11-08) T2: formatters `America/Santiago` en fotos y notas. `photos.updated_at` queda para T3. Próximo: T3 `feat/edicion-fotos`.
