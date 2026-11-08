@@ -1,10 +1,10 @@
 import { useLocalSearchParams } from 'expo-router';
 import { CalendarX } from 'lucide-react-native';
-import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 
 import { DateForm } from '@/features/dates/components/date-form';
 import { useImportantDate } from '@/features/dates/hooks';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { FormKeyboardAvoiding } from '@/shared/ui/form-keyboard-avoiding';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 export default function DateScreen() {
@@ -24,17 +24,8 @@ export default function DateScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <FormKeyboardAvoiding>
       <DateForm coupleId={item.data.couple_id} item={item.data} />
-    </KeyboardAvoidingView>
+    </FormKeyboardAvoiding>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

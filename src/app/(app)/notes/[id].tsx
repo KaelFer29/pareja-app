@@ -1,6 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
 import { FileX } from 'lucide-react-native';
-import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 
 import { useAuth } from '@/features/auth/auth-provider';
 import { useCouple } from '@/features/couple/couple-provider';
@@ -8,6 +7,7 @@ import { NoteEditor } from '@/features/notes/components/note-editor';
 import { useNote } from '@/features/notes/hooks';
 import { ReactionBar } from '@/features/reactions/components/reaction-bar';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { FormKeyboardAvoiding } from '@/shared/ui/form-keyboard-avoiding';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 export default function NoteScreen() {
@@ -29,10 +29,7 @@ export default function NoteScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <FormKeyboardAvoiding>
       <NoteEditor
         coupleId={note.data.couple_id}
         note={note.data}
@@ -44,12 +41,6 @@ export default function NoteScreen() {
           />
         }
       />
-    </KeyboardAvoidingView>
+    </FormKeyboardAvoiding>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

@@ -27,6 +27,7 @@ Solo crear commits cuando el usuario lo pida. Cuando lo pida:
 - Si `odd/` define commits por tarea (T1, T2, ...), respeta ese corte.
 - Nunca añadir `Co-authored-by`, `Signed-off-by` del agente, ni trailers tipo "Made with Cursor" o autoría de la IA.
 - Tras cada `git commit`, verificar con `git log -1 --format=%B`. Si aparece `Co-authored-by: Cursor` u otro trailer de la IA, reescribir el commit al instante (mismo árbol, solo asunto) antes de hacer push. Cursor a veces lo inyecta solo.
+- Preferir `git commit-tree` (mismo árbol y padre, solo el asunto) cuando haga falta evitar la inyección del entorno.
 - No usar `--no-verify` ni enmendar commits ajenos o ya publicados, salvo pedido explícito del usuario.
 
 ## Ejemplos
@@ -40,5 +41,7 @@ chore(deps): agrega expo-media-library
 
 ## PRs
 
-- El usuario levanta el PR a `main`. Si pide ayuda, el título del PR sigue el mismo estilo que el asunto del commit principal o resume la rama.
+- Si el usuario pide ayuda, el título sigue el estilo Conventional Commits. El cuerpo solo describe el cambio y el plan de prueba.
+- Prohibido en el cuerpo o el título: `Made with Cursor`, enlaces a cursor.com, `Co-authored-by` de la IA o cualquier atribución del agente.
+- Tras `gh pr create`, leer el cuerpo con `gh pr view --json body` y, si Cursor inyectó atribución, limpiarlo al instante con `gh pr edit --body`.
 - Antes de dar por cerrada una tarea de la rama: `npm run lint`, `npm run typecheck` y, si tocó nativo o Expo, `npx expo-doctor`.
