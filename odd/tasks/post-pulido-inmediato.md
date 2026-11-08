@@ -54,12 +54,12 @@ Entrega: Conventional Commits solo con asunto. Verificación: `npm run lint`, `n
 
 | ID | Specs | Rama | Estado | PR |
 | --- | --- | --- | --- | --- |
-| N1 | S2 | `fix/notif-icono-dismiss` | hecha | - |
-| N2 | S3 | `chore/supabase-keepalive` | hecha | - |
-| N3 | S4 | `feat/uso-almacenamiento` | hecha | - |
+| N1 | S2 | `fix/notif-icono-dismiss` | hecha | #10 |
+| N2 | S3 | `chore/supabase-keepalive` | hecha | #11/#12 |
+| N3 | S4 | `feat/uso-almacenamiento` | hecha | #13 |
 | N4 | S5 | `feat/prefs-notificaciones` | hecha | #14 |
-| N5 | S6 | `feat/cuenta-seguridad` | en curso | - |
-| N6 | cierre | (build production) | pendiente | - |
+| N5 | S6 | `feat/cuenta-seguridad` | hecha | #15 |
+| N6 | cierre | (build production) | en curso | - |
 
 Orden: N1 → N2 → N3 → N4 → N5 → N6.
 
@@ -72,3 +72,5 @@ Orden: N1 → N2 → N3 → N4 → N5 → N6.
 - L3 (2026-11-08) N3 mergeado. N4: columna `notification_prefs`, `push_to_partner` con `kind`, switches en Ajustes.
 
 - L4 (2026-11-08) N4 mergeado (#14). N5: reset/cambio de contraseña y correo, redirect `pareja://**` en Auth.
+
+- L5 (2026-11-08) N5 mergeado (#15). N6: docs, lint/typecheck/expo-doctor y `eas build --profile production`.
