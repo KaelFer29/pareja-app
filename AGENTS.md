@@ -321,6 +321,7 @@ Todas las tablas viven en `public` con RLS activado. Salvo `profiles` y `push_to
 | `couple_members`  | `couple_id`, `user_id` (único, referencia a `profiles`), `joined_at`                                                              |
 | `photos`          | `id`, `couple_id`, `uploaded_by`, `storage_path`, `caption`, `width`, `height`, `created_at`, `updated_at`                        |
 | `notes`           | `id`, `couple_id`, `author_id`, `title`, `content`, `pinned`, `created_at`, `updated_at`                                          |
+| `note_replies`    | `id`, `couple_id`, `note_id`, `author_id`, `content`, `created_at`, `updated_at`                                                  |
 | `important_dates` | `id`, `couple_id`, `title`, `date`, `repeats_yearly`, `created_at`                                                                |
 | `nudges`          | `id`, `couple_id`, `sender_id`, `kind`, `created_at`                                                                              |
 | `reactions`       | `id`, `couple_id`, `user_id`, `photo_id` o `note_id`, `emoji`, `created_at`                                                       |

@@ -2,6 +2,7 @@ import type { Tables } from '@/shared/lib/database.types';
 import type { NoteColor } from '@/shared/theme';
 
 export type Note = Tables<'notes'>;
+export type NoteReply = Tables<'note_replies'>;
 
 export type NoteDraft = {
   title: string;
