@@ -34,7 +34,6 @@ export default function PhotoScreen() {
     <PhotoViewer
       photo={photo.data}
       authorName={author?.profile?.display_name || 'Alguien'}
-      canDelete={photo.data.uploaded_by === userId}
       footer={
         <ReactionBar
           target={{ kind: 'photo', id: photo.data.id, coupleId: photo.data.couple_id }}

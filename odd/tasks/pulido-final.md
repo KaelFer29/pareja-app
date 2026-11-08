@@ -112,7 +112,7 @@ Implicancia: columna `position` en `notes` con grant de UPDATE y RPC de reordena
 | T1 | S2 | `fix/teclado-formularios` | ninguno | hecha | [#1](https://github.com/KaelFer29/pareja-app/pull/1) |
 | T2 | S6 | `feat/fechas-chile` | ninguno | hecha | [#2](https://github.com/KaelFer29/pareja-app/pull/2) |
 | T3 | S3, S6 | `feat/edicion-fotos` | item 2 (política UPDATE en `photos`) | hecha | - |
-| T4 | S4 | `feat/fotos-compartidas` | item 2 (RLS y Storage compartidos) | pendiente | - |
+| T4 | S4 | `feat/fotos-compartidas` | item 2 (RLS y Storage compartidos) | hecha | - |
 | T5 | S5 | `feat/push-ediciones` | ninguno | pendiente | - |
 | T6 | S7 | `feat/respuestas-notas` | ninguno (tabla nueva) | pendiente | - |
 | T7 | S1 | `feat/animo-libre` | item 1 (migra valores de `mood`) | pendiente | - |
@@ -144,3 +144,4 @@ Cada tarea cierra con lint, typecheck, avisos de `npx supabase db advisors --lin
 - L4 (2026-11-08) T1: `FormKeyboardAvoiding` con `behavior="padding"` en Android e iOS. Aplicado a fotos, notas, fechas, planes y lugares. PR #1 mergeado.
 - L5 (2026-11-08) T2: formatters `America/Santiago` en fotos y notas. `photos.updated_at` queda para T3. Próximo: T3 `feat/edicion-fotos`.
 - L6 (2026-11-08) T3: migración `photos_caption_update` con `updated_at`, grant UPDATE caption y política. Visor con edición, caption completa y zoom pinch/doble toque. Próximo: T4.
+- L7 (2026-11-08) T4: DELETE de fotos y storage para cualquier miembro, descarga a galería con `expo-media-library`. Próximo: T5.

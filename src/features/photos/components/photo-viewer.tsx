@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Check, Pencil, Trash2, X } from 'lucide-react-native';
+import { Check, Download, Pencil, Trash2, X } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -25,6 +25,7 @@ import {
 } from '@/shared/utils/date';
 
 import { useDeletePhoto, useUpdatePhotoCaption } from '../hooks';
+import { savePhotoToGallery } from '../save-to-gallery';
 import type { Photo } from '../types';
 import { ZoomablePhoto } from './zoomable-photo';
 
@@ -33,20 +34,42 @@ const FRAME = spacing.md - spacing.xxs;
 type PhotoViewerProps = {
   photo: Photo;
   authorName: string;
-  canDelete: boolean;
   footer?: React.ReactNode;
 };
 
-export function PhotoViewer({ photo, authorName, canDelete, footer }: PhotoViewerProps) {
+export function PhotoViewer({ photo, authorName, footer }: PhotoViewerProps) {
   const deletePhoto = useDeletePhoto();
   const updateCaption = useUpdatePhotoCaption();
   const { width, height } = useWindowDimensions();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(photo.caption ?? '');
+  const [savingGallery, setSavingGallery] = useState(false);
 
   function startEditing() {
     setDraft(photo.caption ?? '');
     setEditing(true);
+  }
+
+  async function downloadPhoto() {
+    if (!photo.url) {
+      Alert.alert('No se pudo descargar la foto', 'Espera un momento e inténtalo de nuevo.');
+      return;
+    }
+    setSavingGallery(true);
+    try {
+      await savePhotoToGallery(photo.url);
+      Alert.alert('Foto guardada', 'La foto quedó en la galería de tu teléfono.');
+    } catch (error) {
+      const denied = error instanceof Error && error.message === 'permission_denied';
+      Alert.alert(
+        'No se pudo descargar la foto',
+        denied
+          ? 'Activa el permiso de galería en Ajustes e inténtalo de nuevo.'
+          : 'Revisa tu conexión e inténtalo de nuevo.',
+      );
+    } finally {
+      setSavingGallery(false);
+    }
   }
 
   function confirmDelete() {
@@ -159,17 +182,26 @@ export function PhotoViewer({ photo, authorName, canDelete, footer }: PhotoViewe
                   onPress={startEditing}
                 />
               )}
-              {canDelete &&
-                (deletePhoto.isPending ? (
-                  <ActivityIndicator color={colors.danger} />
-                ) : (
-                  <IconButton
-                    icon={Trash2}
-                    tone="danger"
-                    accessibilityLabel="Eliminar foto"
-                    onPress={confirmDelete}
-                  />
-                ))}
+              {savingGallery ? (
+                <ActivityIndicator color={colors.primary} />
+              ) : (
+                <IconButton
+                  icon={Download}
+                  tone="primary"
+                  accessibilityLabel="Descargar foto"
+                  onPress={downloadPhoto}
+                />
+              )}
+              {deletePhoto.isPending ? (
+                <ActivityIndicator color={colors.danger} />
+              ) : (
+                <IconButton
+                  icon={Trash2}
+                  tone="danger"
+                  accessibilityLabel="Eliminar foto"
+                  onPress={confirmDelete}
+                />
+              )}
             </View>
           </View>
 

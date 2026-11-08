@@ -43,6 +43,14 @@
           "cameraPermission": "Pareja necesita acceso a la cámara para que puedas tomar fotos y compartirlas."
         }
       ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Pareja necesita guardar fotos en tu galería para que puedas descargarlas.",
+          "savePhotosPermission": "Pareja necesita guardar fotos en tu galería para que puedas descargarlas.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ],
       "@react-native-community/datetimepicker",
       [
         "expo-calendar",
