@@ -1,6 +1,8 @@
 import type { Tables } from '@/shared/lib/database.types';
 import type { LocalImage } from '@/shared/lib/image';
 
+import type { NotificationPrefs } from './notification-prefs';
+
 export type Profile = Tables<'profiles'>;
 
 export type UpdateAvatarInput = {
@@ -12,6 +14,11 @@ export type UpdateAvatarInput = {
 export type UpdateProfileInput = {
   userId: string;
   displayName: string;
+};
+
+export type UpdateNotificationPrefsInput = {
+  userId: string;
+  prefs: NotificationPrefs;
 };
 
 export type MoodState = {

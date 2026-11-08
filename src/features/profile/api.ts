@@ -4,7 +4,13 @@ import { compressImage } from '@/shared/lib/image';
 import { removeFiles, uploadImage } from '@/shared/lib/storage';
 import { supabase } from '@/shared/lib/supabase';
 
-import type { Profile, UpdateAvatarInput, UpdateMoodInput, UpdateProfileInput } from './types';
+import type {
+  Profile,
+  UpdateAvatarInput,
+  UpdateMoodInput,
+  UpdateNotificationPrefsInput,
+  UpdateProfileInput,
+} from './types';
 
 const AVATAR_MAX_SIDE = 512;
 
@@ -29,6 +35,14 @@ export async function updateMood({ userId, emoji, text }: UpdateMoodInput) {
       mood_emoji: emoji,
       mood_text: text?.trim() || null,
     })
+    .eq('id', userId);
+  if (error) throw error;
+}
+
+export async function updateNotificationPrefs({ userId, prefs }: UpdateNotificationPrefsInput) {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ notification_prefs: prefs })
     .eq('id', userId);
   if (error) throw error;
 }
