@@ -3,6 +3,7 @@ import { ImageOff } from 'lucide-react-native';
 
 import { useAuth } from '@/features/auth/auth-provider';
 import { useCouple } from '@/features/couple/couple-provider';
+import { useDismissNotificationsForPath } from '@/features/notifications/hooks';
 import { PhotoViewer } from '@/features/photos/components/photo-viewer';
 import { usePhoto } from '@/features/photos/hooks';
 import { ReactionBar } from '@/features/reactions/components/reaction-bar';
@@ -11,6 +12,7 @@ import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 export default function PhotoScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  useDismissNotificationsForPath(id ? `/photos/${id}` : undefined);
   const photo = usePhoto(id);
   const { session } = useAuth();
   const { couple, partner } = useCouple();

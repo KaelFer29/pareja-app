@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 
 import { registerPushToken, unregisterPushToken } from './api';
 import { getDevicePushToken } from './device';
+import { dismissNotificationById, dismissNotificationsForPath } from './dismiss';
 import { notificationsModule } from './native';
 
 let registeredToken: string | null = null;
@@ -33,8 +34,12 @@ export async function unregisterThisDevice() {
 }
 
 function openNotification(response: NotificationResponse | null) {
-  const url = response?.notification.request.content.data?.url;
+  const request = response?.notification.request;
+  const url = request?.content.data?.url;
   if (typeof url !== 'string' || !url.startsWith('/')) return;
+  if (request?.identifier) {
+    dismissNotificationById(request.identifier);
+  }
   notificationsModule?.clearLastNotificationResponse();
   router.push(url as Href);
 }
@@ -49,4 +54,11 @@ export function useNotificationNavigation() {
     const subscription = Notifications.addNotificationResponseReceivedListener(openNotification);
     return () => subscription.remove();
   }, []);
+}
+
+export function useDismissNotificationsForPath(path: string | undefined) {
+  useEffect(() => {
+    if (!path) return;
+    dismissNotificationsForPath(path);
+  }, [path]);
 }

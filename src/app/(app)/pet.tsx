@@ -1,5 +1,6 @@
 import { useAuth } from '@/features/auth/auth-provider';
 import { useCouple } from '@/features/couple/couple-provider';
+import { useDismissNotificationsForPath } from '@/features/notifications/hooks';
 import { AdoptPet } from '@/features/pet/components/adopt-pet';
 import { PetView } from '@/features/pet/components/pet-view';
 import { usePet } from '@/features/pet/hooks';
@@ -7,6 +8,7 @@ import { Screen } from '@/shared/ui/screen';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 
 export default function PetScreen() {
+  useDismissNotificationsForPath('/pet');
   const { session } = useAuth();
   const { couple } = useCouple();
   const pet = usePet(couple?.id);
