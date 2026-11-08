@@ -116,7 +116,7 @@ Implicancia: columna `position` en `notes` con grant de UPDATE y RPC de reordena
 | T5 | S5 | `feat/push-ediciones` | ninguno | hecha | - |
 | T6 | S7 | `feat/respuestas-notas` | ninguno (tabla nueva) | hecha | - |
 | T7 | S1 | `feat/animo-libre` | item 1 (migra valores de `mood`) | hecha | - |
-| T8 | S8 | `feat/interaccion-notas-fotos` | ninguno | hecha | - |
+| T8 | S8 | `feat/interaccion-notas-fotos` | ninguno | hecha | [#8](https://github.com/KaelFer29/pareja-app/pull/8) |
 
 Orden sugerido: T1 y T2 son rápidos y sin migración. T3 y T4 comparten `photos` y conviene hacerlos seguidos (PRs en serie). T5 depende de T3 y se completa con T6. T7 y T8 son independientes. Cada tarea es una rama y un PR. Las que agregan librerías nativas (T1 si usa keyboard-controller, T3, T4, T8) necesitan un development build. Agruparlas en una sola compilación para cuidar las 15 mensuales de EAS.
 
@@ -149,3 +149,4 @@ Cada tarea cierra con lint, typecheck, avisos de `npx supabase db advisors --lin
 - L9 (2026-11-08) T6: tabla `note_replies` con RLS, realtime y push. UI de respuestas en el editor. Próximo: T7.
 - L10 (2026-11-08) T7: `mood_emoji` + `mood_text` (máx 15), sugerencias rápidas. Próximo: T8.
 - L11 (2026-11-08) T8: `notes.position` + RPC `reorder_notes`, arrastre con háptica, filtros de fotos y animaciones de entrada. Pulido final cerrado en código.
+- L12 (2026-11-08) T8 mergeado en main vía PR #8. Pulido final cerrado.
