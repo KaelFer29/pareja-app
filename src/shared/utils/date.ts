@@ -9,6 +9,11 @@ const LONG_DATE: Intl.DateTimeFormatOptions = {
   year: 'numeric',
 };
 
+const CHILE_LONG_DATE: Intl.DateTimeFormatOptions = {
+  ...LONG_DATE,
+  timeZone: CHILE_TZ,
+};
+
 const CHILE_DATE_TIME: Intl.DateTimeFormatOptions = {
   timeZone: CHILE_TZ,
   day: 'numeric',
@@ -29,7 +34,7 @@ const CHILE_DATE_TIME_SHORT: Intl.DateTimeFormatOptions = {
 };
 
 export function formatLongDate(isoDate: string) {
-  return new Date(isoDate).toLocaleDateString('es', LONG_DATE);
+  return new Date(isoDate).toLocaleDateString('es', CHILE_LONG_DATE);
 }
 
 export function formatChileDateTime(isoDate: string) {
@@ -50,19 +55,6 @@ export function formatRelative(isoDate: string, now = new Date()) {
   if (elapsed < HOUR_MS) return `hace ${Math.floor(elapsed / MINUTE_MS)} min`;
   if (elapsed < DAY_MS) return `hace ${Math.floor(elapsed / HOUR_MS)} h`;
   return `el ${formatLongDate(isoDate)}`;
-}
-
-export function formatRelativeShort(isoDate: string, now = new Date()) {
-  const date = new Date(isoDate);
-  if (now.getTime() - date.getTime() < DAY_MS) return formatRelative(isoDate, now);
-  const sameYear = date.getFullYear() === now.getFullYear();
-  return date
-    .toLocaleDateString('es', {
-      day: 'numeric',
-      month: 'short',
-      year: sameYear ? undefined : 'numeric',
-    })
-    .replace('.', '');
 }
 
 export function parseDay(day: string) {

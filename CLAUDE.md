@@ -52,7 +52,7 @@ plugins/        config plugins locales
 ```
 
 - Una feature puede importar de `shared/`. Nunca importa archivos internos de otra feature. Si dos features necesitan lo mismo, va a `shared/`.
-- Importar siempre con el alias `@/`, que apunta a `src/`.
+- Entre carpetas distintas, importar con el alias `@/`, que apunta a `src/`. Dentro de una misma feature se usan imports relativos (`./types`, `../hooks`).
 - Anatomía de una feature: `api.ts` (llamadas a Supabase), `hooks.ts` (`useQuery`, `useMutation` y el objeto `<feature>Keys`), `realtime.ts`, `errors.ts`, `types.ts` y `components/`.
 - Flujo de datos: la pantalla usa un hook, el hook llama a `api.ts` con TanStack Query, `realtime.ts` escucha la tabla filtrada por `couple_id` y actualiza la caché, y las mutaciones invalidan sus claves al terminar.
 - Al confirmarse una suscripción de Realtime, la app vuelve a consultar los datos para no perder cambios ocurridos durante la reconexión.

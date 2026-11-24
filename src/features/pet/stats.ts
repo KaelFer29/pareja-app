@@ -1,6 +1,6 @@
 import type { PetAction } from './types';
 
-export { getPetStats, MOOD_MESSAGES, MOOD_SHORT, stageLabel, STAGES } from '@/shared/utils/pet';
+export { getPetStats, MOOD_MESSAGES, stageLabel } from '@/shared/utils/pet';
 
 const ACTION_PAST: Record<PetAction, { mine: string; theirs: string }> = {
   feed: { mine: 'Le diste de comer a', theirs: 'le dio de comer a' },

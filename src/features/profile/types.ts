@@ -21,11 +21,6 @@ export type UpdateNotificationPrefsInput = {
   prefs: NotificationPrefs;
 };
 
-export type MoodState = {
-  emoji: string | null;
-  text: string | null;
-};
-
 export type UpdateMoodInput = {
   userId: string;
   emoji: string | null;

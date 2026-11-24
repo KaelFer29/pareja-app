@@ -23,8 +23,6 @@ export async function savePhotoToGallery(url: string) {
   } finally {
     try {
       new File(downloaded.uri).delete();
-    } catch {
-      // El archivo temporal no es critico si no se puede borrar.
-    }
+    } catch {}
   }
 }
