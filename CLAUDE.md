@@ -18,8 +18,11 @@ Expo y Supabase cambian en cada versión. No confiar en la memoria: antes de usa
 ```bash
 export PATH=$HOME/.nvm/versions/node/v20.20.2/bin:$PATH   # el Node del sistema está desactualizado
 npx expo install <paquete>   # siempre así para agregar dependencias
-npm run start:tunnel         # development build, necesario porque WSL2 no expone su IP
+npm run start:tunnel         # development build en teléfonos físicos, que no llegan a la IP de WSL
 npm run start:go             # túnel en modo Expo Go
+npm run emulator             # abre el AVD de Windows desde WSL y espera a que arranque
+npm run android:build        # compila para x86_64 e instala el development build en el emulador, sin EAS
+npm run start:emulator       # emulador más Metro en la IP de WSL, sin túnel
 npm run web                  # revisar pantallas en el navegador
 npm run lint
 npm run typecheck
@@ -37,6 +40,38 @@ Ejecutar lint y typecheck antes de dar una tarea por terminada.
 - Compilar con `npx eas-cli@latest`, y solo cuando el usuario lo pida: el plan gratuito da 15 builds de Android al mes.
 - Los dos teléfonos son Android. Se mantiene compatibilidad con iOS, pero se prueba en Android. El perfil `production` genera un APK.
 - En Expo Go, `expo-notifications` y los widgets se cargan solo fuera de Expo Go. El mapa no funciona en Expo Go ni en web (`src/features/places/native.web.ts`).
+
+## Emulador
+
+Es la forma principal de probar cambios en Android. La web sirve para iterar rápido en pantallas, pero no tiene mapa, notificaciones, widgets ni cámara.
+
+### Esquema
+
+- El AVD `Pixel_7_API_35` corre en Windows. Node, Metro, Gradle y el SDK Linux (`~/Android/Sdk`, JDK Zulu 17) corren en WSL.
+- `~/Android/Sdk/platform-tools/adb` es un puente a `adb.exe` de Windows, para que haya un solo servidor ADB. Si `sdkmanager` lo sobrescribe, `scripts/env-android-wsl.sh` avisa y explica cómo recrearlo.
+- El emulador llega directo a la IP de WSL. Metro no usa `--localhost` ni `adb reverse`, y en Windows no debe haber un `portproxy` sobre el 8081.
+- `C:\Users\kdfh\.wslconfig` limita WSL a `memory=6GB` con `autoMemoryReclaim=gradual`. Sin ese límite, WSL, el emulador y Gradle agotan los 16 GB del PC.
+
+### Flujo diario
+
+1. `npm run start:emulator` abre el emulador y Metro. Luego se presiona `a` en esa misma terminal.
+2. Los cambios de JavaScript se ven al instante con Fast Refresh.
+3. Si cambian dependencias con código nativo, `app.json` o `plugins/`, primero `npx expo prebuild --platform android --no-install` y luego `npm run android:build`. Compila solo para `x86_64`, tarda cerca de 2 minutos y apaga Gradle al terminar.
+4. `expo prebuild` y `expo install --fix` cambian solos los scripts `android` e `ios` de `package.json` a `expo run:*`. Hay que dejarlos en `expo start --android` y `expo start --ios`.
+
+### Verificar como agente
+
+- La persona corre su propio Metro. No dejar un Metro propio corriendo en paralelo: dos Metro y dos instancias de la app provocan el error `App react context shouldn't be created before`.
+- Nunca levantar Metro con `CI=1`, porque deja de vigilar los archivos y sirve código viejo.
+- Abrir la app sin el aviso del menú de Expo: `adb shell am start -n com.kaelfernandez.pareja/.MainActivity -a android.intent.action.VIEW -d "'exp+pareja-app://expo-development-client/?url=http%3A%2F%2F<IP>%3A8081&disableOnboarding=1'"`, con la IP de `hostname -I`.
+- Ver la pantalla con `adb exec-out screencap -p > captura.png` y sus textos con `adb shell uiautomator dump`. Los errores de JavaScript salen en la terminal de Metro y los nativos en `adb logcat`.
+- La app usa el Supabase real. Lo que se haga con una cuenta real le llega a la pareja, con notificación incluida. Para probar, usar cuentas de prueba.
+
+### Problemas conocidos
+
+- Pantalla negra o "System UI isn't responding": falta memoria o el emulador quedó degradado. Cerrar el emulador y arrancarlo en frío desde Device Manager (Cold Boot Now).
+- `Theme.AppCompat` o el logo pegado en un build debug: revisar que `plugins/with-release-only-splash.js` siga en `app.json` y regenerar con `expo prebuild`.
+- Para escribir con el teclado del PC, el AVD necesita `hw.keyboard = yes` en su `config.ini` y la ventana del emulador debe tener el foco en Windows.
 
 ## Arquitectura
 
