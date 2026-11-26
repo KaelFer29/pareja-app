@@ -43,6 +43,10 @@ wait_for emulator_ready "El emulador no apareció en 3 minutos. Revisa que el AV
 echo "Esperando que termine de arrancar..."
 wait_for boot_completed "El emulador no terminó de arrancar en 3 minutos. Ciérralo e inténtalo de nuevo."
 
+"$WIN_ADB" shell dumpsys battery set ac 1 >/dev/null
+"$WIN_ADB" shell svc power stayon true >/dev/null
+"$WIN_ADB" shell input keyevent KEYCODE_WAKEUP >/dev/null
+"$WIN_ADB" shell wm dismiss-keyguard >/dev/null
 
 echo "Emulador listo."
 "$WIN_ADB" devices
