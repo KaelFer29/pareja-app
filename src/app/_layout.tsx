@@ -62,7 +62,6 @@ function Routes({ hasSession }: { hasSession: boolean }) {
     <Stack
       screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
     >
-      <Stack.Screen name="auth/reset-password" />
       <Stack.Protected guard={hasSession && isComplete && !isPasswordRecovery}>
         <Stack.Screen name="(app)" />
       </Stack.Protected>
@@ -72,6 +71,7 @@ function Routes({ hasSession }: { hasSession: boolean }) {
       <Stack.Protected guard={!hasSession || isPasswordRecovery}>
         <Stack.Screen name="(auth)" />
       </Stack.Protected>
+      <Stack.Screen name="auth/reset-password" />
     </Stack>
   );
 }

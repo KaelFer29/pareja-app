@@ -140,6 +140,7 @@ Nunca editar ni borrar una migración ya aplicada. Las tablas nuevas con `couple
 - Las notificaciones push las envían triggers de Postgres con `pg_net` directo a la API de Expo, sin Edge Function. Si el envío falla, el insert no se ve afectado.
 - Widgets de Android con `react-native-android-widget`, porque `expo-widgets` solo cubre iOS. La tarea se registra en `index.ts`, el punto de entrada.
 - `plugins/with-widget-resize.js` va antes del plugin de widgets en `app.json`, porque los mods se ejecutan en orden inverso.
+- En `src/app/_layout.tsx`, `auth/reset-password` se declara al final del `Stack` y `(auth)` fija `sign-in` como ruta inicial. Sin sesión, `/` no coincide con ninguna ruta y Expo Router muestra la primera pantalla disponible, que antes era "Nueva contraseña".
 - `plugins/with-release-only-splash.js` va antes de `expo-splash-screen` en `app.json`. En builds debug, `MainActivity` aplica `AppTheme` en vez de registrar el splash, porque con `expo-dev-client` el logo queda pegado sobre la app (expo/expo#40464). Release no cambia.
 - Calendario con vista de mes propia. No se usa `react-native-calendars` porque sus dependencias son antiguas.
 - Mapa con MapLibre y OpenFreeMap, búsqueda con Nominatim. Sin cuenta de Google.
