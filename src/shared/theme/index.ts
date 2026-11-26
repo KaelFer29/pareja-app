@@ -17,6 +17,8 @@ export const colors = {
   dangerSoft: '#FBEAE8',
   shadow: '#5C3D2E',
   overlay: 'rgba(58, 42, 35, 0.45)',
+  photoBackdrop: '#000000',
+  tape: 'rgba(255, 255, 255, 0.55)',
 } as const;
 
 export const fonts = {
@@ -49,6 +51,8 @@ export const spacing = {
 } as const;
 
 export const radius = {
+  hairline: 2,
+  paper: 4,
   sm: 10,
   md: 16,
   lg: 22,
@@ -70,6 +74,13 @@ export const shadows = {
     shadowRadius: 14,
     shadowOffset: { width: 0, height: 6 },
     elevation: 6,
+  },
+  paper: {
+    shadowColor: colors.shadow,
+    shadowOpacity: 0.14,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
 } as const;
 
@@ -114,5 +125,45 @@ export const typography = {
   emoji: {
     fontSize: 26,
     lineHeight: 32,
+  },
+  tag: {
+    fontFamily: fonts.extrabold,
+    fontSize: 11,
+    lineHeight: 15,
+  },
+  marker: {
+    fontFamily: fonts.bold,
+    fontSize: 13,
+    lineHeight: 15,
+  },
+  micro: {
+    fontFamily: fonts.regular,
+    fontSize: 11,
+    lineHeight: 15,
+  },
+  handHeading: {
+    fontFamily: fonts.handBold,
+    fontSize: 26,
+    lineHeight: 30,
+  },
+  handCaption: {
+    fontFamily: fonts.hand,
+    fontSize: 20,
+    lineHeight: 28,
+  },
+  handCaptionLarge: {
+    fontFamily: fonts.hand,
+    fontSize: 26,
+    lineHeight: 34,
+  },
+  noteTitle: {
+    fontFamily: fonts.handBold,
+    fontSize: 20,
+    lineHeight: 24,
+  },
+  noteBody: {
+    fontFamily: fonts.hand,
+    fontSize: 17,
+    lineHeight: 21,
   },
 } as const;
