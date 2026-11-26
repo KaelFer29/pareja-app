@@ -13,13 +13,14 @@ import {
 } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
-import { colors, fonts, spacing } from '@/shared/theme';
+import { colors, radius, shadows, spacing, typography } from '@/shared/theme';
 import { Chip } from '@/shared/ui/chip';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { SCREEN_PADDING } from '@/shared/ui/screen';
 import { ErrorState, LoadingState } from '@/shared/ui/states';
 import { Text } from '@/shared/ui/text';
 import { formatDayWithoutYear, formatMonthYear } from '@/shared/utils/date';
+import { withGlyphRoom } from '@/shared/utils/handwriting';
 import { tiltFor } from '@/shared/utils/tilt';
 
 import { usePhotos } from '../hooks';
@@ -111,7 +112,7 @@ export function PhotoGrid({ coupleId, userId }: PhotoGridProps) {
         renderItem={({ item, index }) =>
           item.kind === 'month' ? (
             <View style={styles.month}>
-              <Text style={styles.monthText}>{item.label}</Text>
+              <Text style={styles.monthText}>{withGlyphRoom(item.label)}</Text>
               <View style={styles.monthLine} />
             </View>
           ) : (
@@ -177,7 +178,7 @@ function Polaroid({ photo, width }: PolaroidProps) {
         recyclingKey={photo.id}
       />
       <Text style={styles.caption} numberOfLines={1}>
-        {label}
+        {withGlyphRoom(label)}
       </Text>
     </Pressable>
   );
@@ -204,9 +205,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   monthText: {
-    fontFamily: fonts.handBold,
-    fontSize: 26,
-    lineHeight: 30,
+    ...typography.handHeading,
     color: colors.accent,
   },
   monthLine: {
@@ -222,27 +221,21 @@ const styles = StyleSheet.create({
     padding: FRAME,
     paddingBottom: spacing.sm,
     backgroundColor: colors.surface,
-    borderRadius: 3,
-    shadowColor: colors.shadow,
-    shadowOpacity: 0.14,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    borderRadius: radius.paper,
+    ...shadows.paper,
   },
   pressed: {
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
   image: {
-    borderRadius: 1,
+    borderRadius: radius.hairline,
     backgroundColor: colors.surfaceMuted,
   },
   caption: {
     marginTop: spacing.xs,
     paddingHorizontal: spacing.xs,
-    fontFamily: fonts.hand,
-    fontSize: 20,
-    lineHeight: 28,
+    ...typography.handCaption,
     color: colors.text,
     textAlign: 'center',
   },
