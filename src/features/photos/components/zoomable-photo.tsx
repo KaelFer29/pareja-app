@@ -1,30 +1,21 @@
 import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { colors } from '@/shared/theme';
+
+const MAX_SCALE = 5;
+const DOUBLE_TAP_SCALE = 2.5;
 
 type ZoomablePhotoProps = {
   uri: string | null;
   cacheKey: string;
   width: number;
   height: number;
-  onZoomActiveChange?: (active: boolean) => void;
 };
 
-export function ZoomablePhoto({
-  uri,
-  cacheKey,
-  width,
-  height,
-  onZoomActiveChange,
-}: ZoomablePhotoProps) {
+export function ZoomablePhoto({ uri, cacheKey, width, height }: ZoomablePhotoProps) {
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
   const translateX = useSharedValue(0);
@@ -32,8 +23,10 @@ export function ZoomablePhoto({
   const savedX = useSharedValue(0);
   const savedY = useSharedValue(0);
 
-  function notifyZoom(active: boolean) {
-    onZoomActiveChange?.(active);
+  function clamp(value: number, size: number, currentScale: number) {
+    'worklet';
+    const limit = (size * (currentScale - 1)) / 2;
+    return Math.min(limit, Math.max(-limit, value));
   }
 
   function resetZoom() {
@@ -44,15 +37,11 @@ export function ZoomablePhoto({
     translateY.value = withTiming(0);
     savedX.value = 0;
     savedY.value = 0;
-    runOnJS(notifyZoom)(false);
   }
 
   const pinch = Gesture.Pinch()
-    .onBegin(() => {
-      runOnJS(notifyZoom)(true);
-    })
     .onUpdate((event) => {
-      scale.value = Math.min(4, Math.max(1, savedScale.value * event.scale));
+      scale.value = Math.min(MAX_SCALE, Math.max(1, savedScale.value * event.scale));
     })
     .onEnd(() => {
       savedScale.value = scale.value;
@@ -60,21 +49,18 @@ export function ZoomablePhoto({
         resetZoom();
         return;
       }
-      runOnJS(notifyZoom)(true);
+      translateX.value = withTiming(clamp(translateX.value, width, scale.value));
+      translateY.value = withTiming(clamp(translateY.value, height, scale.value));
+      savedX.value = clamp(savedX.value, width, scale.value);
+      savedY.value = clamp(savedY.value, height, scale.value);
     });
 
   const pan = Gesture.Pan()
-    .manualActivation(true)
-    .onTouchesMove((_event, state) => {
-      if (scale.value > 1.05) {
-        state.activate();
-      } else {
-        state.fail();
-      }
-    })
+    .averageTouches(true)
     .onUpdate((event) => {
-      translateX.value = savedX.value + event.translationX;
-      translateY.value = savedY.value + event.translationY;
+      if (scale.value <= 1) return;
+      translateX.value = clamp(savedX.value + event.translationX, width, scale.value);
+      translateY.value = clamp(savedY.value + event.translationY, height, scale.value);
     })
     .onEnd(() => {
       savedX.value = translateX.value;
@@ -88,9 +74,8 @@ export function ZoomablePhoto({
         resetZoom();
         return;
       }
-      scale.value = withTiming(2.2);
-      savedScale.value = 2.2;
-      runOnJS(notifyZoom)(true);
+      scale.value = withTiming(DOUBLE_TAP_SCALE);
+      savedScale.value = DOUBLE_TAP_SCALE;
     });
 
   const gesture = Gesture.Simultaneous(pinch, pan, doubleTap);
@@ -109,8 +94,8 @@ export function ZoomablePhoto({
         <Animated.View collapsable={false} style={[{ width, height }, animatedStyle]}>
           <Image
             source={uri ? { uri, cacheKey } : null}
-            style={[styles.image, { width, height }]}
-            contentFit="cover"
+            style={{ width, height }}
+            contentFit="contain"
             transition={150}
           />
         </Animated.View>
@@ -122,11 +107,6 @@ export function ZoomablePhoto({
 const styles = StyleSheet.create({
   clip: {
     overflow: 'hidden',
-    borderRadius: 2,
-    backgroundColor: colors.surfaceMuted,
-  },
-  image: {
-    borderRadius: 2,
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.photoBackdrop,
   },
 });

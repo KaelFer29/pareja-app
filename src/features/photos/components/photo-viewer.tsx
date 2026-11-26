@@ -1,18 +1,19 @@
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Check, Download, Pencil, Trash2, X } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Pressable,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
   View,
 } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { colors, fonts, shadows, spacing } from '@/shared/theme';
+import { colors, radius, shadows, spacing, typography } from '@/shared/theme';
 import { FormKeyboardAvoiding } from '@/shared/ui/form-keyboard-avoiding';
 import { IconButton } from '@/shared/ui/icon-button';
 import { Notice } from '@/shared/ui/notice';
@@ -24,11 +25,12 @@ import {
   formatDayWithoutYear,
   wasEditedAfterCreate,
 } from '@/shared/utils/date';
+import { withGlyphRoom } from '@/shared/utils/handwriting';
 
 import { useDeletePhoto, useUpdatePhotoCaption } from '../hooks';
 import { savePhotoToGallery } from '../save-to-gallery';
 import type { Photo } from '../types';
-import { ZoomablePhoto } from './zoomable-photo';
+import { PhotoLightbox } from './photo-lightbox';
 
 const FRAME = spacing.md - spacing.xxs;
 
@@ -45,7 +47,7 @@ export function PhotoViewer({ photo, authorName, footer }: PhotoViewerProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(photo.caption ?? '');
   const [savingGallery, setSavingGallery] = useState(false);
-  const [zooming, setZooming] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
 
   function startEditing() {
     setDraft(photo.caption ?? '');
@@ -127,25 +129,29 @@ export function PhotoViewer({ photo, authorName, footer }: PhotoViewerProps) {
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          scrollEnabled={!zooming}
-          bounces={!zooming}
         >
-          <GestureHandlerRootView style={styles.stage}>
+          <View style={styles.stage}>
             <View style={styles.polaroid}>
-              <ZoomablePhoto
-                uri={photo.url}
-                cacheKey={photo.storage_path}
-                width={imageWidth}
-                height={imageHeight}
-                onZoomActiveChange={setZooming}
-              />
+              <Pressable
+                accessibilityRole="imagebutton"
+                accessibilityLabel="Ver foto en pantalla completa"
+                onPress={() => setFullscreen(true)}
+                style={({ pressed }) => pressed && styles.pressed}
+              >
+                <Image
+                  source={photo.url ? { uri: photo.url, cacheKey: photo.storage_path } : null}
+                  style={[styles.image, { width: imageWidth, height: imageHeight }]}
+                  contentFit="cover"
+                  transition={150}
+                />
+              </Pressable>
               {!editing && (
                 <Text style={[styles.caption, { maxWidth: imageWidth }]}>
-                  {caption || fallbackDay}
+                  {withGlyphRoom(caption || fallbackDay)}
                 </Text>
               )}
             </View>
-          </GestureHandlerRootView>
+          </View>
 
           <View style={styles.meta}>
             <Text variant="caption" tone="muted">
@@ -230,6 +236,12 @@ export function PhotoViewer({ photo, authorName, footer }: PhotoViewerProps) {
           {footer && <View style={styles.footer}>{footer}</View>}
         </ScrollView>
       </FormKeyboardAvoiding>
+      <PhotoLightbox
+        uri={photo.url}
+        cacheKey={photo.storage_path}
+        visible={fullscreen}
+        onClose={() => setFullscreen(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -254,15 +266,20 @@ const styles = StyleSheet.create({
     padding: FRAME,
     paddingBottom: spacing.sm,
     backgroundColor: colors.surface,
-    borderRadius: 4,
+    borderRadius: radius.paper,
     ...shadows.floating,
+  },
+  image: {
+    borderRadius: radius.hairline,
+    backgroundColor: colors.surfaceMuted,
+  },
+  pressed: {
+    opacity: 0.9,
   },
   caption: {
     marginTop: spacing.sm,
     paddingHorizontal: spacing.xs,
-    fontFamily: fonts.hand,
-    fontSize: 26,
-    lineHeight: 34,
+    ...typography.handCaptionLarge,
     color: colors.text,
     textAlign: 'center',
   },

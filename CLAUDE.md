@@ -146,7 +146,7 @@ Nunca editar ni borrar una migración ya aplicada. Las tablas nuevas con `couple
 - Calendario con vista de mes propia. No se usa `react-native-calendars` porque sus dependencias son antiguas.
 - Mapa con MapLibre y OpenFreeMap, búsqueda con Nominatim. Sin cuenta de Google.
 - El desgaste de la mascota se calcula desde `updated_at`, en la app y en `care_for_pet`, sin `pg_cron`. La lógica compartida con el widget vive en `src/shared/utils/pet.ts`.
-- Fotos comprimidas a 1600 px y avatares a 512 px para cuidar el 1 GB gratis de Supabase. Un workflow de GitHub evita que el proyecto se pause.
+- Fotos comprimidas a 1600 px y avatares a 512 px para cuidar el 1 GB gratis de Supabase.
 - Todo debe caber en planes gratuitos.
 
 ## Redacción

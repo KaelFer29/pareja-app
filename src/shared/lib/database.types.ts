@@ -796,7 +796,6 @@ export type Database = {
         Args: { ordered_ids: string[]; target_couple_id: string }
         Returns: undefined
       }
-      storage_usage: { Args: never; Returns: number }
       schedule_outing: {
         Args: { outing_day: string; outing_id: string }
         Returns: {
@@ -820,6 +819,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      storage_usage: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never

@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Flame, Heart } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 
-import { colors, fonts, radius, spacing } from '@/shared/theme';
+import { colors, radius, spacing, typography } from '@/shared/theme';
 import { Card } from '@/shared/ui/card';
 import { Icon } from '@/shared/ui/icon';
 import { Text } from '@/shared/ui/text';
@@ -65,15 +65,17 @@ function AgendaRow({ item, showDay }: { item: AgendaItem; showDay: boolean }) {
         </View>
       )}
       <View style={styles.texts}>
-        <Text variant="bodyStrong" numberOfLines={1}>
-          {item.title}
-        </Text>
+        <View style={styles.titleRow}>
+          <Text variant="bodyStrong" numberOfLines={1} style={styles.title}>
+            {item.title}
+          </Text>
+          {item.outingStreak ? <StreakTag streak={item.outingStreak} /> : null}
+        </View>
         {subtitle !== '' && (
           <Text variant="caption" tone="muted" numberOfLines={1}>
             {subtitle}
           </Text>
         )}
-        {item.outingStreak ? <StreakTag streak={item.outingStreak} /> : null}
       </View>
     </Card>
   );
@@ -92,17 +94,15 @@ const styles = StyleSheet.create({
   streakTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-start',
-    gap: spacing.xxs + 1,
+    flexShrink: 0,
+    gap: spacing.xxs,
     paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: spacing.xxs,
     borderRadius: radius.pill,
     backgroundColor: colors.streakSoft,
   },
   streakText: {
-    fontFamily: fonts.extrabold,
-    fontSize: 11,
-    lineHeight: 15,
+    ...typography.tag,
     color: colors.streak,
   },
   streakMarker: {
@@ -134,14 +134,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accentSoft,
   },
   time: {
-    fontFamily: fonts.bold,
-    fontSize: 13,
-    lineHeight: 15,
+    ...typography.marker,
     color: colors.primary,
     textAlign: 'center',
   },
   texts: {
     flex: 1,
     gap: spacing.xxs,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  title: {
+    flexShrink: 1,
   },
 });

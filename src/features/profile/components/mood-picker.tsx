@@ -8,7 +8,7 @@ import { Notice } from '@/shared/ui/notice';
 import { TextField } from '@/shared/ui/text-field';
 
 import { useUpdateMood } from '../hooks';
-import { MOOD_SUGGESTIONS, MOOD_TEXT_MAX } from '../moods';
+import { lastEmoji, MOOD_SUGGESTIONS, MOOD_TEXT_MAX } from '../moods';
 
 type MoodPickerProps = {
   userId: string;
@@ -53,8 +53,9 @@ export function MoodPicker({ userId, emoji, text, onChange }: MoodPickerProps) {
         label="Emoji"
         placeholder="Elige un emoji"
         value={draftEmoji}
-        onChangeText={setDraftEmoji}
-        maxLength={8}
+        onChangeText={(value) => setDraftEmoji(lastEmoji(value))}
+        autoCorrect={false}
+        autoCapitalize="none"
       />
       <TextField
         label="Cómo te sientes"
