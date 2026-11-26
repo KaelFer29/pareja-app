@@ -69,7 +69,8 @@ Es la forma principal de probar cambios en Android. La web sirve para iterar rá
 
 ### Problemas conocidos
 
-- Pantalla negra o "System UI isn't responding": falta memoria o el emulador quedó degradado. Cerrar el emulador y arrancarlo en frío desde Device Manager (Cold Boot Now).
+- Pantalla negra sin errores: la pantalla del emulador se durmió. `npm run emulator` la despierta y la deja siempre encendida. A mano: `adb shell input keyevent KEYCODE_WAKEUP`.
+- "System UI isn't responding": falta memoria o el emulador quedó degradado. Cerrar el emulador y arrancarlo en frío desde Device Manager (Cold Boot Now).
 - `Theme.AppCompat` o el logo pegado en un build debug: revisar que `plugins/with-release-only-splash.js` siga en `app.json` y regenerar con `expo prebuild`.
 - Para escribir con el teclado del PC, el AVD necesita `hw.keyboard = yes` en su `config.ini` y la ventana del emulador debe tener el foco en Windows.
 
